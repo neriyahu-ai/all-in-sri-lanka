@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All In Sri Lanka — פאנל ניהול</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #1a6b3a;
+  --green-light: #2d9e5f;
+  --green-bg: #f0fff4;
+  --sidebar-w: 220px;
+  --header-h: 60px;
+  --border: #e2e8f0;
+  --text: #1a202c;
+  --muted: #718096;
+  --bg: #f7fafc;
+}
+
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); direction: rtl; }
+
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: var(--sidebar-w);
+  background: #1a202c;
+  color: white;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  z-index: 100;
+}
+.sidebar-logo {
+  padding: 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar-logo .flag { font-size: 1.5rem; }
+.sidebar-logo .title { font-size: 0.9rem; font-weight: 700; line-height: 1.3; }
+.sidebar-logo .sub { font-size: 0.7rem; opacity: 0.5; margin-top: 2px; }
+
+nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+.nav-section { padding: 8px 16px 4px; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.35); }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.7);
+  transition: all 0.15s;
+  border-right: 3px solid transparent;
+}
+.nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.nav-item.active { background: rgba(26,107,58,0.25); color: #68d391; border-right-color: #68d391; }
+.nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+.nav-item .badge {
+  margin-right: auto;
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 0.7rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.35);
+}
+
+.main { margin-right: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  height: var(--header-h);
+  background: white;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar h2 { font-size: 1.1rem; font-weight: 700; flex: 1; }
+.search-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  gap: 8px;
+  width: 220px;
+}
+.search-wrap input {
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  width: 100%;
+  direction: rtl;
+}
+.search-wrap input:focus { outline: none; }
+
+.btn-primary {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-primary:hover:not(:disabled) { background: #145c30; }
+.btn-primary:disabled { background: #a0aec0; cursor: default; }
+
+.content { flex: 1; padding: 24px; }
+
+.table-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.table-card table { width: 100%; border-collapse: collapse; }
+.table-card th {
+  background: var(--bg);
+  padding: 11px 14px;
+  text-align: right;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.table-card td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f4f8;
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+.table-card tr:last-child td { border-bottom: none; }
+.table-card tr:hover td { background: #fafbfc; }
+
+.tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #e2e8f0;
+  color: #4a5568;
+}
+.tag.green { background: #c6f6d5; color: #1a6b3a; }
+.tag.blue { background: #bee3f8; color: #2b6cb0; }
+.tag.yellow { background: #fefcbf; color: #744210; }
+.tag.red { background: #fed7d7; color: #c53030; }
+
+.btn-icon {
+  background: none; border: none; cursor: pointer;
+  color: #a0aec0; font-size: 1rem;
+  padding: 4px 6px; border-radius: 6px;
+  transition: all 0.15s;
+}
+.btn-icon:hover { color: var(--green); background: var(--green-bg); }
+.btn-icon.del:hover { color: #e53e3e; background: #fff5f5; }
+
+.loading-row td, .empty-row td {
+  text-align: center; padding: 40px; color: var(--muted);
+}
+
+.spinner-inline {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle; margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Modal */
+.modal-bg {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 200;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 60px;
+  overflow-y: auto;
+}
+.modal-bg.open { display: flex; }
+.modal {
+  background: white; border-radius: 14px;
+  width: 100%; max-width: 580px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: modalIn 0.2s ease;
+  margin-bottom: 40px;
+}
+@keyframes modalIn { from { opacity:0; transform:translateY(-12px); } to { opacity:1; } }
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.modal-header h3 { flex: 1; font-size: 1rem; }
+.btn-close { background: none; border: none; cursor: pointer; font-size: 1.3rem; color: var(--muted); }
+.modal-body { padding: 20px 24px; }
+.modal-footer {
+  padding: 16px 24px; border-top: 1px solid var(--border);
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+.btn-cancel {
+  background: none; border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 9px 18px;
+  font-size: 0.875rem; cursor: pointer; color: var(--muted);
+}
+.btn-cancel:hover { border-color: #a0aec0; color: var(--text); }
+
+.f-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.f-grid .full { grid-column: 1 / -1; }
+.f-field { display: flex; flex-direction: column; gap: 5px; }
+.f-field label { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+.f-field label .req { color: #e53e3e; }
+.f-field input, .f-field select, .f-field textarea {
+  padding: 9px 12px; border: 1.5px solid var(--border);
+  border-radius: 8px; font-size: 0.9rem; font-family: inherit;
+  direction: rtl; background: var(--bg); transition: border-color 0.2s;
+}
+.f-field input[dir="ltr"] { direction: ltr; text-align: left; }
+.f-field input:focus, .f-field select:focus, .f-field textarea:focus {
+  outline: none; border-color: var(--green); background: white;
+}
+.f-field textarea { resize: vertical; min-height: 70px; }
+
+/* AI Chat */
+.chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 160px); max-height: 680px; }
+.chat-msgs {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  background: white; border: 1px solid var(--border); border-radius: 12px 12px 0 0;
+}
+.msg { max-width: 78%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap; }
+.msg.user { background: var(--green); color: white; align-self: flex-end; border-radius: 12px 12px 4px 12px; }
+.msg.bot { background: #f7fafc; border: 1px solid var(--border); align-self: flex-start; border-radius: 12px 12px 12px 4px; }
+.chat-bar {
+  display: flex; gap: 8px; padding: 12px 14px;
+  background: white; border: 1px solid var(--border); border-top: none; border-radius: 0 0 12px 12px;
+}
+.chat-bar input {
+  flex: 1; border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; font-size: 0.9rem; direction: rtl; font-family: inherit;
+}
+.chat-bar input:focus { outline: none; border-color: var(--green); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; left: 24px;
+  color: white; padding: 12px 18px; border-radius: 10px;
+  font-size: 0.875rem; font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  transform: translateY(60px); opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 1000;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.ok { background: var(--green); }
+.toast.err { background: #c53030; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="flag">🇱🇰</span>
+      <div>
+        <div class="title">All In<br>Sri Lanka</div>
+        <div class="sub">פאנל ניהול</div>
+      </div>
+    </div>
+    <nav>
+      <div class="nav-section">תוכן</div>
+      <div class="nav-item active" onclick="showSection('hotels',this)">
+        <span class="icon">🏨</span> מלונות <span class="badge" id="b-hotels">–</span>
+      </div>
+      <div class="nav-item" onclick="showSection('attractions',this)">
+        <span class="icon">🏄</span> אטרקציות <span class="badge" id="b-attractions">–</span>
+      </div>
+      <div class="nav-item" onclick="showSection('qna',this)">
+        <span class="icon">💬</span> שאלות-תשובות <span class="badge" id="b-qna">–</span>
+      </div>
+      <div class="nav-item" onclick="showSection('drivers',this)">
+        <span class="icon">🚗</span> נהגים <span class="badge" id="b-drivers">–</span>
+      </div>
+      <div class="nav-item" onclick="showSection('inquiries',this)">
+        <span class="icon">📩</span> פניות <span class="badge" id="b-inquiries">–</span>
+      </div>
+      <div class="nav-section" style="margin-top:8px;">כלים</div>
+      <div class="nav-item" onclick="showSection('ai',this)">
+        <span class="icon">🤖</span> סוכן AI
+      </div>
+    </nav>
+    <div class="sidebar-footer">🟢 מחובר ל-Airtable</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <h2 id="sec-title">מלונות</h2>
+      <div class="search-wrap" id="search-wrap">
+        <span>🔍</span>
+        <input type="text" id="search-in" placeholder="חיפוש..." oninput="filterTable()">
+      </div>
+      <button class="btn-primary" id="btn-add" onclick="openAdd()">➕ הוסף</button>
+    </div>
+    <div class="content">
+
+      <!-- Hotels -->
+      <div id="sec-hotels" class="section">
+        <div class="table-card"><table>
+          <thead><tr><th>שם המקום</th><th>סוג</th><th>מיקום</th><th>טלפון</th><th>מחיר/לילה</th><th>דירוג</th><th>WiFi</th><th></th></tr></thead>
+          <tbody id="tb-hotels"><tr class="loading-row"><td colspan="8"><span class="spinner-inline"></span>טוען...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- Attractions -->
+      <div id="sec-attractions" class="section" style="display:none">
+        <div class="table-card"><table>
+          <thead><tr><th>שם</th><th>תחום</th><th>מיקום</th><th>טלפון</th><th>מחיר כניסה</th><th>שעות</th><th></th></tr></thead>
+          <tbody id="tb-attractions"><tr class="loading-row"><td colspan="7"><span class="spinner-inline"></span>טוען...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- QnA -->
+      <div id="sec-qna" class="section" style="display:none">
+        <div class="table-card"><table>
+          <thead><tr><th>נושא</th><th>שאלה</th><th>תשובה (תקציר)</th><th></th></tr></thead>
+          <tbody id="tb-qna"><tr class="loading-row"><td colspan="4"><span class="spinner-inline"></span>טוען...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- Drivers -->
+      <div id="sec-drivers" class="section" style="display:none">
+        <div class="table-card"><table>
+          <thead><tr><th>שם נהג</th><th>חברה</th><th>טלפון</th><th>שפות</th><th>דירוג</th><th>הערות</th><th></th></tr></thead>
+          <tbody id="tb-drivers"><tr class="loading-row"><td colspan="7"><span class="spinner-inline"></span>טוען...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- Inquiries -->
+      <div id="sec-inquiries" class="section" style="display:none">
+        <div class="table-card"><table>
+          <thead><tr><th>שם</th><th>אימייל</th><th>נושא</th><th>סטטוס</th><th>תאריך</th><th></th></tr></thead>
+          <tbody id="tb-inquiries"><tr class="loading-row"><td colspan="6"><span class="spinner-inline"></span>טוען...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- AI -->
+      <div id="sec-ai" class="section" style="display:none">
+        <div class="chat-wrap">
+          <div class="chat-msgs" id="chat-msgs">
+            <div class="msg bot">שלום! אני יכול לעזור לחפש מידע בטבלאות. לדוגמה:
+• "מצא מלונות בארוגם ביי"
+• "הצג שאלות בנושא חיסונים"
+• "כמה אטרקציות יש?"
+• "הצג פניות חדשות"</div>
+          </div>
+          <div class="chat-bar">
+            <input id="chat-in" placeholder="שאל שאלה..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="btn-primary" onclick="sendChat()">שלח</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">הוסף</h3>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">ביטול</button>
+      <button class="btn-primary" id="btn-save" onclick="saveRecord()">
+        <span id="save-label">שמור</span>
+        <span class="spinner-inline" id="save-spin" style="display:none;width:14px;height:14px;border-width:2px;"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────
+const TABLES = {
+  hotels:      'tbl81JyV8LSgrcJtr',
+  attractions: 'tblwQrQEphUK8PphM',
+  qna:         'tblfKu8Xgja3ObS5F',
+  drivers:     'tbluqVYPy7ng3qKJB',
+  inquiries:   'tblWaENqDC3hpkbZI'
+};
+
+const F = {
+  hotels: {
+    name:'fldNSi5FmXtVjXMdC', type:'fldBx8qZR7IwaXL5n', contact:'flddt1mtCe8SyqLeT',
+    phone:'fld2d8WgxmABllAm5', location:'fldtjA9doG2MDQCEl', wifi:'fldCkClyE9mKMmRcP',
+    desc:'fldysYK1Zcx7TwyLO', price:'fldS6keLJdoarzqSo', rating:'fldoLnFs1AYm7mJpL',
+    email:'fldJlKs9BzqhYNBOi'
+  },
+  attractions: {
+    name:'fldWyHNf8irp0WHy6', domain:'fld2lh3OcwXz6Xi4a', phone:'fld0h3jhso29CraNB',
+    location:'fldSZQv3JRHXo3Heu', notes:'fldRE421H2Gpv06Tm', address:'fldGjjzeMUKypCaYy',
+    desc:'fldVcckPplmH1R2im', price:'fld0yJdQ5cUn83L65', hours:'fld6Kl7ClTiw5sswK',
+    rating:'fldfqoj8xYBRje0bS'
+  },
+  qna: {
+    topic:'fldOhEDpWC2jekXq3', question:'fld4nFuEZPdTALZGG', answer:'fldk6dZ8zSEvEcaZn'
+  },
+  drivers: {
+    company:'fldaUyf4Mti0wqvD9', contact:'fldUjQ2QBXoBXfStM', phone:'fld51YqHfIl41rcB8',
+    notes:'fldCEVqSt3gTwj4v3', sys:'fldpMmLNcfkCGfX5O', driverName:'fldsmpfSH4LlTJdcG',
+    driverPhone:'fldYpQMEUcB45vgph', email:'fldaxmnOr9toWUDNS', vehicle:'fldtkOTkPbwSwP1W4',
+    languages:'fldSOaHsCeqxq2BLX', rating:'fldmYMg33kHsgTLoV'
+  },
+  inquiries: {
+    name:'fld7nAdaHbJpGdfrx', email:'fldB2o3aEifVVlTnJ', phone:'fld913HTmungMHLuE',
+    subject:'fldEkdYZhupmB2RlQ', content:'fldh1JhuCNuVc7ZpG',
+    date:'fldwgWiPCatusYkBH', status:'flduBzSwjWUW1TPVj', notes:'fldvK4lavvHGXJinO'
+  }
+};
+
+const TITLES = { hotels:'מלונות', attractions:'אטרקציות', qna:'שאלות-תשובות', drivers:'נהגים', inquiries:'פניות', ai:'סוכן AI' };
+
+// ── State ────────────────────────────────────────────────────────
+let cur = 'hotels';
+let cache = {};
+let editId = null;
+
+// ── API (via backend proxy) ──────────────────────────────────────
+async function api(tableId, method='GET', body=null, id='') {
+  const res = await fetch(`/api/airtable/${tableId}${id?'/'+id:''}`, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function fetchAll(tableId) {
+  let recs=[], offset;
+  do {
+    const qs = 'pageSize=100' + (offset?`&offset=${offset}`:'');
+    const d = await api(tableId + '?' + qs);
+    recs = recs.concat(d.records||[]);
+    offset = d.offset;
+  } while(offset);
+  return recs;
+}
+
+// ── Navigation ───────────────────────────────────────────────────
+function showSection(name, el) {
+  document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('sec-'+name).style.display='';
+  el.classList.add('active');
+  cur = name;
+  document.getElementById('sec-title').textContent = TITLES[name];
+  document.getElementById('btn-add').style.display = name==='ai'?'none':'';
+  document.getElementById('search-wrap').style.display = name==='ai'?'none':'';
+  if (name!=='ai' && !cache[name]) load(name);
+}
+
+async function load(name) {
+  try {
+    const recs = await fetchAll(TABLES[name]);
+    cache[name] = recs;
+    render(name, recs);
+    document.getElementById('b-'+name).textContent = recs.length;
+  } catch(e) {
+    document.getElementById('tb-'+name).innerHTML =
+      `<tr class="empty-row"><td colspan="9">⚠️ ${e.message}</td></tr>`;
+  }
+}
+
+// ── Render ───────────────────────────────────────────────────────
+function s(v,max=0) {
+  const str = (v||'').toString();
+  return max && str.length>max ? str.slice(0,max)+'…' : str;
+}
+
+function render(name, recs) {
+  const tb = document.getElementById('tb-'+name);
+  if (!recs.length) { tb.innerHTML='<tr class="empty-row"><td colspan="9">אין רשומות</td></tr>'; return; }
+  const f = F[name];
+  tb.innerHTML = recs.map(r=>{
+    const d=r.fields, id=r.id;
+    let cells='';
+    if(name==='hotels') cells=`
+      <td><strong>${s(d[f.name])}</strong></td>
+      <td><span class="tag">${s(d[f.type])||'–'}</span></td>
+      <td>${s(d[f.location])}</td>
+      <td dir="ltr">${s(d[f.phone])||'–'}</td>
+      <td>${d[f.price]?'$'+d[f.price]:'–'}</td>
+      <td>${d[f.rating]||'–'}</td>
+      <td><span class="tag ${d[f.wifi]==='כן'?'green':'red'}">${s(d[f.wifi])||'–'}</span></td>`;
+    else if(name==='attractions') cells=`
+      <td><strong>${s(d[f.name])}</strong></td>
+      <td><span class="tag blue">${s(d[f.domain])||'–'}</span></td>
+      <td>${s(d[f.location])}</td>
+      <td dir="ltr">${s(d[f.phone])||'–'}</td>
+      <td>${d[f.price]?'$'+d[f.price]:'–'}</td>
+      <td>${s(d[f.hours])||'–'}</td>`;
+    else if(name==='qna') cells=`
+      <td><span class="tag yellow">${s(d[f.topic])||'–'}</span></td>
+      <td style="max-width:200px">${s(d[f.question],60)}</td>
+      <td style="max-width:240px;color:var(--muted)">${s(d[f.answer],80)}</td>`;
+    else if(name==='drivers') cells=`
+      <td><strong>${s(d[f.driverName]||d[f.contact])}</strong></td>
+      <td>${s(d[f.company])||'–'}</td>
+      <td dir="ltr">${s(d[f.driverPhone]||d[f.phone])||'–'}</td>
+      <td>${(Array.isArray(d[f.languages])?d[f.languages]:[d[f.languages]||'']).join(', ')||'–'}</td>
+      <td>${d[f.rating]?'⭐'.repeat(d[f.rating]):'–'}</td>
+      <td style="max-width:160px;color:var(--muted)">${s(d[f.notes],50)||'–'}</td>`;
+    else if(name==='inquiries') {
+      const st=d[f.status]||'חדש';
+      cells=`
+        <td><strong>${s(d[f.name])}</strong></td>
+        <td>${s(d[f.email])||'–'}</td>
+        <td>${s(d[f.subject],40)||'–'}</td>
+        <td><span class="tag ${{חדש:'red','בטיפול':'yellow','טופל':'green'}[st]||''}">${st}</span></td>
+        <td>${s(d[f.date])||'–'}</td>`;
+    }
+    return `<tr>${cells}
+      <td style="white-space:nowrap">
+        <button class="btn-icon" onclick='openEdit("${name}","${id}")'>✏️</button>
+        <button class="btn-icon del" onclick='del("${name}","${id}")'>🗑️</button>
+      </td></tr>`;
+  }).join('');
+}
+
+function filterTable() {
+  const q = document.getElementById('search-in').value.toLowerCase();
+  const recs = cache[cur]||[];
+  render(cur, q ? recs.filter(r=>JSON.stringify(r.fields).toLowerCase().includes(q)) : recs);
+}
+
+// ── Forms ────────────────────────────────────────────────────────
+function e(v) { return (v||'').toString().replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function opt(list, sel) { return list.map(o=>`<option ${o===sel?'selected':''}>${o}</option>`).join(''); }
+
+const FORMS = {
+  hotels: d=>`<div class="f-grid">
+    <div class="f-field"><label>שם המקום <span class="req">*</span></label><input id="f-name" value="${e(d.name)}"></div>
+    <div class="f-field"><label>סוג</label><select id="f-type"><option value=""></option>${opt(['הוסטל','ריזורט','מלון','גסט-האוס','ווילה','בית להשכרה'],d.type)}</select></div>
+    <div class="f-field"><label>שם איש קשר</label><input id="f-contact" value="${e(d.contact)}"></div>
+    <div class="f-field"><label>טלפון</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
+    <div class="f-field"><label>מיקום <span class="req">*</span></label><input id="f-location" value="${e(d.location)}"></div>
+    <div class="f-field"><label>WiFi</label><select id="f-wifi"><option value="כן" ${d.wifi==='כן'?'selected':''}>כן</option><option value="לא" ${d.wifi==='לא'?'selected':''}>לא</option></select></div>
+    <div class="f-field full"><label>תיאור</label><textarea id="f-desc">${e(d.desc)}</textarea></div>
+    <div class="f-field"><label>מחיר/לילה ($)</label><input id="f-price" type="number" value="${d.price||''}"></div>
+    <div class="f-field"><label>דירוג Booking</label><input id="f-rating" type="number" step="0.1" value="${d.rating||''}"></div>
+    <div class="f-field full"><label>אימייל</label><input id="f-email" dir="ltr" value="${e(d.email)}"></div>
+  </div>`,
+
+  attractions: d=>`<div class="f-grid">
+    <div class="f-field"><label>שם <span class="req">*</span></label><input id="f-name" value="${e(d.name)}"></div>
+    <div class="f-field"><label>תחום</label><select id="f-domain"><option value=""></option>${opt(['הדרכת גלישה','השכרת אופנועים','השכרת רכבים','אמבטיית קרח','ספא','חנות בגדים ומזכרות','תיקון גלשנים','יוגה','צלם גלישה','כביסה','חנות גלישה'],d.domain)}</select></div>
+    <div class="f-field"><label>טלפון</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
+    <div class="f-field"><label>מיקום <span class="req">*</span></label><input id="f-location" value="${e(d.location)}"></div>
+    <div class="f-field"><label>מחיר כניסה ($)</label><input id="f-price" type="number" value="${d.price||''}"></div>
+    <div class="f-field"><label>שעות פתיחה</label><input id="f-hours" value="${e(d.hours)}"></div>
+    <div class="f-field full"><label>כתובת מדויקת</label><input id="f-address" value="${e(d.address)}"></div>
+    <div class="f-field full"><label>תיאור</label><textarea id="f-desc">${e(d.desc)}</textarea></div>
+    <div class="f-field full"><label>הערות</label><textarea id="f-notes">${e(d.notes)}</textarea></div>
+  </div>`,
+
+  qna: d=>`<div class="f-grid">
+    <div class="f-field full"><label>נושא <span class="req">*</span></label>
+      <select id="f-topic"><option value=""></option>${opt(['חיסונים','ויזה ואשרה','כסף ועלויות','תחבורה','אוכל','בטיחות','מזג אוויר','קניות','תרבות ומנהגים','תקשורת וסים','ביטוח','אחר'],d.topic)}</select></div>
+    <div class="f-field full"><label>שאלה <span class="req">*</span></label><textarea id="f-question">${e(d.question)}</textarea></div>
+    <div class="f-field full"><label>תשובה <span class="req">*</span></label><textarea id="f-answer" style="min-height:100px">${e(d.answer)}</textarea></div>
+  </div>`,
+
+  drivers: d=>`<div class="f-grid">
+    <div class="f-field"><label>שם נהג</label><input id="f-driverName" value="${e(d.driverName)}"></div>
+    <div class="f-field"><label>שם חברה</label><input id="f-company" value="${e(d.company)}"></div>
+    <div class="f-field"><label>שם איש קשר</label><input id="f-contact" value="${e(d.contact)}"></div>
+    <div class="f-field"><label>טלפון נהג</label><input id="f-driverPhone" dir="ltr" value="${e(d.driverPhone)}"></div>
+    <div class="f-field"><label>טלפון חברה</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
+    <div class="f-field"><label>אימייל</label><input id="f-email" dir="ltr" value="${e(d.email)}"></div>
+    <div class="f-field"><label>סוג רכב</label><input id="f-vehicle" value="${e(d.vehicle)}"></div>
+    <div class="f-field"><label>שפות</label>
+      <select id="f-languages" multiple style="min-height:80px">${['עברית','אנגלית','סינהלית','טמילית','ערבית','שפה אחרת'].map(o=>`<option ${(d.languages||[]).includes(o)?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="f-field full"><label>הערות</label><textarea id="f-notes">${e(d.notes)}</textarea></div>
+    <div class="f-field full"><label>הערות מערכת (פנימי)</label><textarea id="f-sys">${e(d.sys)}</textarea></div>
+  </div>`,
+
+  inquiries: d=>`<div class="f-grid">
+    <div class="f-field"><label>שם מלא <span class="req">*</span></label><input id="f-name" value="${e(d.name)}"></div>
+    <div class="f-field"><label>אימייל</label><input id="f-email" dir="ltr" value="${e(d.email)}"></div>
+    <div class="f-field"><label>טלפון</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
+    <div class="f-field"><label>סטטוס</label><select id="f-status">${opt(['חדש','בטיפול','טופל'],d.status||'חדש')}</select></div>
+    <div class="f-field full"><label>נושא הפנייה</label><input id="f-subject" value="${e(d.subject)}"></div>
+    <div class="f-field full"><label>תוכן הפנייה</label><textarea id="f-content" style="min-height:90px">${e(d.content)}</textarea></div>
+    <div class="f-field full"><label>הערות פנימיות</label><textarea id="f-notes">${e(d.notes)}</textarea></div>
+  </div>`
+};
+
+function openAdd() {
+  editId = null;
+  document.getElementById('modal-title').textContent = '➕ ' + {hotels:'מלון חדש',attractions:'אטרקציה חדשה',qna:'שאלה-תשובה',drivers:'נהג חדש',inquiries:'פנייה חדשה'}[cur];
+  document.getElementById('modal-body').innerHTML = FORMS[cur]({});
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function openEdit(name, id) {
+  const rec = (cache[name]||[]).find(r=>r.id===id);
+  if (!rec) return;
+  cur = name;
+  editId = id;
+  const f=F[name], raw=rec.fields, d={};
+  for(const [k,fid] of Object.entries(f)) d[k]=raw[fid];
+  document.getElementById('modal-title').textContent = '✏️ עריכה';
+  document.getElementById('modal-body').innerHTML = FORMS[name](d);
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  editId = null;
+}
+
+function collectFields() {
+  const f=F[cur];
+  const v=id=>(document.getElementById(id)?.value||'').trim();
+  const fields={};
+
+  if(cur==='hotels') {
+    if(!v('f-name')||!v('f-location')) throw new Error('שם מקום ומיקום הם שדות חובה');
+    fields[f.name]=v('f-name'); fields[f.type]=v('f-type');
+    fields[f.contact]=v('f-contact'); fields[f.phone]=v('f-phone');
+    fields[f.location]=v('f-location'); fields[f.wifi]=v('f-wifi');
+    fields[f.desc]=v('f-desc'); fields[f.email]=v('f-email');
+    if(v('f-price')) fields[f.price]=+v('f-price');
+    if(v('f-rating')) fields[f.rating]=+v('f-rating');
+  } else if(cur==='attractions') {
+    if(!v('f-name')||!v('f-location')) throw new Error('שם ומיקום הם שדות חובה');
+    fields[f.name]=v('f-name'); fields[f.domain]=v('f-domain');
+    fields[f.phone]=v('f-phone'); fields[f.location]=v('f-location');
+    fields[f.address]=v('f-address'); fields[f.desc]=v('f-desc');
+    fields[f.notes]=v('f-notes'); fields[f.hours]=v('f-hours');
+    if(v('f-price')) fields[f.price]=+v('f-price');
+  } else if(cur==='qna') {
+    if(!v('f-topic')||!v('f-question')||!v('f-answer')) throw new Error('כל השדות חובה');
+    fields[f.topic]=v('f-topic'); fields[f.question]=v('f-question'); fields[f.answer]=v('f-answer');
+  } else if(cur==='drivers') {
+    if(!v('f-driverName')&&!v('f-contact')) throw new Error('יש למלא שם נהג או איש קשר');
+    ['company','contact','phone','notes','sys','driverName','driverPhone','email','vehicle'].forEach(k=>{
+      if(v('f-'+k)) fields[f[k]]=v('f-'+k);
+    });
+    const langs=[...(document.getElementById('f-languages')?.selectedOptions||[])].map(o=>o.value);
+    if(langs.length) fields[f.languages]=langs;
+  } else if(cur==='inquiries') {
+    if(!v('f-name')) throw new Error('שם מלא הוא שדה חובה');
+    ['name','email','phone','subject','content','status','notes'].forEach(k=>{
+      if(v('f-'+k)) fields[f[k]]=v('f-'+k);
+    });
+  }
+
+  // Remove empty strings
+  for(const k in fields) if(fields[k]==='') delete fields[k];
+  return fields;
+}
+
+async function saveRecord() {
+  const btn=document.getElementById('btn-save');
+  const lbl=document.getElementById('save-label');
+  const spin=document.getElementById('save-spin');
+  btn.disabled=true; lbl.style.display='none'; spin.style.display='inline-block';
+
+  try {
+    const fields=collectFields();
+    const tid=TABLES[cur];
+    if(editId) {
+      await api(tid,'PATCH',{fields},editId);
+      toast('עודכן בהצלחה ✓','ok');
+    } else {
+      await api(tid,'POST',{fields});
+      toast('נוסף בהצלחה ✓','ok');
+    }
+    closeModal();
+    cache[cur]=null;
+    load(cur);
+  } catch(e) {
+    toast('שגיאה: '+e.message,'err');
+  } finally {
+    btn.disabled=false; lbl.style.display=''; spin.style.display='none';
+  }
+}
+
+async function del(name, id) {
+  if(!confirm('למחוק רשומה זו?')) return;
+  try {
+    await api(TABLES[name],'DELETE',null,id);
+    toast('נמחק','ok');
+    cache[name]=null; load(name);
+  } catch(e) { toast('שגיאת מחיקה: '+e.message,'err'); }
+}
+
+// ── Toast ────────────────────────────────────────────────────────
+function toast(msg, type='ok') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+type;
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ── AI Chat ──────────────────────────────────────────────────────
+async function sendChat() {
+  const inp=document.getElementById('chat-in');
+  const q=inp.value.trim(); if(!q) return;
+  inp.value='';
+  addMsg('user',q);
+  const thinking=addMsg('bot','⏳ מחשב...');
+  try { thinking.textContent=await aiAnswer(q); }
+  catch(e) { thinking.textContent='❌ '+e.message; }
+}
+
+function addMsg(role,text) {
+  const msgs=document.getElementById('chat-msgs');
+  const div=document.createElement('div');
+  div.className='msg '+role; div.textContent=text;
+  msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight;
+  return div;
+}
+
+async function aiAnswer(q) {
+  const lower=q.toLowerCase();
+  let name=null;
+  if(/מלון|לינה|הוסטל|ריזורט/.test(lower)) name='hotels';
+  else if(/אטרקצי|גלישה|טיול/.test(lower)) name='attractions';
+  else if(/שאלה|חיסון|ויזה|אוכל|בטיחות/.test(lower)) name='qna';
+  else if(/נהג|הסעה|רכב/.test(lower)) name='drivers';
+  else if(/פנייה|פניות/.test(lower)) name='inquiries';
+  else {
+    let r='📊 מצב הטבלאות:\n';
+    for(const [n] of Object.entries(TABLES)) r+=`• ${TITLES[n]}: ${(cache[n]||[]).length||'?'} רשומות\n`;
+    return r;
+  }
+
+  if(!cache[name]) await load(name);
+  const recs=cache[name]||[];
+  const f=F[name];
+
+  const locMatch=q.match(/ב([א-ת]{2,})/);
+  let filtered=recs;
+  if(locMatch) filtered=recs.filter(r=>JSON.stringify(r.fields).includes(locMatch[1]));
+
+  if(!filtered.length) return 'לא נמצאו תוצאות.';
+  const shown=filtered.slice(0,6).map(r=>{
+    const d=r.fields;
+    if(name==='hotels') return `🏨 ${d[f.name]||''} — ${d[f.location]||''}${d[f.price]?' ($'+d[f.price]+'/לילה)':''}`;
+    if(name==='attractions') return `🏄 ${d[f.name]||''} — ${d[f.domain]||''}, ${d[f.location]||''}`;
+    if(name==='qna') return `❓ ${d[f.question]||''}\n   ➜ ${(d[f.answer]||'').slice(0,100)}`;
+    if(name==='drivers') return `🚗 ${d[f.driverName]||d[f.contact]||''} — ${d[f.driverPhone]||d[f.phone]||''}`;
+    if(name==='inquiries') return `📩 ${d[f.name]||''} | ${d[f.status]||'חדש'} | ${d[f.subject]||''}`;
+  }).join('\n\n');
+  return `נמצאו ${filtered.length} תוצאות:\n\n${shown}${filtered.length>6?`\n\n...ועוד ${filtered.length-6}`:''}`;
+}
+
+// ── Boot ─────────────────────────────────────────────────────────
+load('hotels');
+</script>
+</body>
+</html>
