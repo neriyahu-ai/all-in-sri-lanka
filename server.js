@@ -1,5 +1,17 @@
 const express = require('express');
 const path = require('path');
+const { createRequire } = require('module');
+
+// ESM helper — sync-utils.mjs is loaded dynamically in async context
+let syncUtils = null;
+async function getSyncUtils() {
+  if (!syncUtils) {
+    const { getToolNodeName, buildVectorToolNode, buildGeminiEmbeddingsNode } =
+      await import('./lib/sync-utils.mjs');
+    syncUtils = { getToolNodeName, buildVectorToolNode, buildGeminiEmbeddingsNode };
+  }
+  return syncUtils;
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -154,20 +166,43 @@ app.post('/api/sync/:tableId', async (req, res) => {
       await new Promise(r => setTimeout(r, 4000));
 
       // 4. Re-ingest in batches of 5
+      const isCustom = !BUILTIN_NEON[tableId];
       const payloads = records.map(r => resolvedMapper(r.fields));
       const BATCH = 5;
       for (let i = 0; i < payloads.length; i += BATCH) {
-        await Promise.all(payloads.slice(i, i + BATCH).map(p =>
-          fetch(`${N8N}/ingest-record`, {
+        await Promise.all(payloads.slice(i, i + BATCH).map(p => {
+          if (isCustom) {
+            // Custom tables: embed with Gemini (768-dim), insert via ingest-record
+            return embedWithGemini(p._rawText || JSON.stringify(p))
+              .then(vec => fetch(`${N8N}/ingest-record`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: neonTable,
+                  _embedding: vec,
+                  _rawText: p._rawText,
+                  _metadata: p._metadata,
+                }),
+              }))
+              .catch(() => {}); // don't abort on single record failure
+          }
+          return fetch(`${N8N}/ingest-record`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(p),
-          })
-        ));
+          });
+        }));
         syncStatus[jobId].synced += Math.min(BATCH, payloads.length - i);
       }
 
       syncStatus[jobId].done = true;
+
+      // 5. For custom tables: add search tool node to n8n workflow
+      if (!BUILTIN_NEON[tableId]) {
+        await addToolNodeToWorkflow(neonTable).catch(e =>
+          console.error('addToolNode failed:', e.message)
+        );
+      }
     } catch (e) {
       syncStatus[jobId].done = true;
       syncStatus[jobId].error = e.message;
@@ -175,7 +210,78 @@ app.post('/api/sync/:tableId', async (req, res) => {
   })();
 });
 
-// Poll sync job status
+// ── Gemini embedding (768-dim) ────────────────────────────────────
+async function embedWithGemini(text) {
+  const key = process.env.GOOGLE_API_KEY;
+  if (!key) throw new Error('GOOGLE_API_KEY not set');
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${key}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: { parts: [{ text }] } }),
+    }
+  );
+  const d = await res.json();
+  if (!res.ok) throw new Error(d.error?.message || 'Gemini embed failed');
+  return d.embedding.values; // float[]
+}
+
+// ── Add vectorStorePGVector + Gemini embeddings node to n8n workflow ─
+const N8N_BOT_WORKFLOW = '4veLlcqXhyjLgRWh';
+const N8N_INTERNAL = 'https://all-in-n8n.up.railway.app/rest';
+
+async function addToolNodeToWorkflow(neonTable) {
+  const utils = await getSyncUtils();
+  const toolName = utils.getToolNodeName(neonTable);
+
+  // Login to get cookie
+  const cookieRes = await fetch(`${N8N_INTERNAL}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ emailOrLdapLoginId: 'neronline100@gmail.com', password: 'Neronline100@gmail.com1' }),
+  });
+  const setCookie = cookieRes.headers.get('set-cookie') || '';
+  const cookie = setCookie.split(';')[0];
+
+  // Fetch current workflow
+  const wfRes = await fetch(`${N8N_INTERNAL}/workflows/${N8N_BOT_WORKFLOW}`, {
+    headers: { 'Cookie': cookie },
+  });
+  const wf = (await wfRes.json()).data;
+
+  // Skip if node already exists
+  if (wf.nodes.some(n => n.name === toolName)) return { skipped: true };
+
+  // Build new nodes
+  const vectorNode = utils.buildVectorToolNode(toolName, neonTable);
+  const embedNode  = utils.buildGeminiEmbeddingsNode(toolName);
+
+  const agentName = wf.nodes.find(n => n.type.includes('agent'))?.name || 'AI Agent';
+
+  // Patch workflow
+  const updatedNodes = [...wf.nodes, vectorNode, embedNode];
+  const updatedConns = {
+    ...wf.connections,
+    [embedNode.name]:  { ai_embedding: [[{ node: vectorNode.name, type: 'ai_embedding', index: 0 }]] },
+    [vectorNode.name]: { ai_tool:      [[{ node: agentName,       type: 'ai_tool',      index: 0 }]] },
+  };
+
+  await fetch(`${N8N_INTERNAL}/workflows/${N8N_BOT_WORKFLOW}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
+    body: JSON.stringify({
+      name: wf.name,
+      nodes: updatedNodes,
+      connections: updatedConns,
+      settings: wf.settings || { executionOrder: 'v1' },
+    }),
+  });
+
+  return { added: toolName };
+}
+
+// ── Poll sync job status
 app.get('/api/sync-status/:jobId', (req, res) => {
   const s = syncStatus[req.params.jobId];
   if (!s) return res.status(404).json({ error: 'job not found' });

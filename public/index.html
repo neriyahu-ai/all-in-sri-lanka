@@ -280,8 +280,12 @@ function selectTable(t) {
 
   const b = BUILTIN[t.id] || {};
   const custom = getCustom()[t.id] || {};
+  // Show sync button for built-in tables AND custom tables that have a neonTable mapping
   const hasNeon = b.neon || custom.neon;
   document.getElementById('btn-sync').style.display = hasNeon ? '' : 'none';
+  document.getElementById('btn-sync').title = hasNeon
+    ? `סנכרן ${t.name} לבוט`
+    : 'יש להגדיר שם Neon בעת יצירת הטבלה';
   document.getElementById('sync-bar').classList.remove('show','done');
 
   renderTableShell(t);
