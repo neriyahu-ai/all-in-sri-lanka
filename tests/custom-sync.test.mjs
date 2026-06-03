@@ -100,9 +100,9 @@ describe('buildGeminiEmbeddingsNode', () => {
     assert.equal(node.type, '@n8n/n8n-nodes-langchain.embeddingsGoogleGemini');
   });
 
-  test('model is text-embedding-004', () => {
+  test('model is gemini-embedding-001', () => {
     node = buildGeminiEmbeddingsNode(toolName);
-    assert.equal(node.parameters.modelName, 'text-embedding-004');
+    assert.equal(node.parameters.modelName, 'gemini-embedding-001');
   });
 
   test('has a Google credential (googlePalmApi key)', () => {

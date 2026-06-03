@@ -97,11 +97,11 @@ app.post('/api/tables', async (req, res) => {
     const atData = await atRes.json();
     if (!atRes.ok) return res.status(atRes.status).json({ error: atData.error?.message || 'Airtable error' });
 
-    // Create in Neon
+    // Create in Neon — custom tables use gemini-embedding-001 (3072-dim)
     const neonRes = await fetch(`${N8N}/admin-create-table`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tableName: neonName }),
+      body: JSON.stringify({ tableName: neonName, dimensions: 3072 }),
     });
     const neonData = await neonRes.json();
 
@@ -215,7 +215,7 @@ async function embedWithGemini(text) {
   const key = process.env.GOOGLE_API_KEY;
   if (!key) throw new Error('GOOGLE_API_KEY not set');
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${key}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${key}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
