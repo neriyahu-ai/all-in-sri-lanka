@@ -6,7 +6,7 @@ A conversational travel assistant for Sri Lanka, built on n8n with semantic sear
 
 **Live webhook:**
 ```
-POST https://all-in-n8n.up.railway.app/webhook/172e76e0-b9d4-44e0-82d8-372dd398fac0/chat
+POST https://all-in-n8n.up.railway.app/webhook/cd147b7a-d9e9-4ca2-850b-9c38cfa45aa2/chat
 ```
 
 **Request format:**
