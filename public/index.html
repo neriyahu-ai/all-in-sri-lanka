@@ -7,7 +7,7 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --green: #1a6b3a; --green-bg: #f0fff4; --sidebar-w: 210px;
+  --green: #1a6b3a; --green-bg: #f0fff4; --sidebar-w: 216px;
   --border: #e2e8f0; --text: #1a202c; --muted: #718096; --bg: #f7fafc;
 }
 body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); direction: rtl; }
@@ -15,76 +15,99 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color:
 
 /* Sidebar */
 .sidebar { width: var(--sidebar-w); background: #1a202c; color: white; flex-shrink: 0; display: flex; flex-direction: column; position: fixed; top: 0; right: 0; bottom: 0; z-index: 100; }
-.logo { padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
-.logo .flag { font-size: 1.5rem; }
+.logo { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
+.logo .flag { font-size: 1.4rem; }
 .logo .t { font-size: 0.85rem; font-weight: 700; line-height: 1.3; }
-.logo .s { font-size: 0.68rem; opacity: 0.4; margin-top: 2px; }
-nav { flex: 1; padding: 10px 0; }
+.logo .s { font-size: 0.67rem; opacity: 0.4; margin-top: 2px; }
+nav { flex: 1; padding: 8px 0; overflow-y: auto; }
 .nav-grp { padding: 8px 16px 3px; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.3); }
-.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; cursor: pointer; font-size: 0.85rem; color: rgba(255,255,255,0.65); transition: all 0.15s; border-right: 3px solid transparent; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 9px 16px; cursor: pointer; font-size: 0.845rem; color: rgba(255,255,255,0.65); transition: all 0.15s; border-right: 3px solid transparent; }
 .nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
 .nav-item.active { background: rgba(26,107,58,0.25); color: #68d391; border-right-color: #68d391; }
-.nav-item .icon { width: 20px; text-align: center; }
-.nav-item .badge { margin-right: auto; background: rgba(255,255,255,0.1); border-radius: 10px; padding: 1px 7px; font-size: 0.7rem; }
-.sidebar-foot { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.72rem; color: rgba(255,255,255,0.3); }
+.nav-item .icon { width: 18px; text-align: center; font-size: 0.95rem; }
+.nav-item .badge { margin-right: auto; background: rgba(255,255,255,0.1); border-radius: 10px; padding: 1px 6px; font-size: 0.7rem; }
+.nav-add-table { display: flex; align-items: center; gap: 9px; padding: 9px 16px; cursor: pointer; font-size: 0.8rem; color: rgba(255,255,255,0.35); border-top: 1px solid rgba(255,255,255,0.08); margin-top: 4px; transition: all 0.15s; }
+.nav-add-table:hover { color: #68d391; background: rgba(26,107,58,0.15); }
+.sidebar-foot { padding: 10px 16px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.7rem; color: rgba(255,255,255,0.3); }
 
 /* Main */
 .main { margin-right: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
-.topbar { height: 58px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 14px; position: sticky; top: 0; z-index: 50; }
-.topbar h2 { font-size: 1.05rem; font-weight: 700; flex: 1; }
-.search { display: flex; align-items: center; background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px; width: 200px; }
-.search input { border: none; background: transparent; font-size: 0.875rem; width: 100%; direction: rtl; }
+.topbar { height: 56px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 22px; gap: 12px; position: sticky; top: 0; z-index: 50; }
+.topbar h2 { font-size: 1rem; font-weight: 700; flex: 1; }
+.search { display: flex; align-items: center; background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 11px; gap: 7px; width: 190px; }
+.search input { border: none; background: transparent; font-size: 0.85rem; width: 100%; direction: rtl; }
 .search input:focus { outline: none; }
-.btn { border: none; border-radius: 8px; cursor: pointer; font-size: 0.875rem; font-weight: 600; padding: 8px 16px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+.btn { border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; padding: 7px 14px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .btn-green { background: var(--green); color: white; }
 .btn-green:hover:not(:disabled) { background: #145c30; }
 .btn-green:disabled { background: #a0aec0; cursor: default; }
-.btn-ghost { background: none; border: 1.5px solid var(--border); color: var(--muted); padding: 7px 14px; }
-.btn-ghost:hover { border-color: #a0aec0; color: var(--text); }
-.content { flex: 1; padding: 22px; }
+.btn-ghost { background: none; border: 1.5px solid var(--border); color: var(--muted); }
+.btn-ghost:hover:not(:disabled) { border-color: #a0aec0; color: var(--text); }
+.btn-ghost:disabled { opacity: 0.5; cursor: default; }
+.content { flex: 1; padding: 20px; }
 
-/* Table */
+/* Sync bar */
+.sync-bar { display:none; align-items:center; gap:12px; background:#fffbeb; border:1px solid #f6e05e; border-radius:10px; padding:11px 15px; margin-bottom:14px; font-size:0.875rem; }
+.sync-bar.show { display:flex; }
+.sync-bar .sync-lbl { flex:1; color:#744210; font-weight:600; }
+.prog-wrap { flex:2; background:#e2e8f0; border-radius:6px; height:7px; overflow:hidden; }
+.prog-fill { height:100%; background:var(--green); border-radius:6px; transition:width 0.4s; }
+.sync-bar.done { background:#f0fff4; border-color:#68d391; }
+.sync-bar.done .sync-lbl { color:#1a6b3a; }
+
+/* Table card */
 .card { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
 .card table { width: 100%; border-collapse: collapse; }
-.card th { background: var(--bg); padding: 10px 14px; text-align: right; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
-.card td { padding: 11px 14px; border-bottom: 1px solid #f0f4f8; font-size: 0.875rem; vertical-align: middle; }
+.card th { background: var(--bg); padding: 10px 13px; text-align: right; font-size: 0.71rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.card td { padding: 10px 13px; border-bottom: 1px solid #f0f4f8; font-size: 0.86rem; vertical-align: middle; }
 .card tr:last-child td { border-bottom: none; }
 .card tr:hover td { background: #fafbfc; }
-.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.74rem; font-weight: 600; }
 .tag-gray { background: #e2e8f0; color: #4a5568; }
 .tag-green { background: #c6f6d5; color: #1a6b3a; }
 .tag-blue { background: #bee3f8; color: #2b6cb0; }
 .tag-yellow { background: #fefcbf; color: #744210; }
 .tag-red { background: #fed7d7; color: #c53030; }
-.btn-icon { background: none; border: none; cursor: pointer; color: #cbd5e0; font-size: 0.95rem; padding: 3px 6px; border-radius: 5px; transition: all 0.15s; }
+.btn-icon { background: none; border: none; cursor: pointer; color: #cbd5e0; font-size: 0.9rem; padding: 3px 5px; border-radius: 5px; transition: all 0.15s; }
 .btn-icon:hover { color: var(--green); background: var(--green-bg); }
 .btn-icon.del:hover { color: #e53e3e; background: #fff5f5; }
-.loading-row td, .empty-row td { text-align: center; padding: 40px; color: var(--muted); }
-.spin { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-left: 6px; }
+.loading-row td, .empty-row td { text-align: center; padding: 36px; color: var(--muted); }
+.spin { display: inline-block; width: 17px; height: 17px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-left: 6px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Modal */
 .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; justify-content: center; padding: 40px 16px; overflow-y: auto; }
 .modal-bg.open { display: flex; align-items: flex-start; }
-.modal { background: white; border-radius: 14px; width: 100%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: mIn 0.2s ease; margin: auto; }
+.modal { background: white; border-radius: 14px; width: 100%; max-width: 580px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: mIn 0.2s ease; margin: auto; }
 @keyframes mIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; } }
 .mhdr { padding: 18px 22px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
 .mhdr h3 { flex: 1; font-size: 1rem; }
 .mbody { padding: 18px 22px; }
 .mftr { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
 .close-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--muted); }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .grid2 .full { grid-column: 1/-1; }
 .fld { display: flex; flex-direction: column; gap: 4px; }
-.fld label { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+.fld label { font-size: 0.74rem; font-weight: 600; color: var(--muted); text-transform: uppercase; }
 .fld label .req { color: #e53e3e; }
 .fld input, .fld select, .fld textarea { padding: 8px 11px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.9rem; font-family: inherit; direction: rtl; background: var(--bg); transition: border-color 0.2s; }
 .fld input[dir=ltr] { direction: ltr; text-align: left; }
 .fld input:focus, .fld select:focus, .fld textarea:focus { outline: none; border-color: var(--green); background: white; }
-.fld textarea { resize: vertical; min-height: 72px; }
+.fld textarea { resize: vertical; min-height: 70px; }
 
-/* AI */
-.chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 110px); max-height: 680px; }
+/* Field builder */
+.field-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.field-row { display: grid; grid-template-columns: 1fr 140px 28px; gap: 7px; align-items: center; }
+.field-row input, .field-row select { padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 7px; font-size: 0.85rem; font-family: inherit; direction: rtl; background: var(--bg); }
+.field-row input:focus, .field-row select:focus { outline: none; border-color: var(--green); background: white; }
+.btn-del-field { background: none; border: none; cursor: pointer; color: #cbd5e0; font-size: 1.1rem; padding: 2px; border-radius: 4px; transition: color 0.15s; }
+.btn-del-field:hover { color: #e53e3e; }
+.btn-add-field { background: none; border: 1.5px dashed var(--border); border-radius: 8px; padding: 8px; width: 100%; color: var(--muted); font-size: 0.85rem; cursor: pointer; transition: all 0.15s; margin-top: 4px; }
+.btn-add-field:hover { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+.info-box { background: #ebf8ff; border: 1px solid #bee3f8; border-radius: 8px; padding: 10px 13px; font-size: 0.82rem; color: #2c5282; line-height: 1.5; }
+
+/* AI Chat */
+.chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 106px); max-height: 680px; }
 .chat-msgs { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: white; border: 1px solid var(--border); border-radius: 12px 12px 0 0; }
 .msg { max-width: 78%; padding: 10px 14px; border-radius: 12px; font-size: 0.88rem; line-height: 1.5; white-space: pre-wrap; }
 .msg.user { background: var(--green); color: white; align-self: flex-end; border-radius: 12px 12px 4px 12px; }
@@ -107,380 +130,523 @@ nav { flex: 1; padding: 10px 0; }
       <span class="flag">🇱🇰</span>
       <div><div class="t">All In Sri Lanka</div><div class="s">פאנל ניהול • Airtable</div></div>
     </div>
-    <nav>
-      <div class="nav-grp">תוכן</div>
-      <div class="nav-item active" onclick="show('hotels',this)"><span class="icon">🏨</span> מלונות <span class="badge" id="b-hotels">–</span></div>
-      <div class="nav-item" onclick="show('attractions',this)"><span class="icon">🏄</span> אטרקציות <span class="badge" id="b-attractions">–</span></div>
-      <div class="nav-item" onclick="show('qna',this)"><span class="icon">💬</span> שאלות-תשובות <span class="badge" id="b-qna">–</span></div>
-      <div class="nav-item" onclick="show('drivers',this)"><span class="icon">🚗</span> נהגים <span class="badge" id="b-drivers">–</span></div>
-      <div class="nav-item" onclick="show('inquiries',this)"><span class="icon">📩</span> פניות <span class="badge" id="b-inquiries">–</span></div>
-      <div class="nav-grp" style="margin-top:8px">כלים</div>
-      <div class="nav-item" onclick="show('ai',this)"><span class="icon">🤖</span> סוכן AI</div>
+    <nav id="nav-list">
+      <div class="nav-grp">טוען...</div>
     </nav>
-    <div class="sidebar-foot">🟢 Airtable</div>
+    <div class="sidebar-foot">🟢 Airtable + Neon</div>
   </aside>
 
   <div class="main">
     <div class="topbar">
-      <h2 id="sec-title">מלונות</h2>
+      <h2 id="sec-title">טוען...</h2>
       <div class="search" id="search-wrap"><span>🔍</span><input id="search-in" placeholder="חיפוש..." oninput="filter()"></div>
-      <button class="btn btn-green" id="btn-add" onclick="openAdd()">➕ הוסף</button>
+      <button class="btn btn-ghost" id="btn-sync" onclick="syncToBot()" style="display:none">🔄 סנכרן לבוט</button>
+      <button class="btn btn-green" id="btn-add" onclick="openAdd()" style="display:none">➕ הוסף</button>
     </div>
     <div class="content">
-
-      <div id="sec-hotels">
-        <div class="card"><table>
-          <thead><tr><th>שם המקום</th><th>סוג</th><th>מיקום</th><th>טלפון</th><th>מחיר/לילה</th><th>דירוג</th><th>WiFi</th><th></th></tr></thead>
-          <tbody id="tb-hotels"><tr class="loading-row"><td colspan="8"><span class="spin"></span>טוען...</td></tr></tbody>
-        </table></div>
+      <div class="sync-bar" id="sync-bar">
+        <span class="sync-lbl" id="sync-lbl">מסנכרן...</span>
+        <div class="prog-wrap"><div class="prog-fill" id="sync-fill" style="width:0%"></div></div>
+        <span id="sync-count" style="color:var(--muted);font-size:0.8rem;white-space:nowrap"></span>
       </div>
-
-      <div id="sec-attractions" style="display:none">
-        <div class="card"><table>
-          <thead><tr><th>שם</th><th>תחום</th><th>מיקום</th><th>טלפון</th><th>מחיר כניסה</th><th>שעות</th><th></th></tr></thead>
-          <tbody id="tb-attractions"><tr class="loading-row"><td colspan="7"><span class="spin"></span>טוען...</td></tr></tbody>
-        </table></div>
-      </div>
-
-      <div id="sec-qna" style="display:none">
-        <div class="card"><table>
-          <thead><tr><th>נושא</th><th>שאלה</th><th>תשובה (תקציר)</th><th></th></tr></thead>
-          <tbody id="tb-qna"><tr class="loading-row"><td colspan="4"><span class="spin"></span>טוען...</td></tr></tbody>
-        </table></div>
-      </div>
-
-      <div id="sec-drivers" style="display:none">
-        <div class="card"><table>
-          <thead><tr><th>שם נהג</th><th>חברה</th><th>טלפון</th><th>שפות</th><th>דירוג</th><th></th></tr></thead>
-          <tbody id="tb-drivers"><tr class="loading-row"><td colspan="6"><span class="spin"></span>טוען...</td></tr></tbody>
-        </table></div>
-      </div>
-
-      <div id="sec-inquiries" style="display:none">
-        <div class="card"><table>
-          <thead><tr><th>שם</th><th>אימייל</th><th>נושא</th><th>סטטוס</th><th>תאריך</th><th></th></tr></thead>
-          <tbody id="tb-inquiries"><tr class="loading-row"><td colspan="6"><span class="spin"></span>טוען...</td></tr></tbody>
-        </table></div>
-      </div>
-
-      <div id="sec-ai" style="display:none">
-        <div class="chat-wrap">
-          <div class="chat-msgs" id="chat-msgs">
-            <div class="msg bot">שלום! אני מחפש בנתוני Airtable. לדוגמה:
-• "מצא מלונות בארוגם ביי"
-• "הצג שאלות על חיסונים"
-• "כמה אטרקציות יש?"</div>
-          </div>
-          <div class="chat-bar">
-            <input id="chat-in" placeholder="שאל שאלה..." onkeydown="if(event.key==='Enter')sendChat()">
-            <button class="btn btn-green" onclick="sendChat()">שלח</button>
-          </div>
+      <div id="table-area">
+        <div class="card" style="padding:40px;text-align:center;color:var(--muted)">
+          <span class="spin"></span> טוען טבלאות...
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal-bg" id="mbg" onclick="if(event.target===this)closeModal()">
+<!-- Record Modal -->
+<div class="modal-bg" id="rec-modal" onclick="if(event.target===this)closeRecModal()">
   <div class="modal">
-    <div class="mhdr"><h3 id="mtitle">הוסף</h3><button class="close-btn" onclick="closeModal()">✕</button></div>
-    <div class="mbody" id="mbody"></div>
+    <div class="mhdr"><h3 id="rec-title">הוסף</h3><button class="close-btn" onclick="closeRecModal()">✕</button></div>
+    <div class="mbody" id="rec-body"></div>
     <div class="mftr">
-      <button class="btn btn-ghost" onclick="closeModal()">ביטול</button>
-      <button class="btn btn-green" id="btn-save" onclick="saveRecord()">
+      <button class="btn btn-ghost" onclick="closeRecModal()">ביטול</button>
+      <button class="btn btn-green" id="btn-save-rec" onclick="saveRecord()">
         <span id="save-lbl">שמור</span>
-        <span class="spin" id="save-spin" style="display:none;width:14px;height:14px;border-width:2px;"></span>
+        <span class="spin" id="save-spin" style="display:none;width:13px;height:13px;border-width:2px;"></span>
       </button>
     </div>
   </div>
 </div>
+
+<!-- New Table Modal -->
+<div class="modal-bg" id="tbl-modal" onclick="if(event.target===this)closeTblModal()">
+  <div class="modal">
+    <div class="mhdr"><h3>➕ טבלה חדשה</h3><button class="close-btn" onclick="closeTblModal()">✕</button></div>
+    <div class="mbody">
+      <div class="grid2" style="margin-bottom:16px">
+        <div class="fld full">
+          <label>שם הטבלה (לתצוגה) <span class="req">*</span></label>
+          <input id="nt-name" placeholder="למשל: חדרי צ׳ופר, מסעדות...">
+        </div>
+        <div class="fld">
+          <label>שם ב-Neon (אנגלית, לbוט) <span class="req">*</span></label>
+          <input id="nt-neon" dir="ltr" placeholder="chalets" oninput="sanitizeNeon()">
+        </div>
+        <div class="fld">
+          <label>אייקון</label>
+          <input id="nt-icon" placeholder="🏕️" style="font-size:1.3rem;text-align:center">
+        </div>
+      </div>
+
+      <div class="fld" style="margin-bottom:8px">
+        <label>שדות הטבלה <span class="req">*</span></label>
+      </div>
+      <div id="field-list" class="field-list"></div>
+      <button class="btn-add-field" onclick="addFieldRow()">+ הוסף שדה</button>
+
+      <div class="info-box" style="margin-top:16px">
+        💡 הטבלה תיווצר ב-Airtable ובמסד Neon. לאחר מכן תוכל להוסיף רשומות ולסנכרן לבוט.
+      </div>
+    </div>
+    <div class="mftr">
+      <button class="btn btn-ghost" onclick="closeTblModal()">ביטול</button>
+      <button class="btn btn-green" id="btn-create-tbl" onclick="createTable()">
+        <span id="create-lbl">צור טבלה</span>
+        <span class="spin" id="create-spin" style="display:none;width:13px;height:13px;border-width:2px;"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Config ────────────────────────────────────────────────────────
-const TABLES = {
-  hotels:      'tbl81JyV8LSgrcJtr',
-  attractions: 'tblwQrQEphUK8PphM',
-  qna:         'tblfKu8Xgja3ObS5F',
-  drivers:     'tbluqVYPy7ng3qKJB',
-  inquiries:   'tblWaENqDC3hpkbZI'
+// ── State ──────────────────────────────────────────────────────────
+let tables = [];           // all tables from /api/tables
+let curTable = null;       // current table object {id, name, neonTable, fields, icon}
+let cache = {};            // tableId → records[]
+let editRecId = null;
+
+// Built-in table config (icons, neon sync support)
+const BUILTIN = {
+  tbl81JyV8LSgrcJtr: { icon:'🏨', neon:'hotels' },
+  tblwQrQEphUK8PphM: { icon:'🏄', neon:'attractions' },
+  tblfKu8Xgja3ObS5F: { icon:'💬', neon:'qna' },
+  tbluqVYPy7ng3qKJB: { icon:'🚗', neon:'drivers' },
+  tblWaENqDC3hpkbZI: { icon:'📩', neon:null },
 };
-const F = {
-  hotels: { name:'fldNSi5FmXtVjXMdC', type:'fldBx8qZR7IwaXL5n', contact:'flddt1mtCe8SyqLeT', phone:'fld2d8WgxmABllAm5', location:'fldtjA9doG2MDQCEl', wifi:'fldCkClyE9mKMmRcP', desc:'fldysYK1Zcx7TwyLO', price:'fldS6keLJdoarzqSo', rating:'fldoLnFs1AYm7mJpL', email:'fldJlKs9BzqhYNBOi' },
-  attractions: { name:'fldWyHNf8irp0WHy6', domain:'fld2lh3OcwXz6Xi4a', phone:'fld0h3jhso29CraNB', location:'fldSZQv3JRHXo3Heu', notes:'fldRE421H2Gpv06Tm', address:'fldGjjzeMUKypCaYy', desc:'fldVcckPplmH1R2im', price:'fld0yJdQ5cUn83L65', hours:'fld6Kl7ClTiw5sswK', rating:'fldfqoj8xYBRje0bS' },
-  qna: { topic:'fldOhEDpWC2jekXq3', question:'fld4nFuEZPdTALZGG', answer:'fldk6dZ8zSEvEcaZn' },
-  drivers: { company:'fldaUyf4Mti0wqvD9', contact:'fldUjQ2QBXoBXfStM', phone:'fld51YqHfIl41rcB8', notes:'fldCEVqSt3gTwj4v3', sys:'fldpMmLNcfkCGfX5O', driverName:'fldsmpfSH4LlTJdcG', driverPhone:'fldYpQMEUcB45vgph', email:'fldaxmnOr9toWUDNS', vehicle:'fldtkOTkPbwSwP1W4', languages:'fldSOaHsCeqxq2BLX', rating:'fldmYMg33kHsgTLoV' },
-  inquiries: { name:'fld7nAdaHbJpGdfrx', email:'fldB2o3aEifVVlTnJ', phone:'fld913HTmungMHLuE', subject:'fldEkdYZhupmB2RlQ', content:'fldh1JhuCNuVc7ZpG', date:'fldwgWiPCatusYkBH', status:'flduBzSwjWUW1TPVj', notes:'fldvK4lavvHGXJinO' }
-};
-const TITLES = { hotels:'מלונות', attractions:'אטרקציות', qna:'שאלות-תשובות', drivers:'נהגים', inquiries:'פניות', ai:'סוכן AI' };
+// Custom tables stored in localStorage
+function getCustom() { try { return JSON.parse(localStorage.getItem('custom_tables')||'{}'); } catch{ return {}; } }
+function saveCustom(c) { localStorage.setItem('custom_tables', JSON.stringify(c)); }
 
-let cur = 'hotels', cache = {}, editId = null;
-
-// ── API ────────────────────────────────────────────────────────────
-async function atFetch(path, opts={}) {
-  const r = await fetch('/api/airtable/' + path, { headers:{'Content-Type':'application/json'}, ...opts });
-  const d = await r.json();
-  if (!r.ok) throw new Error(d.error?.message || `HTTP ${r.status}`);
-  return d;
-}
-
-async function fetchAll(tableId) {
-  let recs=[], offset;
-  do {
-    const qs = 'pageSize=100' + (offset?`&offset=${offset}`:'');
-    const d = await atFetch(tableId + '?' + qs);
-    recs = recs.concat(d.records||[]);
-    offset = d.offset;
-  } while(offset);
-  return recs;
+// ── Boot ───────────────────────────────────────────────────────────
+async function boot() {
+  try {
+    const res = await fetch('/api/tables');
+    tables = await res.json();
+    if (!Array.isArray(tables)) throw new Error('bad response');
+    buildNav();
+    // Load first table
+    const first = tables[0];
+    if (first) selectTable(first);
+  } catch(e) {
+    document.getElementById('nav-list').innerHTML =
+      `<div style="padding:12px 16px;color:#fc8181;font-size:0.8rem">⚠️ ${e.message}</div>`;
+  }
 }
 
 // ── Nav ────────────────────────────────────────────────────────────
-function show(name, el) {
-  document.querySelectorAll('[id^="sec-"]').forEach(s=>s.style.display='none');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('sec-'+name).style.display='';
-  el.classList.add('active');
-  cur = name;
-  document.getElementById('sec-title').textContent = TITLES[name];
-  const ai = name==='ai';
-  document.getElementById('btn-add').style.display = ai?'none':'';
-  document.getElementById('search-wrap').style.display = ai?'none':'';
-  if (!ai && !cache[name]) load(name);
+function buildNav() {
+  const custom = getCustom();
+  let html = '<div class="nav-grp">טבלאות</div>';
+  html += '<div class="nav-add-table" onclick="openNewTable()"><span>➕</span> טבלה חדשה</div>';
+  tables.forEach((t, i) => {
+    const b = BUILTIN[t.id] || {};
+    const c = custom[t.id] || {};
+    const icon = c.icon || b.icon || '📋';
+    html += `<div class="nav-item" id="nav-${t.id}" onclick="selectTable(tables[${i}])">
+      <span class="icon">${icon}</span> ${t.name}
+      <span class="badge" id="badge-${t.id}">–</span>
+    </div>`;
+  });
+  html += '<div class="nav-grp" style="margin-top:8px">כלים</div>';
+  html += `<div class="nav-item" id="nav-ai" onclick="showAI(this)"><span class="icon">🤖</span> סוכן AI</div>`;
+  document.getElementById('nav-list').innerHTML = html;
 }
 
-async function load(name) {
+function selectTable(t) {
+  curTable = t;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const el = document.getElementById('nav-' + t.id);
+  if (el) el.classList.add('active');
+  document.getElementById('sec-title').textContent = t.name;
+  document.getElementById('btn-add').style.display = '';
+  document.getElementById('search-wrap').style.display = '';
+
+  const b = BUILTIN[t.id] || {};
+  const custom = getCustom()[t.id] || {};
+  const hasNeon = b.neon || custom.neon;
+  document.getElementById('btn-sync').style.display = hasNeon ? '' : 'none';
+  document.getElementById('sync-bar').classList.remove('show','done');
+
+  renderTableShell(t);
+  if (!cache[t.id]) loadRecords(t);
+  else renderRecords(t, cache[t.id]);
+}
+
+function showAI(el) {
+  curTable = null;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sec-title').textContent = 'סוכן AI';
+  document.getElementById('btn-add').style.display = 'none';
+  document.getElementById('btn-sync').style.display = 'none';
+  document.getElementById('search-wrap').style.display = 'none';
+  document.getElementById('sync-bar').classList.remove('show','done');
+  document.getElementById('table-area').innerHTML = `
+    <div class="chat-wrap">
+      <div class="chat-msgs" id="chat-msgs">
+        <div class="msg bot">שלום! אני מחפש בנתוני Airtable. לדוגמה:\n• "מצא מלונות בארוגם ביי"\n• "הצג שאלות על חיסונים"</div>
+      </div>
+      <div class="chat-bar">
+        <input id="chat-in" placeholder="שאל שאלה..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn btn-green" onclick="sendChat()">שלח</button>
+      </div>
+    </div>`;
+}
+
+// ── Records ────────────────────────────────────────────────────────
+function renderTableShell(t) {
+  const cols = getColumns(t);
+  const ths = cols.map(c => `<th>${c.label}</th>`).join('') + '<th></th>';
+  document.getElementById('table-area').innerHTML = `
+    <div class="card"><table>
+      <thead><tr>${ths}</tr></thead>
+      <tbody id="tbody"><tr class="loading-row"><td colspan="${cols.length+1}"><span class="spin"></span>טוען...</td></tr></tbody>
+    </table></div>`;
+}
+
+async function loadRecords(t) {
   try {
-    const recs = await fetchAll(TABLES[name]);
-    cache[name] = recs;
-    render(name, recs);
-    document.getElementById('b-'+name).textContent = recs.length;
+    const res = await fetch(`/api/airtable/${t.id}?pageSize=100&returnFieldsByFieldId=true`);
+    const d = await res.json();
+    let recs = d.records || [];
+    let offset = d.offset;
+    while (offset) {
+      const r2 = await fetch(`/api/airtable/${t.id}?pageSize=100&returnFieldsByFieldId=true&offset=${offset}`);
+      const d2 = await r2.json();
+      recs = recs.concat(d2.records || []);
+      offset = d2.offset;
+    }
+    cache[t.id] = recs;
+    renderRecords(t, recs);
+    document.getElementById('badge-' + t.id).textContent = recs.length;
   } catch(e) {
-    const tb = document.getElementById('tb-'+name);
-    if(tb) tb.innerHTML=`<tr class="empty-row"><td colspan="9">⚠️ ${e.message}</td></tr>`;
-    toast(e.message,'err');
+    const tb = document.getElementById('tbody');
+    if(tb) tb.innerHTML = `<tr class="empty-row"><td colspan="9">⚠️ ${e.message}</td></tr>`;
   }
 }
 
-// ── Render ─────────────────────────────────────────────────────────
-function trunc(v,n=50){ const s=(v||'').toString(); return s.length>n?s.slice(0,n)+'…':s; }
+function getColumns(t) {
+  // Built-in table overrides
+  const overrides = {
+    tbl81JyV8LSgrcJtr: [{id:'fldNSi5FmXtVjXMdC',label:'שם'},{id:'fldBx8qZR7IwaXL5n',label:'סוג'},{id:'fldtjA9doG2MDQCEl',label:'מיקום'},{id:'fld2d8WgxmABllAm5',label:'טלפון'},{id:'fldS6keLJdoarzqSo',label:'מחיר'},{id:'fldoLnFs1AYm7mJpL',label:'דירוג'},{id:'fldCkClyE9mKMmRcP',label:'WiFi'}],
+    tblwQrQEphUK8PphM: [{id:'fldWyHNf8irp0WHy6',label:'שם'},{id:'fld2lh3OcwXz6Xi4a',label:'תחום'},{id:'fldSZQv3JRHXo3Heu',label:'מיקום'},{id:'fld0h3jhso29CraNB',label:'טלפון'},{id:'fld0yJdQ5cUn83L65',label:'מחיר כניסה'},{id:'fld6Kl7ClTiw5sswK',label:'שעות'}],
+    tblfKu8Xgja3ObS5F: [{id:'fldOhEDpWC2jekXq3',label:'נושא'},{id:'fld4nFuEZPdTALZGG',label:'שאלה'},{id:'fldk6dZ8zSEvEcaZn',label:'תשובה'}],
+    tbluqVYPy7ng3qKJB: [{id:'fldsmpfSH4LlTJdcG',label:'שם נהג'},{id:'fldaUyf4Mti0wqvD9',label:'חברה'},{id:'fldYpQMEUcB45vgph',label:'טלפון'},{id:'fldSOaHsCeqxq2BLX',label:'שפות'},{id:'fldmYMg33kHsgTLoV',label:'דירוג'}],
+    tblWaENqDC3hpkbZI: [{id:'fld7nAdaHbJpGdfrx',label:'שם'},{id:'fldB2o3aEifVVlTnJ',label:'אימייל'},{id:'fldEkdYZhupmB2RlQ',label:'נושא'},{id:'flduBzSwjWUW1TPVj',label:'סטטוס'},{id:'fldwgWiPCatusYkBH',label:'תאריך'}],
+  };
+  if (overrides[t.id]) return overrides[t.id];
+  // Generic: first 5 non-formula fields
+  return (t.fields || []).filter(f => !['formula','rollup','lookup','count','autoNumber','createdTime','lastModifiedTime'].includes(f.type)).slice(0,5).map(f => ({ id: f.id, label: f.name }));
+}
 
-function render(name, recs) {
-  const tb = document.getElementById('tb-'+name);
-  if(!recs.length){tb.innerHTML='<tr class="empty-row"><td colspan="9">אין רשומות</td></tr>';return;}
-  const f=F[name];
-  tb.innerHTML = recs.map(r=>{
-    const d=r.fields, id=r.id;
-    let cells='';
-    if(name==='hotels'){
-      cells=`<td><strong>${trunc(d[f.name]||'–',30)}</strong></td>
-        <td><span class="tag tag-gray">${d[f.type]||'–'}</span></td>
-        <td>${trunc(d[f.location]||'–',22)}</td>
-        <td dir="ltr">${trunc(d[f.phone]||'–',18)}</td>
-        <td>${d[f.price]?'$'+d[f.price]:'–'}</td>
-        <td>${d[f.rating]||'–'}</td>
-        <td><span class="tag ${d[f.wifi]==='כן'?'tag-green':'tag-red'}">${d[f.wifi]||'–'}</span></td>`;
-    } else if(name==='attractions'){
-      cells=`<td><strong>${trunc(d[f.name]||'–',28)}</strong></td>
-        <td><span class="tag tag-blue">${trunc(d[f.domain]||'–',20)}</span></td>
-        <td>${trunc(d[f.location]||'–',20)}</td>
-        <td dir="ltr">${trunc(d[f.phone]||'–',18)}</td>
-        <td>${d[f.price]?'$'+d[f.price]:'–'}</td>
-        <td>${trunc(d[f.hours]||'–',15)}</td>`;
-    } else if(name==='qna'){
-      cells=`<td><span class="tag tag-yellow">${trunc(d[f.topic]||'–',15)}</span></td>
-        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d[f.question]||''}">${trunc(d[f.question]||'–',55)}</td>
-        <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)" title="${d[f.answer]||''}">${trunc(d[f.answer]||'–',65)}</td>`;
-    } else if(name==='drivers'){
-      const langs=Array.isArray(d[f.languages])?d[f.languages].join(', '):(d[f.languages]||'–');
-      cells=`<td><strong>${trunc(d[f.driverName]||d[f.contact]||'–',25)}</strong></td>
-        <td>${trunc(d[f.company]||'–',20)}</td>
-        <td dir="ltr">${trunc(d[f.driverPhone]||d[f.phone]||'–',18)}</td>
-        <td>${trunc(langs,25)}</td>
-        <td>${d[f.rating]?'⭐'.repeat(d[f.rating]):'–'}</td>`;
-    } else if(name==='inquiries'){
-      const st=d[f.status]||'חדש';
-      const cls={חדש:'tag-red','בטיפול':'tag-yellow','טופל':'tag-green'}[st]||'tag-gray';
-      cells=`<td><strong>${trunc(d[f.name]||'–',22)}</strong></td>
-        <td>${trunc(d[f.email]||'–',22)}</td>
-        <td>${trunc(d[f.subject]||'–',30)}</td>
-        <td><span class="tag ${cls}">${st}</span></td>
-        <td>${d[f.date]||'–'}</td>`;
-    }
-    return `<tr>${cells}
-      <td style="white-space:nowrap">
-        <button class="btn-icon" onclick='openEdit("${name}","${id}")' title="עריכה">✏️</button>
-        <button class="btn-icon del" onclick='del("${name}","${id}")' title="מחיקה">🗑️</button>
-      </td></tr>`;
+function cellVal(v, fid, t) {
+  if (v === null || v === undefined) return '–';
+  if (Array.isArray(v)) return v.join(', ');
+  // Special formatting for known fields
+  const s = String(v);
+  if (fid === 'fldCkClyE9mKMmRcP') return `<span class="tag ${v==='כן'?'tag-green':'tag-red'}">${v}</span>`;
+  if (fid === 'fldBx8qZR7IwaXL5n') return `<span class="tag tag-gray">${s}</span>`;
+  if (fid === 'fld2lh3OcwXz6Xi4a') return `<span class="tag tag-blue">${s}</span>`;
+  if (fid === 'fldOhEDpWC2jekXq3') return `<span class="tag tag-yellow">${s}</span>`;
+  if (fid === 'flduBzSwjWUW1TPVj') { const cls={חדש:'tag-red','בטיפול':'tag-yellow','טופל':'tag-green'}[v]||'tag-gray'; return `<span class="tag ${cls}">${v}</span>`; }
+  if (fid === 'fldmYMg33kHsgTLoV') return v ? '⭐'.repeat(Number(v)) : '–';
+  if (s.length > 60) return `<span title="${s.replace(/"/g,'&quot;')}" style="cursor:help">${s.slice(0,55)}…</span>`;
+  return s;
+}
+
+function renderRecords(t, recs) {
+  const tb = document.getElementById('tbody');
+  if (!tb) return;
+  if (!recs.length) { tb.innerHTML = '<tr class="empty-row"><td colspan="9">אין רשומות</td></tr>'; return; }
+  const cols = getColumns(t);
+  tb.innerHTML = recs.map(r => {
+    const d = r.fields;
+    const cells = cols.map(c => `<td>${cellVal(d[c.id], c.id, t)}</td>`).join('');
+    return `<tr>${cells}<td style="white-space:nowrap">
+      <button class="btn-icon" onclick='openEdit("${r.id}")' title="עריכה">✏️</button>
+      <button class="btn-icon del" onclick='delRec("${r.id}")' title="מחיקה">🗑️</button>
+    </td></tr>`;
   }).join('');
 }
 
-function filter(){
-  const q=document.getElementById('search-in').value.toLowerCase();
-  render(cur, q?(cache[cur]||[]).filter(r=>JSON.stringify(r.fields).toLowerCase().includes(q)):(cache[cur]||[]));
+function filter() {
+  const q = document.getElementById('search-in').value.toLowerCase();
+  if (!curTable) return;
+  const recs = cache[curTable.id] || [];
+  renderRecords(curTable, q ? recs.filter(r => JSON.stringify(r.fields).toLowerCase().includes(q)) : recs);
 }
 
-// ── Forms ──────────────────────────────────────────────────────────
-function e(v){return(v||'').toString().replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
-function optList(list,sel=''){return list.map(o=>`<option ${o===sel?'selected':''}>${o}</option>`).join('');}
-function getVal(rec,key){return(rec?.fields||{})[F[cur]?.[key]]||'';}
-
-const FORMS = {
-  hotels: d=>`<div class="grid2">
-    <div class="fld"><label>שם המקום <span class="req">*</span></label><input id="f-name" value="${e(d.name)}"></div>
-    <div class="fld"><label>סוג</label><select id="f-type"><option value=""></option>${optList(['הוסטל','ריזורט','מלון','גסט-האוס','ווילה','בית להשכרה'],d.type)}</select></div>
-    <div class="fld"><label>מיקום <span class="req">*</span></label><input id="f-location" value="${e(d.location)}"></div>
-    <div class="fld"><label>WiFi</label><select id="f-wifi"><option value="כן" ${d.wifi==='כן'?'selected':''}>כן</option><option value="לא" ${d.wifi==='לא'?'selected':''}>לא</option></select></div>
-    <div class="fld"><label>איש קשר</label><input id="f-contact" value="${e(d.contact)}"></div>
-    <div class="fld"><label>טלפון</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
-    <div class="fld full"><label>תיאור</label><textarea id="f-desc">${e(d.desc)}</textarea></div>
-    <div class="fld"><label>מחיר/לילה ($)</label><input id="f-price" type="number" value="${d.price||''}"></div>
-    <div class="fld"><label>דירוג Booking</label><input id="f-rating" type="number" step="0.1" value="${d.rating||''}"></div>
-    <div class="fld full"><label>אימייל</label><input id="f-email" dir="ltr" value="${e(d.email)}"></div>
-  </div>`,
-  attractions: d=>`<div class="grid2">
-    <div class="fld"><label>שם <span class="req">*</span></label><input id="f-name" value="${e(d.name)}"></div>
-    <div class="fld"><label>תחום</label><select id="f-domain"><option value=""></option>${optList(['הדרכת גלישה','השכרת אופנועים','השכרת רכבים','אמבטיית קרח','ספא','חנות בגדים ומזכרות','תיקון גלשנים','יוגה','צלם גלישה','כביסה','חנות גלישה','אחר'],d.domain)}</select></div>
-    <div class="fld"><label>מיקום <span class="req">*</span></label><input id="f-location" value="${e(d.location)}"></div>
-    <div class="fld"><label>טלפון</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
-    <div class="fld"><label>מחיר כניסה ($)</label><input id="f-price" type="number" value="${d.price||''}"></div>
-    <div class="fld"><label>שעות פתיחה</label><input id="f-hours" value="${e(d.hours)}"></div>
-    <div class="fld full"><label>כתובת מדויקת</label><input id="f-address" value="${e(d.address)}"></div>
-    <div class="fld full"><label>תיאור</label><textarea id="f-desc">${e(d.desc)}</textarea></div>
-    <div class="fld full"><label>הערות</label><textarea id="f-notes">${e(d.notes)}</textarea></div>
-  </div>`,
-  qna: d=>`<div class="grid2">
-    <div class="fld full"><label>נושא <span class="req">*</span></label>
-      <select id="f-topic"><option value=""></option>${optList(['חיסונים','ויזה ואשרה','כסף ועלויות','תחבורה','אוכל','בטיחות','מזג אוויר','קניות','תרבות ומנהגים','תקשורת וסים','ביטוח','אחר'],d.topic)}</select></div>
-    <div class="fld full"><label>שאלה <span class="req">*</span></label><textarea id="f-question">${e(d.question)}</textarea></div>
-    <div class="fld full"><label>תשובה <span class="req">*</span></label><textarea id="f-answer" style="min-height:100px">${e(d.answer)}</textarea></div>
-  </div>`,
-  drivers: d=>`<div class="grid2">
-    <div class="fld"><label>שם נהג</label><input id="f-driverName" value="${e(d.driverName)}"></div>
-    <div class="fld"><label>שם חברה</label><input id="f-company" value="${e(d.company)}"></div>
-    <div class="fld"><label>שם איש קשר</label><input id="f-contact" value="${e(d.contact)}"></div>
-    <div class="fld"><label>טלפון נהג</label><input id="f-driverPhone" dir="ltr" value="${e(d.driverPhone)}"></div>
-    <div class="fld"><label>טלפון חברה</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
-    <div class="fld"><label>אימייל</label><input id="f-email" dir="ltr" value="${e(d.email)}"></div>
-    <div class="fld"><label>סוג רכב</label><input id="f-vehicle" value="${e(d.vehicle)}"></div>
-    <div class="fld"><label>שפות</label>
-      <select id="f-languages" multiple style="min-height:80px">${['עברית','אנגלית','סינהלית','טמילית','ערבית','שפה אחרת'].map(o=>`<option ${(d.languages||[]).includes(o)?'selected':''}>${o}</option>`).join('')}</select></div>
-    <div class="fld full"><label>הערות</label><textarea id="f-notes">${e(d.notes)}</textarea></div>
-    <div class="fld full"><label>הערות מערכת (פנימי)</label><textarea id="f-sys">${e(d.sys)}</textarea></div>
-  </div>`,
-  inquiries: d=>`<div class="grid2">
-    <div class="fld"><label>שם מלא <span class="req">*</span></label><input id="f-name" value="${e(d.name)}"></div>
-    <div class="fld"><label>אימייל</label><input id="f-email" dir="ltr" value="${e(d.email)}"></div>
-    <div class="fld"><label>טלפון</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
-    <div class="fld"><label>סטטוס</label><select id="f-status">${optList(['חדש','בטיפול','טופל'],d.status||'חדש')}</select></div>
-    <div class="fld full"><label>נושא הפנייה</label><input id="f-subject" value="${e(d.subject)}"></div>
-    <div class="fld full"><label>תוכן הפנייה</label><textarea id="f-content" style="min-height:90px">${e(d.content)}</textarea></div>
-    <div class="fld full"><label>הערות פנימיות</label><textarea id="f-notes">${e(d.notes)}</textarea></div>
-  </div>`
-};
-
-function openAdd(){
-  editId=null;
-  const labels={hotels:'מלון חדש',attractions:'אטרקציה חדשה',qna:'שאלה-תשובה חדשה',drivers:'נהג חדש',inquiries:'פנייה חדשה'};
-  document.getElementById('mtitle').textContent='➕ '+labels[cur];
-  document.getElementById('mbody').innerHTML=FORMS[cur]({});
-  document.getElementById('mbg').classList.add('open');
+// ── Record Modal ───────────────────────────────────────────────────
+function openAdd() {
+  if (!curTable) return;
+  editRecId = null;
+  document.getElementById('rec-title').textContent = '➕ ' + curTable.name;
+  document.getElementById('rec-body').innerHTML = buildRecForm(curTable, {});
+  document.getElementById('rec-modal').classList.add('open');
 }
 
-function openEdit(name,id){
-  const rec=(cache[name]||[]).find(r=>r.id===id); if(!rec) return;
-  cur=name; editId=id;
-  const d={}, f=F[name];
-  for(const [k,fid] of Object.entries(f)) d[k]=rec.fields[fid]||'';
-  document.getElementById('mtitle').textContent='✏️ עריכה';
-  document.getElementById('mbody').innerHTML=FORMS[name](d);
-  document.getElementById('mbg').classList.add('open');
+function openEdit(id) {
+  const rec = (cache[curTable.id]||[]).find(r => r.id === id);
+  if (!rec) return;
+  editRecId = id;
+  document.getElementById('rec-title').textContent = '✏️ עריכה';
+  document.getElementById('rec-body').innerHTML = buildRecForm(curTable, rec.fields);
+  document.getElementById('rec-modal').classList.add('open');
 }
 
-function closeModal(){ document.getElementById('mbg').classList.remove('open'); editId=null; }
+function closeRecModal() { document.getElementById('rec-modal').classList.remove('open'); editRecId = null; }
 
-function collect(){
-  const v=id=>(document.getElementById(id)?.value||'').trim();
-  const f=F[cur], fields={};
-  if(cur==='hotels'){
-    if(!v('f-name')||!v('f-location')) throw new Error('שם מקום ומיקום הם שדות חובה');
-    fields[f.name]=v('f-name'); fields[f.type]=v('f-type')||undefined;
-    fields[f.contact]=v('f-contact')||undefined; fields[f.phone]=v('f-phone')||undefined;
-    fields[f.location]=v('f-location'); fields[f.wifi]=v('f-wifi');
-    fields[f.desc]=v('f-desc')||undefined; fields[f.email]=v('f-email')||undefined;
-    if(v('f-price')) fields[f.price]=+v('f-price');
-    if(v('f-rating')) fields[f.rating]=+v('f-rating');
-  } else if(cur==='attractions'){
-    if(!v('f-name')||!v('f-location')) throw new Error('שם ומיקום הם שדות חובה');
-    fields[f.name]=v('f-name'); fields[f.domain]=v('f-domain')||undefined;
-    fields[f.phone]=v('f-phone')||undefined; fields[f.location]=v('f-location');
-    fields[f.address]=v('f-address')||undefined; fields[f.desc]=v('f-desc')||undefined;
-    fields[f.notes]=v('f-notes')||undefined; fields[f.hours]=v('f-hours')||undefined;
-    if(v('f-price')) fields[f.price]=+v('f-price');
-  } else if(cur==='qna'){
-    if(!v('f-topic')||!v('f-question')||!v('f-answer')) throw new Error('נושא, שאלה ותשובה הם שדות חובה');
-    fields[f.topic]=v('f-topic'); fields[f.question]=v('f-question'); fields[f.answer]=v('f-answer');
-  } else if(cur==='drivers'){
-    if(!v('f-driverName')&&!v('f-contact')) throw new Error('יש למלא שם נהג או איש קשר');
-    ['company','contact','phone','notes','sys','driverName','driverPhone','email','vehicle'].forEach(k=>{
-      const val=v('f-'+k); if(val) fields[f[k]]=val;
+function buildRecForm(t, vals) {
+  const editable = (t.fields || []).filter(f =>
+    !['formula','rollup','lookup','count','autoNumber','createdTime','lastModifiedTime','multipleAttachments','multipleRecordLinks'].includes(f.type)
+  );
+  if (!editable.length) return '<p style="color:var(--muted);text-align:center;padding:20px">אין שדות עריכה זמינים בטבלה זו</p>';
+
+  return `<div class="grid2">${editable.map(f => {
+    const v = vals[f.id] || '';
+    const isLong = f.type === 'multilineText';
+    const isNum = f.type === 'number';
+    const isSel = f.type === 'singleSelect';
+    const isMulti = f.type === 'multipleSelects';
+    const choices = f.options?.choices?.map(c => c.name) || [];
+    let input;
+    if (isLong) input = `<textarea id="rf-${f.id}">${escH(v)}</textarea>`;
+    else if (isSel) input = `<select id="rf-${f.id}"><option value=""></option>${choices.map(c=>`<option ${c===v?'selected':''}>${c}</option>`).join('')}</select>`;
+    else if (isMulti) input = `<select id="rf-${f.id}" multiple style="min-height:72px">${choices.map(c=>`<option ${(Array.isArray(v)?v:[]).includes(c)?'selected':''}>${c}</option>`).join('')}</select>`;
+    else if (isNum) input = `<input id="rf-${f.id}" type="number" value="${escH(v)}">`;
+    else input = `<input id="rf-${f.id}" value="${escH(v)}">`;
+    const full = isLong || isMulti ? ' full' : '';
+    return `<div class="fld${full}"><label>${f.name}</label>${input}</div>`;
+  }).join('')}</div>`;
+}
+
+async function saveRecord() {
+  const btn = document.getElementById('btn-save-rec');
+  const lbl = document.getElementById('save-lbl');
+  const spin = document.getElementById('save-spin');
+  btn.disabled = true; lbl.style.display = 'none'; spin.style.display = 'inline-block';
+
+  try {
+    const editable = (curTable.fields||[]).filter(f =>
+      !['formula','rollup','lookup','count','autoNumber','createdTime','lastModifiedTime','multipleAttachments','multipleRecordLinks'].includes(f.type)
+    );
+    const fields = {};
+    editable.forEach(f => {
+      const el = document.getElementById('rf-' + f.id);
+      if (!el) return;
+      if (f.type === 'multipleSelects') {
+        const sel = [...el.selectedOptions].map(o => o.value);
+        if (sel.length) fields[f.id] = sel;
+      } else if (f.type === 'number') {
+        if (el.value !== '') fields[f.id] = Number(el.value);
+      } else if (f.type === 'singleSelect') {
+        if (el.value) fields[f.id] = el.value;
+      } else {
+        if (el.value.trim()) fields[f.id] = el.value.trim();
+      }
     });
-    const langs=[...(document.getElementById('f-languages')?.selectedOptions||[])].map(o=>o.value);
-    if(langs.length) fields[f.languages]=langs;
-  } else if(cur==='inquiries'){
-    if(!v('f-name')) throw new Error('שם מלא הוא שדה חובה');
-    ['name','email','phone','subject','content','status','notes'].forEach(k=>{
-      const val=v('f-'+k); if(val) fields[f[k]]=val;
-    });
+
+    const url = editRecId ? `/api/airtable/${curTable.id}/${editRecId}` : `/api/airtable/${curTable.id}`;
+    const method = editRecId ? 'PATCH' : 'POST';
+    const res = await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify({fields}) });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error?.message || 'שגיאה');
+    toast(editRecId ? 'עודכן ✓' : 'נוסף ✓', 'ok');
+    closeRecModal();
+    cache[curTable.id] = null;
+    loadRecords(curTable);
+  } catch(e) { toast('שגיאה: ' + e.message, 'err'); }
+  finally { btn.disabled = false; lbl.style.display = ''; spin.style.display = 'none'; }
+}
+
+async function delRec(id) {
+  if (!confirm('למחוק רשומה זו?')) return;
+  try {
+    const res = await fetch(`/api/airtable/${curTable.id}/${id}`, { method: 'DELETE' });
+    const d = await res.json();
+    if (!d.deleted) throw new Error('מחיקה נכשלה');
+    toast('נמחק', 'ok');
+    cache[curTable.id] = null;
+    loadRecords(curTable);
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+// ── New Table Modal ────────────────────────────────────────────────
+function openNewTable() {
+  document.getElementById('nt-name').value = '';
+  document.getElementById('nt-neon').value = '';
+  document.getElementById('nt-icon').value = '';
+  document.getElementById('field-list').innerHTML = '';
+  // Add 2 default fields
+  addFieldRow('שם', 'singleLineText');
+  addFieldRow('תיאור', 'multilineText');
+  document.getElementById('tbl-modal').classList.add('open');
+}
+
+function closeTblModal() { document.getElementById('tbl-modal').classList.remove('open'); }
+
+let fieldRowId = 0;
+function addFieldRow(name='', type='singleLineText') {
+  const id = ++fieldRowId;
+  const types = [
+    ['singleLineText','טקסט קצר'],['multilineText','טקסט ארוך'],
+    ['number','מספר'],['singleSelect','בחירה יחידה'],['date','תאריך'],
+  ];
+  const opts = types.map(([v,l]) => `<option value="${v}" ${v===type?'selected':''}>${l}</option>`).join('');
+  const row = document.createElement('div');
+  row.className = 'field-row';
+  row.id = 'fr-' + id;
+  row.innerHTML = `<input placeholder="שם השדה" value="${escH(name)}"><select>${opts}</select>
+    <button class="btn-del-field" onclick="document.getElementById('fr-${id}').remove()">✕</button>`;
+  document.getElementById('field-list').appendChild(row);
+}
+
+function sanitizeNeon() {
+  const el = document.getElementById('nt-neon');
+  el.value = el.value.toLowerCase().replace(/[^a-z0-9_]/g,'_').replace(/^[0-9]/,'t$&');
+}
+
+async function createTable() {
+  const name = document.getElementById('nt-name').value.trim();
+  const neonName = document.getElementById('nt-neon').value.trim();
+  const icon = document.getElementById('nt-icon').value.trim() || '📋';
+
+  if (!name || !neonName) return toast('יש למלא שם ושם Neon', 'err');
+
+  const rows = document.querySelectorAll('.field-row');
+  const fields = [];
+  for (const row of rows) {
+    const n = row.querySelector('input').value.trim();
+    const t = row.querySelector('select').value;
+    if (n) fields.push({ name: n, type: t });
   }
-  // clean undefined
-  Object.keys(fields).forEach(k=>fields[k]===undefined&&delete fields[k]);
-  return {fields};
+  if (!fields.length) return toast('יש להוסיף לפחות שדה אחד', 'err');
+
+  const btn = document.getElementById('btn-create-tbl');
+  const lbl = document.getElementById('create-lbl');
+  const spin = document.getElementById('create-spin');
+  btn.disabled = true; lbl.style.display = 'none'; spin.style.display = 'inline-block';
+
+  try {
+    const res = await fetch('/api/tables', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, neonName, fields }),
+    });
+    const d = await res.json();
+    if (!d.success) throw new Error(d.error || 'נכשל');
+
+    // Save icon + neon mapping in localStorage
+    const custom = getCustom();
+    custom[d.airtableId] = { icon, neon: neonName };
+    saveCustom(custom);
+
+    toast(`✅ טבלה "${name}" נוצרה!`, 'ok');
+    closeTblModal();
+    // Reload tables list
+    tables = await fetch('/api/tables').then(r => r.json());
+    buildNav();
+    const newT = tables.find(t => t.id === d.airtableId);
+    if (newT) selectTable(newT);
+  } catch(e) { toast('שגיאה: ' + e.message, 'err'); }
+  finally { btn.disabled = false; lbl.style.display = ''; spin.style.display = 'none'; }
 }
 
-async function saveRecord(){
-  const btn=document.getElementById('btn-save');
-  const lbl=document.getElementById('save-lbl');
-  const spin=document.getElementById('save-spin');
-  btn.disabled=true; lbl.style.display='none'; spin.style.display='inline-block';
+// ── Sync ───────────────────────────────────────────────────────────
+async function syncToBot() {
+  if (!curTable) return;
+  const b = BUILTIN[curTable.id] || {};
+  const custom = getCustom()[curTable.id] || {};
+  const neonTable = b.neon || custom.neon;
+  if (!neonTable) return;
+
+  const btn = document.getElementById('btn-sync');
+  const bar = document.getElementById('sync-bar');
+  const lbl = document.getElementById('sync-lbl');
+  const fill = document.getElementById('sync-fill');
+  const countEl = document.getElementById('sync-count');
+
+  btn.disabled = true;
+  bar.className = 'sync-bar show';
+  lbl.textContent = `מסנכרן ${curTable.name}...`;
+  fill.style.width = '0%'; countEl.textContent = '';
+
+  let p = 0;
+  const ticker = setInterval(() => { p = Math.min(p+2, 85); fill.style.width = p+'%'; }, 500);
+
   try {
-    const body=collect();
-    const tid=TABLES[cur];
-    if(editId){
-      await atFetch(tid+'/'+editId,{method:'PATCH',body:JSON.stringify(body)});
-      toast('עודכן בהצלחה ✓','ok');
-    } else {
-      await atFetch(tid,{method:'POST',body:JSON.stringify(body)});
-      toast('נוסף בהצלחה ✓','ok');
+    // Start sync (returns immediately with jobId)
+    const startRes = await fetch(`/api/sync/${curTable.id}`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ neonTable }),
+    });
+    const { jobId, error } = await startRes.json();
+    if (error) throw new Error(error);
+
+    // Poll until done
+    while (true) {
+      await new Promise(r => setTimeout(r, 2000));
+      const statusRes = await fetch(`/api/sync-status/${jobId}`);
+      const s = await statusRes.json();
+      if (s.error) throw new Error(s.error);
+      if (s.total > 0) {
+        const pct = Math.round((s.synced / s.total) * 100);
+        fill.style.width = pct + '%';
+        countEl.textContent = `${s.synced} / ${s.total}`;
+      }
+      if (s.done) {
+        clearInterval(ticker);
+        fill.style.width = '100%';
+        bar.classList.add('done');
+        lbl.textContent = `✅ ${curTable.name} סונכרנו לבוט`;
+        countEl.textContent = `${s.synced} רשומות`;
+        toast(`סונכרנו ${s.synced} רשומות ✓`, 'ok');
+        break;
+      }
     }
-    closeModal(); cache[cur]=null; load(cur);
-  } catch(err){ toast('שגיאה: '+err.message,'err'); }
-  finally{ btn.disabled=false; lbl.style.display=''; spin.style.display='none'; }
-}
-
-async function del(name,id){
-  if(!confirm('למחוק רשומה זו?')) return;
-  try {
-    await atFetch(TABLES[name]+'/'+id,{method:'DELETE'});
-    toast('נמחק','ok'); cache[name]=null; load(name);
-  } catch(e){ toast('שגיאת מחיקה: '+e.message,'err'); }
-}
-
-function toast(msg,type='ok'){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast show '+type;
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3500);
+  } catch(e) {
+    clearInterval(ticker);
+    bar.classList.remove('show');
+    toast('שגיאת סנכרון: ' + e.message, 'err');
+  } finally { btn.disabled = false; }
 }
 
 // ── AI ─────────────────────────────────────────────────────────────
-async function sendChat(){
-  const inp=document.getElementById('chat-in');
-  const q=inp.value.trim(); if(!q) return;
-  inp.value=''; addMsg('user',q);
-  const th=addMsg('bot','⏳ מחפש...');
-  try{ th.textContent=await aiAnswer(q); } catch(e){ th.textContent='❌ '+e.message; }
+async function sendChat() {
+  const inp = document.getElementById('chat-in');
+  const q = inp.value.trim(); if (!q) return;
+  inp.value = ''; addMsg('user', q);
+  const th = addMsg('bot', '⏳ מחפש...');
+  try {
+    const tbl = tables.find(t => q.includes(t.name)) || tables[0];
+    if (!tbl) { th.textContent = 'לא נמצאו טבלאות'; return; }
+    if (!cache[tbl.id]) await loadRecords(tbl);
+    const recs = cache[tbl.id] || [];
+    const loc = q.match(/ב([א-ת]{2,})/);
+    let filtered = recs;
+    if (loc) filtered = recs.filter(r => JSON.stringify(r.fields).includes(loc[1]));
+    const cols = getColumns(tbl);
+    const shown = filtered.slice(0,6).map(r => cols.slice(0,2).map(c => r.fields[c.id]||'').join(' — ')).join('\n');
+    th.textContent = `${tbl.name}: נמצאו ${filtered.length}\n\n${shown}${filtered.length>6?`\n...ועוד ${filtered.length-6}`:''}`;
+  } catch(e) { th.textContent = '❌ ' + e.message; }
 }
 function addMsg(role,text){
   const msgs=document.getElementById('chat-msgs');
@@ -488,35 +654,16 @@ function addMsg(role,text){
   div.className='msg '+role; div.textContent=text;
   msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight; return div;
 }
-async function aiAnswer(q){
-  const low=q.toLowerCase();
-  let name=null;
-  if(/מלון|לינה|הוסטל/.test(low)) name='hotels';
-  else if(/אטרקצי|גלישה|טיול/.test(low)) name='attractions';
-  else if(/שאלה|חיסון|ויזה|אוכל/.test(low)) name='qna';
-  else if(/נהג|הסעה/.test(low)) name='drivers';
-  else if(/פנייה|פניות/.test(low)) name='inquiries';
-  else { return Object.entries(cache).map(([n,r])=>`${TITLES[n]}: ${(r||[]).length} רשומות`).join('\n')||'טוען...'; }
-  if(!cache[name]) await load(name);
-  const recs=cache[name]||[];
-  const f=F[name];
-  const loc=q.match(/ב([א-ת]{2,})/);
-  let filtered=recs;
-  if(loc) filtered=recs.filter(r=>JSON.stringify(r.fields).includes(loc[1]));
-  if(!filtered.length) return 'לא נמצאו תוצאות.';
-  const shown=filtered.slice(0,6).map(r=>{
-    const d=r.fields;
-    if(name==='hotels') return `🏨 ${d[f.name]||'?'} — ${d[f.location]||'?'}${d[f.price]?' ($'+d[f.price]+')':''}`;
-    if(name==='attractions') return `🏄 ${d[f.name]||'?'} — ${d[f.domain]||'?'}, ${d[f.location]||'?'}`;
-    if(name==='qna') return `❓ ${(d[f.question]||'').slice(0,80)}`;
-    if(name==='drivers') return `🚗 ${d[f.driverName]||d[f.contact]||'?'} — ${d[f.driverPhone]||d[f.phone]||'?'}`;
-    if(name==='inquiries') return `📩 ${d[f.name]||'?'} | ${d[f.status]||'חדש'}`;
-  }).join('\n');
-  return `נמצאו ${filtered.length}:\n\n${shown}${filtered.length>6?`\n...ועוד ${filtered.length-6}`:''}`;
+
+// ── Helpers ────────────────────────────────────────────────────────
+function escH(v) { return (v||'').toString().replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+type;
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3500);
 }
 
-// Boot
-load('hotels');
+boot();
 </script>
 </body>
 </html>
