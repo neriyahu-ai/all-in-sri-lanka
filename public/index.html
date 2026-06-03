@@ -11,70 +11,45 @@
   --border: #e2e8f0; --text: #1a202c; --muted: #718096; --bg: #f7fafc;
 }
 body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); direction: rtl; }
-
-/* Layout */
 .layout { display: flex; min-height: 100vh; }
-.sidebar {
-  width: var(--sidebar-w); background: #1a202c; color: white;
-  flex-shrink: 0; display: flex; flex-direction: column;
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 100;
-}
+
+/* Sidebar */
+.sidebar { width: var(--sidebar-w); background: #1a202c; color: white; flex-shrink: 0; display: flex; flex-direction: column; position: fixed; top: 0; right: 0; bottom: 0; z-index: 100; }
 .logo { padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
 .logo .flag { font-size: 1.5rem; }
 .logo .t { font-size: 0.85rem; font-weight: 700; line-height: 1.3; }
-.logo .s { font-size: 0.7rem; opacity: 0.4; }
+.logo .s { font-size: 0.68rem; opacity: 0.4; margin-top: 2px; }
 nav { flex: 1; padding: 10px 0; }
-.nav-grp { padding: 8px 16px 3px; font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.3); }
-.nav-item {
-  display: flex; align-items: center; gap: 10px; padding: 10px 16px;
-  cursor: pointer; font-size: 0.85rem; color: rgba(255,255,255,0.65);
-  transition: all 0.15s; border-right: 3px solid transparent;
-}
+.nav-grp { padding: 8px 16px 3px; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.3); }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; cursor: pointer; font-size: 0.85rem; color: rgba(255,255,255,0.65); transition: all 0.15s; border-right: 3px solid transparent; }
 .nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
 .nav-item.active { background: rgba(26,107,58,0.25); color: #68d391; border-right-color: #68d391; }
 .nav-item .icon { width: 20px; text-align: center; }
-.nav-item .badge {
-  margin-right: auto; background: rgba(255,255,255,0.1);
-  border-radius: 10px; padding: 1px 7px; font-size: 0.7rem;
-}
+.nav-item .badge { margin-right: auto; background: rgba(255,255,255,0.1); border-radius: 10px; padding: 1px 7px; font-size: 0.7rem; }
 .sidebar-foot { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.72rem; color: rgba(255,255,255,0.3); }
 
+/* Main */
 .main { margin-right: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
-.topbar {
-  height: 58px; background: white; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; padding: 0 24px; gap: 14px;
-  position: sticky; top: 0; z-index: 50;
-}
+.topbar { height: 58px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 14px; position: sticky; top: 0; z-index: 50; }
 .topbar h2 { font-size: 1.05rem; font-weight: 700; flex: 1; }
-.search {
-  display: flex; align-items: center; background: var(--bg);
-  border: 1.5px solid var(--border); border-radius: 8px;
-  padding: 6px 12px; gap: 8px; width: 200px;
-}
+.search { display: flex; align-items: center; background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 12px; gap: 8px; width: 200px; }
 .search input { border: none; background: transparent; font-size: 0.875rem; width: 100%; direction: rtl; }
 .search input:focus { outline: none; }
-
 .btn { border: none; border-radius: 8px; cursor: pointer; font-size: 0.875rem; font-weight: 600; padding: 8px 16px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
 .btn-green { background: var(--green); color: white; }
 .btn-green:hover:not(:disabled) { background: #145c30; }
 .btn-green:disabled { background: #a0aec0; cursor: default; }
 .btn-ghost { background: none; border: 1.5px solid var(--border); color: var(--muted); padding: 7px 14px; }
 .btn-ghost:hover { border-color: #a0aec0; color: var(--text); }
-
 .content { flex: 1; padding: 22px; }
 
 /* Table */
 .card { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
 .card table { width: 100%; border-collapse: collapse; }
-.card th {
-  background: var(--bg); padding: 10px 14px; text-align: right;
-  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
-  color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap;
-}
+.card th { background: var(--bg); padding: 10px 14px; text-align: right; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
 .card td { padding: 11px 14px; border-bottom: 1px solid #f0f4f8; font-size: 0.875rem; vertical-align: middle; }
 .card tr:last-child td { border-bottom: none; }
 .card tr:hover td { background: #fafbfc; }
-.truncate { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
 .tag-gray { background: #e2e8f0; color: #4a5568; }
 .tag-green { background: #c6f6d5; color: #1a6b3a; }
@@ -84,7 +59,6 @@ nav { flex: 1; padding: 10px 0; }
 .btn-icon { background: none; border: none; cursor: pointer; color: #cbd5e0; font-size: 0.95rem; padding: 3px 6px; border-radius: 5px; transition: all 0.15s; }
 .btn-icon:hover { color: var(--green); background: var(--green-bg); }
 .btn-icon.del:hover { color: #e53e3e; background: #fff5f5; }
-
 .loading-row td, .empty-row td { text-align: center; padding: 40px; color: var(--muted); }
 .spin { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-left: 6px; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -99,22 +73,17 @@ nav { flex: 1; padding: 10px 0; }
 .mbody { padding: 18px 22px; }
 .mftr { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
 .close-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--muted); }
-
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
 .grid2 .full { grid-column: 1/-1; }
 .fld { display: flex; flex-direction: column; gap: 4px; }
 .fld label { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; }
 .fld label .req { color: #e53e3e; }
-.fld input, .fld select, .fld textarea {
-  padding: 8px 11px; border: 1.5px solid var(--border); border-radius: 8px;
-  font-size: 0.9rem; font-family: inherit; direction: rtl; background: var(--bg);
-  transition: border-color 0.2s;
-}
+.fld input, .fld select, .fld textarea { padding: 8px 11px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.9rem; font-family: inherit; direction: rtl; background: var(--bg); transition: border-color 0.2s; }
 .fld input[dir=ltr] { direction: ltr; text-align: left; }
 .fld input:focus, .fld select:focus, .fld textarea:focus { outline: none; border-color: var(--green); background: white; }
 .fld textarea { resize: vertical; min-height: 72px; }
 
-/* AI Chat */
+/* AI */
 .chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 110px); max-height: 680px; }
 .chat-msgs { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: white; border: 1px solid var(--border); border-radius: 12px 12px 0 0; }
 .msg { max-width: 78%; padding: 10px 14px; border-radius: 12px; font-size: 0.88rem; line-height: 1.5; white-space: pre-wrap; }
@@ -136,7 +105,7 @@ nav { flex: 1; padding: 10px 0; }
   <aside class="sidebar">
     <div class="logo">
       <span class="flag">🇱🇰</span>
-      <div><div class="t">All In Sri Lanka</div><div class="s">פאנל ניהול • Neon DB</div></div>
+      <div><div class="t">All In Sri Lanka</div><div class="s">פאנל ניהול • Airtable</div></div>
     </div>
     <nav>
       <div class="nav-grp">תוכן</div>
@@ -144,10 +113,11 @@ nav { flex: 1; padding: 10px 0; }
       <div class="nav-item" onclick="show('attractions',this)"><span class="icon">🏄</span> אטרקציות <span class="badge" id="b-attractions">–</span></div>
       <div class="nav-item" onclick="show('qna',this)"><span class="icon">💬</span> שאלות-תשובות <span class="badge" id="b-qna">–</span></div>
       <div class="nav-item" onclick="show('drivers',this)"><span class="icon">🚗</span> נהגים <span class="badge" id="b-drivers">–</span></div>
+      <div class="nav-item" onclick="show('inquiries',this)"><span class="icon">📩</span> פניות <span class="badge" id="b-inquiries">–</span></div>
       <div class="nav-grp" style="margin-top:8px">כלים</div>
       <div class="nav-item" onclick="show('ai',this)"><span class="icon">🤖</span> סוכן AI</div>
     </nav>
-    <div class="sidebar-foot">🟢 Neon PostgreSQL</div>
+    <div class="sidebar-foot">🟢 Airtable</div>
   </aside>
 
   <div class="main">
@@ -160,15 +130,15 @@ nav { flex: 1; padding: 10px 0; }
 
       <div id="sec-hotels">
         <div class="card"><table>
-          <thead><tr><th>שם</th><th>מיקום</th><th>סוג</th><th>מחיר</th><th>דירוג</th><th>WiFi</th><th></th></tr></thead>
-          <tbody id="tb-hotels"><tr class="loading-row"><td colspan="7"><span class="spin"></span>טוען...</td></tr></tbody>
+          <thead><tr><th>שם המקום</th><th>סוג</th><th>מיקום</th><th>טלפון</th><th>מחיר/לילה</th><th>דירוג</th><th>WiFi</th><th></th></tr></thead>
+          <tbody id="tb-hotels"><tr class="loading-row"><td colspan="8"><span class="spin"></span>טוען...</td></tr></tbody>
         </table></div>
       </div>
 
       <div id="sec-attractions" style="display:none">
         <div class="card"><table>
-          <thead><tr><th>שם</th><th>תחום</th><th>מיקום</th><th>טלפון</th><th>כתובת</th><th></th></tr></thead>
-          <tbody id="tb-attractions"><tr class="loading-row"><td colspan="6"><span class="spin"></span>טוען...</td></tr></tbody>
+          <thead><tr><th>שם</th><th>תחום</th><th>מיקום</th><th>טלפון</th><th>מחיר כניסה</th><th>שעות</th><th></th></tr></thead>
+          <tbody id="tb-attractions"><tr class="loading-row"><td colspan="7"><span class="spin"></span>טוען...</td></tr></tbody>
         </table></div>
       </div>
 
@@ -181,15 +151,22 @@ nav { flex: 1; padding: 10px 0; }
 
       <div id="sec-drivers" style="display:none">
         <div class="card"><table>
-          <thead><tr><th>איש קשר</th><th>חברה</th><th>טלפון</th><th>הערות</th><th></th></tr></thead>
-          <tbody id="tb-drivers"><tr class="loading-row"><td colspan="5"><span class="spin"></span>טוען...</td></tr></tbody>
+          <thead><tr><th>שם נהג</th><th>חברה</th><th>טלפון</th><th>שפות</th><th>דירוג</th><th></th></tr></thead>
+          <tbody id="tb-drivers"><tr class="loading-row"><td colspan="6"><span class="spin"></span>טוען...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <div id="sec-inquiries" style="display:none">
+        <div class="card"><table>
+          <thead><tr><th>שם</th><th>אימייל</th><th>נושא</th><th>סטטוס</th><th>תאריך</th><th></th></tr></thead>
+          <tbody id="tb-inquiries"><tr class="loading-row"><td colspan="6"><span class="spin"></span>טוען...</td></tr></tbody>
         </table></div>
       </div>
 
       <div id="sec-ai" style="display:none">
         <div class="chat-wrap">
           <div class="chat-msgs" id="chat-msgs">
-            <div class="msg bot">שלום! אני מחפש בנתוני Neon. לדוגמה:
+            <div class="msg bot">שלום! אני מחפש בנתוני Airtable. לדוגמה:
 • "מצא מלונות בארוגם ביי"
 • "הצג שאלות על חיסונים"
 • "כמה אטרקציות יש?"</div>
@@ -213,125 +190,124 @@ nav { flex: 1; padding: 10px 0; }
     <div class="mftr">
       <button class="btn btn-ghost" onclick="closeModal()">ביטול</button>
       <button class="btn btn-green" id="btn-save" onclick="saveRecord()">
-        <span id="save-lbl">שמור</span><span class="spin" id="save-spin" style="display:none;width:14px;height:14px;border-width:2px;"></span>
+        <span id="save-lbl">שמור</span>
+        <span class="spin" id="save-spin" style="display:none;width:14px;height:14px;border-width:2px;"></span>
       </button>
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-const TITLES = { hotels:'מלונות', attractions:'אטרקציות', qna:'שאלות-תשובות', drivers:'נהגים', ai:'סוכן AI' };
-let cur = 'hotels';
-let cache = {};
-let editId = null;
+// ── Config ────────────────────────────────────────────────────────
+const TABLES = {
+  hotels:      'tbl81JyV8LSgrcJtr',
+  attractions: 'tblwQrQEphUK8PphM',
+  qna:         'tblfKu8Xgja3ObS5F',
+  drivers:     'tbluqVYPy7ng3qKJB',
+  inquiries:   'tblWaENqDC3hpkbZI'
+};
+const F = {
+  hotels: { name:'fldNSi5FmXtVjXMdC', type:'fldBx8qZR7IwaXL5n', contact:'flddt1mtCe8SyqLeT', phone:'fld2d8WgxmABllAm5', location:'fldtjA9doG2MDQCEl', wifi:'fldCkClyE9mKMmRcP', desc:'fldysYK1Zcx7TwyLO', price:'fldS6keLJdoarzqSo', rating:'fldoLnFs1AYm7mJpL', email:'fldJlKs9BzqhYNBOi' },
+  attractions: { name:'fldWyHNf8irp0WHy6', domain:'fld2lh3OcwXz6Xi4a', phone:'fld0h3jhso29CraNB', location:'fldSZQv3JRHXo3Heu', notes:'fldRE421H2Gpv06Tm', address:'fldGjjzeMUKypCaYy', desc:'fldVcckPplmH1R2im', price:'fld0yJdQ5cUn83L65', hours:'fld6Kl7ClTiw5sswK', rating:'fldfqoj8xYBRje0bS' },
+  qna: { topic:'fldOhEDpWC2jekXq3', question:'fld4nFuEZPdTALZGG', answer:'fldk6dZ8zSEvEcaZn' },
+  drivers: { company:'fldaUyf4Mti0wqvD9', contact:'fldUjQ2QBXoBXfStM', phone:'fld51YqHfIl41rcB8', notes:'fldCEVqSt3gTwj4v3', sys:'fldpMmLNcfkCGfX5O', driverName:'fldsmpfSH4LlTJdcG', driverPhone:'fldYpQMEUcB45vgph', email:'fldaxmnOr9toWUDNS', vehicle:'fldtkOTkPbwSwP1W4', languages:'fldSOaHsCeqxq2BLX', rating:'fldmYMg33kHsgTLoV' },
+  inquiries: { name:'fld7nAdaHbJpGdfrx', email:'fldB2o3aEifVVlTnJ', phone:'fld913HTmungMHLuE', subject:'fldEkdYZhupmB2RlQ', content:'fldh1JhuCNuVc7ZpG', date:'fldwgWiPCatusYkBH', status:'flduBzSwjWUW1TPVj', notes:'fldvK4lavvHGXJinO' }
+};
+const TITLES = { hotels:'מלונות', attractions:'אטרקציות', qna:'שאלות-תשובות', drivers:'נהגים', inquiries:'פניות', ai:'סוכן AI' };
 
-// ── Parse text field ─────────────────────────────────────────────
-function parseText(text) {
-  if (!text) return {};
-  // Try JSON
-  try {
-    const j = JSON.parse(text);
-    if (typeof j === 'object') return j;
-  } catch(e) {}
-  // Try pipe-separated key: value
-  const obj = {};
-  const parts = text.split('|');
-  for (const p of parts) {
-    const idx = p.indexOf(':');
-    if (idx > 0) {
-      const k = p.slice(0, idx).trim();
-      const v = p.slice(idx + 1).trim();
-      obj[k] = v;
-    }
-  }
-  // QnA format: "שאלה: X תשובה: Y"
-  if (!parts.length || parts.length === 1) {
-    const qm = text.match(/שאלה:\s*(.+?)\s+תשובה:\s*([\s\S]+)/);
-    if (qm) { obj['שאלה'] = qm[1]; obj['תשובה'] = qm[2]; }
-  }
-  return obj;
+let cur = 'hotels', cache = {}, editId = null;
+
+// ── API ────────────────────────────────────────────────────────────
+async function atFetch(path, opts={}) {
+  const r = await fetch('/api/airtable/' + path, { headers:{'Content-Type':'application/json'}, ...opts });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.error?.message || `HTTP ${r.status}`);
+  return d;
 }
 
-// ── API ──────────────────────────────────────────────────────────
-async function api(path, opts = {}) {
-  const r = await fetch(path, { headers: { 'Content-Type': 'application/json' }, ...opts });
-  if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.error || `HTTP ${r.status}`); }
-  return r.json();
+async function fetchAll(tableId) {
+  let recs=[], offset;
+  do {
+    const qs = 'pageSize=100' + (offset?`&offset=${offset}`:'');
+    const d = await atFetch(tableId + '?' + qs);
+    recs = recs.concat(d.records||[]);
+    offset = d.offset;
+  } while(offset);
+  return recs;
 }
 
-// ── Navigation ───────────────────────────────────────────────────
+// ── Nav ────────────────────────────────────────────────────────────
 function show(name, el) {
-  document.querySelectorAll('[id^="sec-"]').forEach(s => s.style.display = 'none');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('sec-' + name).style.display = '';
+  document.querySelectorAll('[id^="sec-"]').forEach(s=>s.style.display='none');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('sec-'+name).style.display='';
   el.classList.add('active');
   cur = name;
   document.getElementById('sec-title').textContent = TITLES[name];
-  const isAI = name === 'ai';
-  document.getElementById('btn-add').style.display = isAI ? 'none' : '';
-  document.getElementById('search-wrap').style.display = isAI ? 'none' : '';
-  if (!isAI && !cache[name]) load(name);
+  const ai = name==='ai';
+  document.getElementById('btn-add').style.display = ai?'none':'';
+  document.getElementById('search-wrap').style.display = ai?'none':'';
+  if (!ai && !cache[name]) load(name);
 }
 
 async function load(name) {
   try {
-    const recs = await api('/api/records/' + name);
+    const recs = await fetchAll(TABLES[name]);
     cache[name] = recs;
     render(name, recs);
-    document.getElementById('b-' + name).textContent = recs.length;
+    document.getElementById('b-'+name).textContent = recs.length;
   } catch(e) {
-    const tb = document.getElementById('tb-' + name);
-    if (tb) tb.innerHTML = `<tr class="empty-row"><td colspan="9">⚠️ ${e.message}</td></tr>`;
+    const tb = document.getElementById('tb-'+name);
+    if(tb) tb.innerHTML=`<tr class="empty-row"><td colspan="9">⚠️ ${e.message}</td></tr>`;
+    toast(e.message,'err');
   }
 }
 
-// ── Render ───────────────────────────────────────────────────────
-function trunc(v, n=50) { const s=(v||'').toString(); return s.length>n ? s.slice(0,n)+'…' : s; }
+// ── Render ─────────────────────────────────────────────────────────
+function trunc(v,n=50){ const s=(v||'').toString(); return s.length>n?s.slice(0,n)+'…':s; }
 
 function render(name, recs) {
-  const tb = document.getElementById('tb-' + name);
-  if (!recs.length) { tb.innerHTML = '<tr class="empty-row"><td colspan="9">אין רשומות</td></tr>'; return; }
-  tb.innerHTML = recs.map(r => {
-    const p = parseText(r.text);
-    const m = r.metadata || {};
-    const id = r.id;
-    let cells = '';
-    if (name === 'hotels') {
-      const name_ = m.name || p['שם'] || p['שם המקום'] || '–';
-      const loc = m.location || p['מיקום'] || '–';
-      const type = p['סוג'] || '–';
-      const price = p['מחיר ממוצע'] || p['מחיר ללילה'] || p['מחיר'] || '–';
-      const rating = p['דירוג Booking'] || p['דירוג'] || '–';
-      const wifi = p['wifi'] || p['WiFi'] || p['יש וויפי?'] || '–';
-      cells = `<td><strong>${trunc(name_,30)}</strong></td><td>${trunc(loc,25)}</td>
-        <td><span class="tag tag-gray">${trunc(type,15)}</span></td>
-        <td>${price!=='–'?price+'$':price}</td><td>${rating}</td>
-        <td><span class="tag ${wifi==='כן'?'tag-green':'tag-red'}">${wifi}</span></td>`;
-    } else if (name === 'attractions') {
-      const nm = m.name || p['שם הבית ספר/המדריך'] || p['שם'] || '–';
-      const domain = p['תחום'] || '–';
-      const loc = m.location || p['מיקום'] || '–';
-      const phone = p['טלפון'] || '–';
-      const addr = p['כתובת מדויקת'] || p['כתובת'] || '–';
-      cells = `<td><strong>${trunc(nm,30)}</strong></td>
-        <td><span class="tag tag-blue">${trunc(domain,20)}</span></td>
-        <td>${trunc(loc,20)}</td><td dir="ltr">${trunc(phone,18)}</td><td>${trunc(addr,25)}</td>`;
-    } else if (name === 'qna') {
-      const topic = m.topic || p['נושא'] || '–';
-      const q = p['שאלה'] || r.text.slice(0, 60) || '–';
-      const a = p['תשובה'] || '–';
-      cells = `<td><span class="tag tag-yellow">${trunc(topic,15)}</span></td>
-        <td class="truncate" title="${q}">${trunc(q,55)}</td>
-        <td class="truncate" style="color:var(--muted)" title="${a}">${trunc(a,65)}</td>`;
-    } else if (name === 'drivers') {
-      const contact = m.contact || p['איש קשר'] || p['שם איש קשר'] || '–';
-      const company = m.company || p['שם חברה'] || p['Company Name'] || '–';
-      const phone = p['טלפון'] || '–';
-      const notes = p['הערות'] || '–';
-      cells = `<td><strong>${trunc(contact,25)}</strong></td><td>${trunc(company,20)}</td>
-        <td dir="ltr">${trunc(phone,18)}</td><td class="truncate">${trunc(notes,40)}</td>`;
+  const tb = document.getElementById('tb-'+name);
+  if(!recs.length){tb.innerHTML='<tr class="empty-row"><td colspan="9">אין רשומות</td></tr>';return;}
+  const f=F[name];
+  tb.innerHTML = recs.map(r=>{
+    const d=r.fields, id=r.id;
+    let cells='';
+    if(name==='hotels'){
+      cells=`<td><strong>${trunc(d[f.name]||'–',30)}</strong></td>
+        <td><span class="tag tag-gray">${d[f.type]||'–'}</span></td>
+        <td>${trunc(d[f.location]||'–',22)}</td>
+        <td dir="ltr">${trunc(d[f.phone]||'–',18)}</td>
+        <td>${d[f.price]?'$'+d[f.price]:'–'}</td>
+        <td>${d[f.rating]||'–'}</td>
+        <td><span class="tag ${d[f.wifi]==='כן'?'tag-green':'tag-red'}">${d[f.wifi]||'–'}</span></td>`;
+    } else if(name==='attractions'){
+      cells=`<td><strong>${trunc(d[f.name]||'–',28)}</strong></td>
+        <td><span class="tag tag-blue">${trunc(d[f.domain]||'–',20)}</span></td>
+        <td>${trunc(d[f.location]||'–',20)}</td>
+        <td dir="ltr">${trunc(d[f.phone]||'–',18)}</td>
+        <td>${d[f.price]?'$'+d[f.price]:'–'}</td>
+        <td>${trunc(d[f.hours]||'–',15)}</td>`;
+    } else if(name==='qna'){
+      cells=`<td><span class="tag tag-yellow">${trunc(d[f.topic]||'–',15)}</span></td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d[f.question]||''}">${trunc(d[f.question]||'–',55)}</td>
+        <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)" title="${d[f.answer]||''}">${trunc(d[f.answer]||'–',65)}</td>`;
+    } else if(name==='drivers'){
+      const langs=Array.isArray(d[f.languages])?d[f.languages].join(', '):(d[f.languages]||'–');
+      cells=`<td><strong>${trunc(d[f.driverName]||d[f.contact]||'–',25)}</strong></td>
+        <td>${trunc(d[f.company]||'–',20)}</td>
+        <td dir="ltr">${trunc(d[f.driverPhone]||d[f.phone]||'–',18)}</td>
+        <td>${trunc(langs,25)}</td>
+        <td>${d[f.rating]?'⭐'.repeat(d[f.rating]):'–'}</td>`;
+    } else if(name==='inquiries'){
+      const st=d[f.status]||'חדש';
+      const cls={חדש:'tag-red','בטיפול':'tag-yellow','טופל':'tag-green'}[st]||'tag-gray';
+      cells=`<td><strong>${trunc(d[f.name]||'–',22)}</strong></td>
+        <td>${trunc(d[f.email]||'–',22)}</td>
+        <td>${trunc(d[f.subject]||'–',30)}</td>
+        <td><span class="tag ${cls}">${st}</span></td>
+        <td>${d[f.date]||'–'}</td>`;
     }
     return `<tr>${cells}
       <td style="white-space:nowrap">
@@ -341,219 +317,205 @@ function render(name, recs) {
   }).join('');
 }
 
-function filter() {
-  const q = document.getElementById('search-in').value.toLowerCase();
-  const recs = cache[cur] || [];
-  render(cur, q ? recs.filter(r => JSON.stringify(r).toLowerCase().includes(q)) : recs);
+function filter(){
+  const q=document.getElementById('search-in').value.toLowerCase();
+  render(cur, q?(cache[cur]||[]).filter(r=>JSON.stringify(r.fields).toLowerCase().includes(q)):(cache[cur]||[]));
 }
 
-// ── Forms ────────────────────────────────────────────────────────
-function optList(list, sel='') {
-  return list.map(o => `<option ${o===sel?'selected':''}>${o}</option>`).join('');
-}
-
-function getFields(name, rec) {
-  if (!rec) return {};
-  const p = parseText(rec.text);
-  const m = rec.metadata || {};
-  if (name==='hotels') return {
-    name: m.name||p['שם']||p['שם המקום']||'', location: m.location||p['מיקום']||'',
-    type: p['סוג']||'', contact: p['איש קשר']||'', phone: p['טלפון']||'',
-    wifi: p['wifi']||p['WiFi']||'כן', desc: p['תיאור']||'',
-    price: p['מחיר ממוצע']||p['מחיר ללילה']||p['מחיר']||'',
-    rating: p['דירוג Booking']||p['דירוג']||''
-  };
-  if (name==='attractions') return {
-    name: m.name||p['שם הבית ספר/המדריך']||p['שם']||'',
-    domain: p['תחום']||'', phone: p['טלפון']||'',
-    location: m.location||p['מיקום']||'',
-    address: p['כתובת מדויקת']||p['כתובת']||'',
-    notes: p['הערות']||''
-  };
-  if (name==='qna') return {
-    topic: m.topic||p['נושא']||'', question: p['שאלה']||'', answer: p['תשובה']||''
-  };
-  if (name==='drivers') return {
-    contact: m.contact||p['איש קשר']||p['שם איש קשר']||'',
-    company: m.company||p['שם חברה']||'',
-    phone: p['טלפון']||'', notes: p['הערות']||''
-  };
-  return {};
-}
+// ── Forms ──────────────────────────────────────────────────────────
+function e(v){return(v||'').toString().replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function optList(list,sel=''){return list.map(o=>`<option ${o===sel?'selected':''}>${o}</option>`).join('');}
+function getVal(rec,key){return(rec?.fields||{})[F[cur]?.[key]]||'';}
 
 const FORMS = {
-  hotels: d => `<div class="grid2">
+  hotels: d=>`<div class="grid2">
     <div class="fld"><label>שם המקום <span class="req">*</span></label><input id="f-name" value="${e(d.name)}"></div>
-    <div class="fld"><label>סוג</label><select id="f-type"><option value=""></option>${optList(['הוסטל','מלון','ריזורט','גסט-האוס','ווילה','בית הארחה'],d.type)}</select></div>
+    <div class="fld"><label>סוג</label><select id="f-type"><option value=""></option>${optList(['הוסטל','ריזורט','מלון','גסט-האוס','ווילה','בית להשכרה'],d.type)}</select></div>
     <div class="fld"><label>מיקום <span class="req">*</span></label><input id="f-location" value="${e(d.location)}"></div>
-    <div class="fld"><label>WiFi</label><select id="f-wifi"><option ${d.wifi==='כן'?'selected':''}>כן</option><option ${d.wifi==='לא'?'selected':''}>לא</option></select></div>
+    <div class="fld"><label>WiFi</label><select id="f-wifi"><option value="כן" ${d.wifi==='כן'?'selected':''}>כן</option><option value="לא" ${d.wifi==='לא'?'selected':''}>לא</option></select></div>
     <div class="fld"><label>איש קשר</label><input id="f-contact" value="${e(d.contact)}"></div>
     <div class="fld"><label>טלפון</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
     <div class="fld full"><label>תיאור</label><textarea id="f-desc">${e(d.desc)}</textarea></div>
-    <div class="fld"><label>מחיר ממוצע ($)</label><input id="f-price" value="${e(d.price)}"></div>
-    <div class="fld"><label>דירוג Booking</label><input id="f-rating" value="${e(d.rating)}"></div>
+    <div class="fld"><label>מחיר/לילה ($)</label><input id="f-price" type="number" value="${d.price||''}"></div>
+    <div class="fld"><label>דירוג Booking</label><input id="f-rating" type="number" step="0.1" value="${d.rating||''}"></div>
+    <div class="fld full"><label>אימייל</label><input id="f-email" dir="ltr" value="${e(d.email)}"></div>
   </div>`,
-
-  attractions: d => `<div class="grid2">
+  attractions: d=>`<div class="grid2">
     <div class="fld"><label>שם <span class="req">*</span></label><input id="f-name" value="${e(d.name)}"></div>
-    <div class="fld"><label>תחום</label><select id="f-domain"><option value=""></option>${optList(['הדרכת גלישה','השכרת אופנועים','השכרת רכבים','ספא','יוגה','צלם גלישה','תיקון גלשנים','חנות גלישה','כביסה','אחר'],d.domain)}</select></div>
+    <div class="fld"><label>תחום</label><select id="f-domain"><option value=""></option>${optList(['הדרכת גלישה','השכרת אופנועים','השכרת רכבים','אמבטיית קרח','ספא','חנות בגדים ומזכרות','תיקון גלשנים','יוגה','צלם גלישה','כביסה','חנות גלישה','אחר'],d.domain)}</select></div>
     <div class="fld"><label>מיקום <span class="req">*</span></label><input id="f-location" value="${e(d.location)}"></div>
     <div class="fld"><label>טלפון</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
+    <div class="fld"><label>מחיר כניסה ($)</label><input id="f-price" type="number" value="${d.price||''}"></div>
+    <div class="fld"><label>שעות פתיחה</label><input id="f-hours" value="${e(d.hours)}"></div>
     <div class="fld full"><label>כתובת מדויקת</label><input id="f-address" value="${e(d.address)}"></div>
+    <div class="fld full"><label>תיאור</label><textarea id="f-desc">${e(d.desc)}</textarea></div>
     <div class="fld full"><label>הערות</label><textarea id="f-notes">${e(d.notes)}</textarea></div>
   </div>`,
-
-  qna: d => `<div class="grid2">
+  qna: d=>`<div class="grid2">
     <div class="fld full"><label>נושא <span class="req">*</span></label>
       <select id="f-topic"><option value=""></option>${optList(['חיסונים','ויזה ואשרה','כסף ועלויות','תחבורה','אוכל','בטיחות','מזג אוויר','קניות','תרבות ומנהגים','תקשורת וסים','ביטוח','אחר'],d.topic)}</select></div>
     <div class="fld full"><label>שאלה <span class="req">*</span></label><textarea id="f-question">${e(d.question)}</textarea></div>
     <div class="fld full"><label>תשובה <span class="req">*</span></label><textarea id="f-answer" style="min-height:100px">${e(d.answer)}</textarea></div>
   </div>`,
-
-  drivers: d => `<div class="grid2">
-    <div class="fld"><label>שם איש קשר <span class="req">*</span></label><input id="f-contact" value="${e(d.contact)}"></div>
+  drivers: d=>`<div class="grid2">
+    <div class="fld"><label>שם נהג</label><input id="f-driverName" value="${e(d.driverName)}"></div>
     <div class="fld"><label>שם חברה</label><input id="f-company" value="${e(d.company)}"></div>
-    <div class="fld full"><label>טלפון <span class="req">*</span></label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
+    <div class="fld"><label>שם איש קשר</label><input id="f-contact" value="${e(d.contact)}"></div>
+    <div class="fld"><label>טלפון נהג</label><input id="f-driverPhone" dir="ltr" value="${e(d.driverPhone)}"></div>
+    <div class="fld"><label>טלפון חברה</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
+    <div class="fld"><label>אימייל</label><input id="f-email" dir="ltr" value="${e(d.email)}"></div>
+    <div class="fld"><label>סוג רכב</label><input id="f-vehicle" value="${e(d.vehicle)}"></div>
+    <div class="fld"><label>שפות</label>
+      <select id="f-languages" multiple style="min-height:80px">${['עברית','אנגלית','סינהלית','טמילית','ערבית','שפה אחרת'].map(o=>`<option ${(d.languages||[]).includes(o)?'selected':''}>${o}</option>`).join('')}</select></div>
     <div class="fld full"><label>הערות</label><textarea id="f-notes">${e(d.notes)}</textarea></div>
+    <div class="fld full"><label>הערות מערכת (פנימי)</label><textarea id="f-sys">${e(d.sys)}</textarea></div>
+  </div>`,
+  inquiries: d=>`<div class="grid2">
+    <div class="fld"><label>שם מלא <span class="req">*</span></label><input id="f-name" value="${e(d.name)}"></div>
+    <div class="fld"><label>אימייל</label><input id="f-email" dir="ltr" value="${e(d.email)}"></div>
+    <div class="fld"><label>טלפון</label><input id="f-phone" dir="ltr" value="${e(d.phone)}"></div>
+    <div class="fld"><label>סטטוס</label><select id="f-status">${optList(['חדש','בטיפול','טופל'],d.status||'חדש')}</select></div>
+    <div class="fld full"><label>נושא הפנייה</label><input id="f-subject" value="${e(d.subject)}"></div>
+    <div class="fld full"><label>תוכן הפנייה</label><textarea id="f-content" style="min-height:90px">${e(d.content)}</textarea></div>
+    <div class="fld full"><label>הערות פנימיות</label><textarea id="f-notes">${e(d.notes)}</textarea></div>
   </div>`
 };
 
-function e(v) { return (v||'').toString().replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
-
-function openAdd() {
-  editId = null;
-  const labels = { hotels:'מלון חדש', attractions:'אטרקציה חדשה', qna:'שאלה-תשובה', drivers:'נהג חדש' };
-  document.getElementById('mtitle').textContent = '➕ ' + labels[cur];
-  document.getElementById('mbody').innerHTML = FORMS[cur]({});
+function openAdd(){
+  editId=null;
+  const labels={hotels:'מלון חדש',attractions:'אטרקציה חדשה',qna:'שאלה-תשובה חדשה',drivers:'נהג חדש',inquiries:'פנייה חדשה'};
+  document.getElementById('mtitle').textContent='➕ '+labels[cur];
+  document.getElementById('mbody').innerHTML=FORMS[cur]({});
   document.getElementById('mbg').classList.add('open');
 }
 
-function openEdit(name, id) {
-  const rec = (cache[name]||[]).find(r => r.id === id);
-  if (!rec) return;
-  cur = name;
-  editId = id;
-  const d = getFields(name, rec);
-  document.getElementById('mtitle').textContent = '✏️ עריכה';
-  document.getElementById('mbody').innerHTML = FORMS[name](d);
+function openEdit(name,id){
+  const rec=(cache[name]||[]).find(r=>r.id===id); if(!rec) return;
+  cur=name; editId=id;
+  const d={}, f=F[name];
+  for(const [k,fid] of Object.entries(f)) d[k]=rec.fields[fid]||'';
+  document.getElementById('mtitle').textContent='✏️ עריכה';
+  document.getElementById('mbody').innerHTML=FORMS[name](d);
   document.getElementById('mbg').classList.add('open');
 }
 
-function closeModal() {
-  document.getElementById('mbg').classList.remove('open');
-  editId = null;
+function closeModal(){ document.getElementById('mbg').classList.remove('open'); editId=null; }
+
+function collect(){
+  const v=id=>(document.getElementById(id)?.value||'').trim();
+  const f=F[cur], fields={};
+  if(cur==='hotels'){
+    if(!v('f-name')||!v('f-location')) throw new Error('שם מקום ומיקום הם שדות חובה');
+    fields[f.name]=v('f-name'); fields[f.type]=v('f-type')||undefined;
+    fields[f.contact]=v('f-contact')||undefined; fields[f.phone]=v('f-phone')||undefined;
+    fields[f.location]=v('f-location'); fields[f.wifi]=v('f-wifi');
+    fields[f.desc]=v('f-desc')||undefined; fields[f.email]=v('f-email')||undefined;
+    if(v('f-price')) fields[f.price]=+v('f-price');
+    if(v('f-rating')) fields[f.rating]=+v('f-rating');
+  } else if(cur==='attractions'){
+    if(!v('f-name')||!v('f-location')) throw new Error('שם ומיקום הם שדות חובה');
+    fields[f.name]=v('f-name'); fields[f.domain]=v('f-domain')||undefined;
+    fields[f.phone]=v('f-phone')||undefined; fields[f.location]=v('f-location');
+    fields[f.address]=v('f-address')||undefined; fields[f.desc]=v('f-desc')||undefined;
+    fields[f.notes]=v('f-notes')||undefined; fields[f.hours]=v('f-hours')||undefined;
+    if(v('f-price')) fields[f.price]=+v('f-price');
+  } else if(cur==='qna'){
+    if(!v('f-topic')||!v('f-question')||!v('f-answer')) throw new Error('נושא, שאלה ותשובה הם שדות חובה');
+    fields[f.topic]=v('f-topic'); fields[f.question]=v('f-question'); fields[f.answer]=v('f-answer');
+  } else if(cur==='drivers'){
+    if(!v('f-driverName')&&!v('f-contact')) throw new Error('יש למלא שם נהג או איש קשר');
+    ['company','contact','phone','notes','sys','driverName','driverPhone','email','vehicle'].forEach(k=>{
+      const val=v('f-'+k); if(val) fields[f[k]]=val;
+    });
+    const langs=[...(document.getElementById('f-languages')?.selectedOptions||[])].map(o=>o.value);
+    if(langs.length) fields[f.languages]=langs;
+  } else if(cur==='inquiries'){
+    if(!v('f-name')) throw new Error('שם מלא הוא שדה חובה');
+    ['name','email','phone','subject','content','status','notes'].forEach(k=>{
+      const val=v('f-'+k); if(val) fields[f[k]]=val;
+    });
+  }
+  // clean undefined
+  Object.keys(fields).forEach(k=>fields[k]===undefined&&delete fields[k]);
+  return {fields};
 }
 
-function collect() {
-  const v = id => (document.getElementById(id)?.value || '').trim();
-  if (cur === 'hotels') {
-    if (!v('f-name') || !v('f-location')) throw new Error('שם מקום ומיקום הם שדות חובה');
-    return { type: 'hotels', name: v('f-type'), place_name: v('f-name'),
-      contact_name: v('f-contact'), phone: v('f-phone'), location: v('f-location'),
-      wifi: v('f-wifi'), description: v('f-desc'), price: v('f-price'), rating: v('f-rating') };
-  }
-  if (cur === 'attractions') {
-    if (!v('f-name') || !v('f-location')) throw new Error('שם ומיקום הם שדות חובה');
-    return { type: 'attractions', name: v('f-name'), domain: v('f-domain'),
-      phone: v('f-phone'), location: v('f-location'), address: v('f-address'), notes: v('f-notes') };
-  }
-  if (cur === 'qna') {
-    if (!v('f-topic') || !v('f-question') || !v('f-answer')) throw new Error('כל השדות חובה');
-    return { type: 'qna', topic: v('f-topic'), question: v('f-question'), answer: v('f-answer') };
-  }
-  if (cur === 'drivers') {
-    if (!v('f-contact') || !v('f-phone')) throw new Error('איש קשר וטלפון הם שדות חובה');
-    return { type: 'drivers', contact: v('f-contact'), company: v('f-company'),
-      phone: v('f-phone'), notes: v('f-notes') };
-  }
-}
-
-async function saveRecord() {
-  const btn = document.getElementById('btn-save');
-  const lbl = document.getElementById('save-lbl');
-  const spin = document.getElementById('save-spin');
-  btn.disabled = true; lbl.style.display = 'none'; spin.style.display = 'inline-block';
+async function saveRecord(){
+  const btn=document.getElementById('btn-save');
+  const lbl=document.getElementById('save-lbl');
+  const spin=document.getElementById('save-spin');
+  btn.disabled=true; lbl.style.display='none'; spin.style.display='inline-block';
   try {
-    const payload = collect();
-    if (editId) {
-      await api(`/api/records/${cur}/${editId}`, { method: 'PUT', body: JSON.stringify(payload) });
-      toast('עודכן בהצלחה ✓', 'ok');
+    const body=collect();
+    const tid=TABLES[cur];
+    if(editId){
+      await atFetch(tid+'/'+editId,{method:'PATCH',body:JSON.stringify(body)});
+      toast('עודכן בהצלחה ✓','ok');
     } else {
-      await api('/api/records', { method: 'POST', body: JSON.stringify(payload) });
-      toast('נוסף בהצלחה ✓', 'ok');
+      await atFetch(tid,{method:'POST',body:JSON.stringify(body)});
+      toast('נוסף בהצלחה ✓','ok');
     }
-    closeModal();
-    cache[cur] = null;
-    load(cur);
-  } catch(err) {
-    toast('שגיאה: ' + err.message, 'err');
-  } finally {
-    btn.disabled = false; lbl.style.display = ''; spin.style.display = 'none';
-  }
+    closeModal(); cache[cur]=null; load(cur);
+  } catch(err){ toast('שגיאה: '+err.message,'err'); }
+  finally{ btn.disabled=false; lbl.style.display=''; spin.style.display='none'; }
 }
 
-async function del(name, id) {
-  if (!confirm('למחוק רשומה זו?')) return;
+async function del(name,id){
+  if(!confirm('למחוק רשומה זו?')) return;
   try {
-    await api(`/api/records/${name}/${id}`, { method: 'DELETE' });
-    toast('נמחק', 'ok');
-    cache[name] = null; load(name);
-  } catch(e) { toast('שגיאה: ' + e.message, 'err'); }
+    await atFetch(TABLES[name]+'/'+id,{method:'DELETE'});
+    toast('נמחק','ok'); cache[name]=null; load(name);
+  } catch(e){ toast('שגיאת מחיקה: '+e.message,'err'); }
 }
 
-function toast(msg, type='ok') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast show ' + type;
-  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3500);
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+type;
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3500);
 }
 
-// ── AI Chat ──────────────────────────────────────────────────────
-async function sendChat() {
-  const inp = document.getElementById('chat-in');
-  const q = inp.value.trim(); if (!q) return;
-  inp.value = '';
-  addMsg('user', q);
-  const thinking = addMsg('bot', '⏳ מחפש...');
-  try { thinking.textContent = await aiAnswer(q); }
-  catch(e) { thinking.textContent = '❌ ' + e.message; }
+// ── AI ─────────────────────────────────────────────────────────────
+async function sendChat(){
+  const inp=document.getElementById('chat-in');
+  const q=inp.value.trim(); if(!q) return;
+  inp.value=''; addMsg('user',q);
+  const th=addMsg('bot','⏳ מחפש...');
+  try{ th.textContent=await aiAnswer(q); } catch(e){ th.textContent='❌ '+e.message; }
 }
-
-function addMsg(role, text) {
-  const msgs = document.getElementById('chat-msgs');
-  const div = document.createElement('div');
-  div.className = 'msg ' + role; div.textContent = text;
-  msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
-  return div;
+function addMsg(role,text){
+  const msgs=document.getElementById('chat-msgs');
+  const div=document.createElement('div');
+  div.className='msg '+role; div.textContent=text;
+  msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight; return div;
 }
-
-async function aiAnswer(q) {
-  const lower = q.toLowerCase();
-  let name = null;
-  if (/מלון|לינה|הוסטל/.test(lower)) name = 'hotels';
-  else if (/אטרקצי|גלישה|טיול/.test(lower)) name = 'attractions';
-  else if (/שאלה|חיסון|ויזה|אוכל|בטיחות/.test(lower)) name = 'qna';
-  else if (/נהג|הסעה/.test(lower)) name = 'drivers';
-  else {
-    const counts = Object.entries(cache).map(([n,r]) => `${TITLES[n]}: ${(r||[]).length}`).join(', ');
-    return counts || 'טוען נתונים... נסה שוב';
-  }
-  if (!cache[name]) await load(name);
-  const recs = cache[name] || [];
-  const locM = q.match(/ב([א-ת]{2,})/);
-  let filtered = recs;
-  if (locM) filtered = recs.filter(r => JSON.stringify(r).includes(locM[1]));
-  if (!filtered.length) return 'לא נמצאו תוצאות.';
-  const shown = filtered.slice(0, 6).map(r => {
-    const p = parseText(r.text); const m = r.metadata || {};
-    if (name==='hotels') return `🏨 ${m.name||p['שם']||'?'} — ${m.location||p['מיקום']||'?'}`;
-    if (name==='attractions') return `🏄 ${m.name||p['שם הבית ספר/המדריך']||'?'} — ${p['מיקום']||'?'}`;
-    if (name==='qna') return `❓ ${p['שאלה']||r.text.slice(0,60)}`;
-    if (name==='drivers') return `🚗 ${p['איש קשר']||'?'} — ${p['טלפון']||'?'}`;
+async function aiAnswer(q){
+  const low=q.toLowerCase();
+  let name=null;
+  if(/מלון|לינה|הוסטל/.test(low)) name='hotels';
+  else if(/אטרקצי|גלישה|טיול/.test(low)) name='attractions';
+  else if(/שאלה|חיסון|ויזה|אוכל/.test(low)) name='qna';
+  else if(/נהג|הסעה/.test(low)) name='drivers';
+  else if(/פנייה|פניות/.test(low)) name='inquiries';
+  else { return Object.entries(cache).map(([n,r])=>`${TITLES[n]}: ${(r||[]).length} רשומות`).join('\n')||'טוען...'; }
+  if(!cache[name]) await load(name);
+  const recs=cache[name]||[];
+  const f=F[name];
+  const loc=q.match(/ב([א-ת]{2,})/);
+  let filtered=recs;
+  if(loc) filtered=recs.filter(r=>JSON.stringify(r.fields).includes(loc[1]));
+  if(!filtered.length) return 'לא נמצאו תוצאות.';
+  const shown=filtered.slice(0,6).map(r=>{
+    const d=r.fields;
+    if(name==='hotels') return `🏨 ${d[f.name]||'?'} — ${d[f.location]||'?'}${d[f.price]?' ($'+d[f.price]+')':''}`;
+    if(name==='attractions') return `🏄 ${d[f.name]||'?'} — ${d[f.domain]||'?'}, ${d[f.location]||'?'}`;
+    if(name==='qna') return `❓ ${(d[f.question]||'').slice(0,80)}`;
+    if(name==='drivers') return `🚗 ${d[f.driverName]||d[f.contact]||'?'} — ${d[f.driverPhone]||d[f.phone]||'?'}`;
+    if(name==='inquiries') return `📩 ${d[f.name]||'?'} | ${d[f.status]||'חדש'}`;
   }).join('\n');
   return `נמצאו ${filtered.length}:\n\n${shown}${filtered.length>6?`\n...ועוד ${filtered.length-6}`:''}`;
 }
 
-// ── Boot ─────────────────────────────────────────────────────────
+// Boot
 load('hotels');
 </script>
 </body>
