@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { createRequire } = require('module');
+const { Pool } = require('pg');
 
 // ESM helper — sync-utils.mjs is loaded dynamically in async context
 let syncUtils = null;
@@ -15,6 +16,12 @@ async function getSyncUtils() {
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const neonPool = new Pool({
+  connectionString: process.env.NEON_DATABASE_URL ||
+    'postgresql://neondb_owner:npg_XlCfkx6nbMc1@ep-red-dust-aqzjle9q-pooler.c-8.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+  ssl: { rejectUnauthorized: false },
+});
 const AT_KEY = process.env.AIRTABLE_API_KEY;
 const BASE_ID = 'appRQcniFTsieCxkl';
 const N8N = 'https://all-in-n8n.up.railway.app/webhook';
@@ -27,12 +34,15 @@ const BUILTIN_NEON = {
   tbluqVYPy7ng3qKJB: 'drivers',
 };
 
+// Tables that use Gemini embedding (vector 3072) instead of n8n ingest-record
+const GEMINI_EMBED_TABLES = new Set(['tbluqVYPy7ng3qKJB']);
+
 // Field ID → ingest payload key for built-in tables
 const BUILTIN_MAP = {
   tbl81JyV8LSgrcJtr: f => ({ type:'hotels', name:f['fldBx8qZR7IwaXL5n']||'', place_name:f['fldNSi5FmXtVjXMdC']||'', contact_name:f['flddt1mtCe8SyqLeT']||'', phone:f['fld2d8WgxmABllAm5']||'', location:f['fldtjA9doG2MDQCEl']||'', wifi:f['fldCkClyE9mKMmRcP']||'', description:f['fldysYK1Zcx7TwyLO']||'', price:f['fldS6keLJdoarzqSo']||'', rating:f['fldoLnFs1AYm7mJpL']||'' }),
   tblwQrQEphUK8PphM: f => ({ type:'attractions', name:f['fldWyHNf8irp0WHy6']||'', domain:f['fld2lh3OcwXz6Xi4a']||'', phone:f['fld0h3jhso29CraNB']||'', location:f['fldSZQv3JRHXo3Heu']||'', notes:f['fldRE421H2Gpv06Tm']||'', address:f['fldGjjzeMUKypCaYy']||'' }),
   tblfKu8Xgja3ObS5F: f => ({ type:'qna', topic:f['fldOhEDpWC2jekXq3']||'', question:f['fld4nFuEZPdTALZGG']||'', answer:f['fldk6dZ8zSEvEcaZn']||'' }),
-  tbluqVYPy7ng3qKJB: f => ({ type:'drivers', company:f['fldaUyf4Mti0wqvD9']||'', contact:f['fldUjQ2QBXoBXfStM']||'', phone:f['fld51YqHfIl41rcB8']||'', notes:f['fldCEVqSt3gTwj4v3']||'' }),
+  tbluqVYPy7ng3qKJB: f => ({ type:'drivers', company:f['fldaUyf4Mti0wqvD9']||'', contact:f['fldUjQ2QBXoBXfStM']||'', phone:f['fld51YqHfIl41rcB8']||'', notes:f['fldCEVqSt3gTwj4v3']||'', driverName:f['fldsmpfSH4LlTJdcG']||'', driverPhone:f['fldYpQMEUcB45vgph']||'', email:f['fldaxmnOr9toWUDNS']||'', vehicle:f['fldtkOTkPbwSwP1W4']||'', languages:(f['fldSOaHsCeqxq2BLX']||[]).join(', '), rating:f['fldmYMg33kHsgTLoV']||'' }),
 };
 
 app.use(express.json());
@@ -157,34 +167,42 @@ app.post('/api/sync/:tableId', async (req, res) => {
         });
       }
 
-      // 3. Clear Neon + wait for worker DELETE to finish
-      await fetch(`${N8N}/admin-clear`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ table: neonTable }),
-      });
-      await new Promise(r => setTimeout(r, 4000));
+      // 3. Clear Neon
+      if (GEMINI_EMBED_TABLES.has(tableId)) {
+        // Gemini tables are managed directly — n8n admin-clear doesn't know about them
+        // The ingest-record endpoint handles upsert; we rely on it replacing data
+      } else {
+        await fetch(`${N8N}/admin-clear`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ table: neonTable }),
+        });
+        await new Promise(r => setTimeout(r, 4000));
+      }
 
       // 4. Re-ingest in batches of 5
       const isCustom = !BUILTIN_NEON[tableId];
+      const useGemini = isCustom || GEMINI_EMBED_TABLES.has(tableId);
       const payloads = records.map(r => resolvedMapper(r.fields));
       const BATCH = 5;
       for (let i = 0; i < payloads.length; i += BATCH) {
         await Promise.all(payloads.slice(i, i + BATCH).map(p => {
-          if (isCustom) {
-            // Custom tables: embed with Gemini (768-dim), insert via ingest-record
-            return embedWithGemini(p._rawText || JSON.stringify(p))
+          if (useGemini) {
+            // Gemini tables: embed locally (3072-dim), insert via ingest-record
+            const rawText = p._rawText || buildGeminiText(p, neonTable);
+            const meta = p._metadata || { source: neonTable, name: p.driverName || p.contact || p.name || '' };
+            return embedWithGemini(rawText)
               .then(vec => fetch(`${N8N}/ingest-record`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   type: neonTable,
                   _embedding: vec,
-                  _rawText: p._rawText,
-                  _metadata: p._metadata,
+                  _rawText: rawText,
+                  _metadata: meta,
                 }),
               }))
-              .catch(() => {}); // don't abort on single record failure
+              .catch(() => {});
           }
           return fetch(`${N8N}/ingest-record`, {
             method: 'POST',
@@ -197,8 +215,8 @@ app.post('/api/sync/:tableId', async (req, res) => {
 
       syncStatus[jobId].done = true;
 
-      // 5. For custom tables: add search tool node to n8n workflow
-      if (!BUILTIN_NEON[tableId]) {
+      // 5. Add search tool node to n8n workflow (custom tables + Gemini-embedded builtins)
+      if (!BUILTIN_NEON[tableId] || GEMINI_EMBED_TABLES.has(tableId)) {
         await addToolNodeToWorkflow(neonTable).catch(e =>
           console.error('addToolNode failed:', e.message)
         );
@@ -210,7 +228,23 @@ app.post('/api/sync/:tableId', async (req, res) => {
   })();
 });
 
-// ── Gemini embedding (768-dim) ────────────────────────────────────
+// ── Build text for Gemini-embedded tables ────────────────────────
+function buildGeminiText(p, tableType) {
+  if (tableType === 'drivers') {
+    const parts = [`נהג: ${p.driverName || p.contact || ''}`];
+    if (p.company)     parts.push(`חברה: ${p.company}`);
+    if (p.phone)       parts.push(`טלפון: ${p.phone}`);
+    if (p.driverPhone) parts.push(`טלפון נהג: ${p.driverPhone}`);
+    if (p.vehicle)     parts.push(`רכב: ${p.vehicle}`);
+    if (p.languages)   parts.push(`שפות: ${p.languages}`);
+    if (p.rating)      parts.push(`דירוג: ${p.rating}`);
+    if (p.notes)       parts.push(`הערות: ${p.notes}`);
+    return parts.join(' | ');
+  }
+  return Object.entries(p).map(([k, v]) => `${k}: ${v}`).join(' | ');
+}
+
+// ── Gemini embedding (3072-dim) ────────────────────────────────────
 async function embedWithGemini(text) {
   const key = process.env.GOOGLE_API_KEY;
   if (!key) throw new Error('GOOGLE_API_KEY not set');
@@ -286,6 +320,38 @@ app.get('/api/sync-status/:jobId', (req, res) => {
   const s = syncStatus[req.params.jobId];
   if (!s) return res.status(404).json({ error: 'job not found' });
   res.json(s);
+});
+
+// ── Conversations: list sessions ──────────────────────────────────
+app.get('/api/conversations', async (req, res) => {
+  try {
+    const { rows } = await neonPool.query(`
+      SELECT
+        session_id,
+        COUNT(*) AS msg_count,
+        MIN(id)  AS first_id,
+        MAX(id)  AS last_id,
+        (SELECT message->>'content'
+         FROM n8n_chat_histories h2
+         WHERE h2.session_id = h1.session_id AND h2.message->>'type' = 'human'
+         ORDER BY h2.id LIMIT 1) AS first_human_msg
+      FROM n8n_chat_histories h1
+      GROUP BY session_id
+      ORDER BY last_id DESC
+    `);
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Conversations: messages for a session ─────────────────────────
+app.get('/api/conversations/:sessionId', async (req, res) => {
+  try {
+    const { rows } = await neonPool.query(
+      'SELECT id, message FROM n8n_chat_histories WHERE session_id = $1 ORDER BY id',
+      [req.params.sessionId]
+    );
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 app.listen(PORT, () => console.log(`Admin panel [AIRTABLE PROXY] on port ${PORT}`));

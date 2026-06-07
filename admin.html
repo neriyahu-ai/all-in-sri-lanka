@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All In Sri Lanka — פאנל ניהול</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #1a6b3a;
+  --green-light: #2d9e5f;
+  --green-bg: #f0fff4;
+  --sidebar-w: 220px;
+  --header-h: 60px;
+  --border: #e2e8f0;
+  --text: #1a202c;
+  --muted: #718096;
+  --bg: #f7fafc;
+}
+
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); direction: rtl; }
+
+/* Layout */
+.layout { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-w);
+  background: #1a202c;
+  color: white;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  z-index: 100;
+}
+.sidebar-logo {
+  padding: 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar-logo .flag { font-size: 1.5rem; }
+.sidebar-logo .title { font-size: 0.9rem; font-weight: 700; line-height: 1.3; }
+.sidebar-logo .sub { font-size: 0.7rem; opacity: 0.5; margin-top: 2px; }
+
+nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+.nav-section { padding: 8px 16px 4px; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.35); }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.7);
+  border-radius: 0;
+  transition: all 0.15s;
+  border-right: 3px solid transparent;
+}
+.nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.nav-item.active { background: rgba(26,107,58,0.25); color: #68d391; border-right-color: #68d391; }
+.nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+.nav-item .count { margin-right: auto; background: rgba(255,255,255,0.12); border-radius: 10px; padding: 1px 7px; font-size: 0.7rem; }
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.35);
+}
+
+/* Main */
+.main { margin-right: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+/* Header */
+.topbar {
+  height: var(--header-h);
+  background: white;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar h2 { font-size: 1.1rem; font-weight: 700; flex: 1; }
+.topbar .search {
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  gap: 8px;
+  width: 220px;
+}
+.topbar .search input {
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  width: 100%;
+  direction: rtl;
+}
+.topbar .search input:focus { outline: none; }
+.btn-primary {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: #145c30; }
+
+/* Content */
+.content { flex: 1; padding: 24px; }
+
+/* Stats bar */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+.stat-card .num { font-size: 1.8rem; font-weight: 800; color: var(--green); }
+.stat-card .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+/* Table */
+.table-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.table-card table { width: 100%; border-collapse: collapse; }
+.table-card th {
+  background: var(--bg);
+  padding: 11px 14px;
+  text-align: right;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.table-card td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f4f8;
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+.table-card tr:last-child td { border-bottom: none; }
+.table-card tr:hover td { background: #fafbfc; }
+.tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #e2e8f0;
+  color: #4a5568;
+}
+.tag.green { background: #c6f6d5; color: #1a6b3a; }
+.tag.blue { background: #bee3f8; color: #2b6cb0; }
+.tag.yellow { background: #fefcbf; color: #744210; }
+.tag.red { background: #fed7d7; color: #c53030; }
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #a0aec0;
+  font-size: 1rem;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.btn-icon:hover { color: var(--green); background: var(--green-bg); }
+.btn-icon.del:hover { color: #e53e3e; background: #fff5f5; }
+
+/* Loading / Empty */
+.loading-row td { text-align: center; padding: 40px; color: var(--muted); }
+.empty-row td { text-align: center; padding: 48px; color: var(--muted); }
+.spinner-inline {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Modal */
+.modal-bg {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 200;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 60px;
+}
+.modal-bg.open { display: flex; }
+.modal {
+  background: white;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.modal-header h3 { flex: 1; font-size: 1rem; }
+.btn-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.3rem; color: var(--muted); padding: 2px;
+}
+.modal-body { padding: 20px 24px; }
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.btn-cancel {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: var(--muted);
+}
+.btn-cancel:hover { border-color: #a0aec0; color: var(--text); }
+
+/* Form fields in modal */
+.f-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.f-grid .full { grid-column: 1 / -1; }
+.f-field { display: flex; flex-direction: column; gap: 5px; }
+.f-field label { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+.f-field label .req { color: #e53e3e; }
+.f-field input, .f-field select, .f-field textarea {
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  direction: rtl;
+  background: var(--bg);
+  transition: border-color 0.2s;
+}
+.f-field input:focus, .f-field select:focus, .f-field textarea:focus {
+  outline: none; border-color: var(--green); background: white;
+}
+.f-field textarea { resize: vertical; min-height: 70px; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; left: 24px;
+  background: #1a202c; color: white;
+  padding: 12px 18px; border-radius: 10px;
+  font-size: 0.875rem; font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  transform: translateY(60px); opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 1000; max-width: 340px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.ok { background: var(--green); }
+.toast.err { background: #c53030; }
+
+/* Conversation thread modal */
+.conv-thread { display: flex; flex-direction: column; gap: 10px; max-height: 60vh; overflow-y: auto; padding: 4px 0; }
+.conv-msg { display: flex; flex-direction: column; gap: 2px; }
+.conv-msg .bubble { padding: 10px 14px; border-radius: 12px; font-size: 0.875rem; line-height: 1.5; max-width: 85%; }
+.conv-msg.human { align-items: flex-end; }
+.conv-msg.human .bubble { background: var(--green); color: white; border-radius: 12px 12px 4px 12px; }
+.conv-msg.ai { align-items: flex-start; }
+.conv-msg.ai .bubble { background: #f7fafc; border: 1px solid var(--border); border-radius: 12px 12px 12px 4px; }
+.conv-msg .role-label { font-size: 0.7rem; color: var(--muted); padding: 0 4px; }
+
+/* AI Chat */
+.chat-panel {
+  display: flex; flex-direction: column;
+  height: calc(100vh - var(--header-h) - 48px);
+  max-height: 700px;
+}
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  background: white; border: 1px solid var(--border);
+  border-radius: 12px 12px 0 0;
+}
+.msg { max-width: 75%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; }
+.msg.user { background: var(--green); color: white; align-self: flex-end; border-radius: 12px 12px 4px 12px; }
+.msg.ai { background: #f7fafc; border: 1px solid var(--border); align-self: flex-start; border-radius: 12px 12px 12px 4px; }
+.msg.ai pre { white-space: pre-wrap; font-family: inherit; }
+.chat-input-row {
+  display: flex; gap: 8px; padding: 12px 14px;
+  background: white; border: 1px solid var(--border);
+  border-top: none; border-radius: 0 0 12px 12px;
+}
+.chat-input-row input {
+  flex: 1; border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; font-size: 0.9rem; direction: rtl;
+}
+.chat-input-row input:focus { outline: none; border-color: var(--green); }
+</style>
+</head>
+<body>
+
+<!-- App -->
+<div class="layout" id="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="flag">🇱🇰</span>
+      <div>
+        <div class="title">All In<br>Sri Lanka</div>
+        <div class="sub">פאנל ניהול</div>
+      </div>
+    </div>
+    <nav>
+      <div class="nav-section">תוכן</div>
+      <div class="nav-item active" onclick="showSection('hotels', this)">
+        <span class="icon">🏨</span> מלונות <span class="count" id="nc-hotels">–</span>
+      </div>
+      <div class="nav-item" onclick="showSection('attractions', this)">
+        <span class="icon">🏄</span> אטרקציות <span class="count" id="nc-attractions">–</span>
+      </div>
+      <div class="nav-item" onclick="showSection('qna', this)">
+        <span class="icon">💬</span> שאלות-תשובות <span class="count" id="nc-qna">–</span>
+      </div>
+      <div class="nav-item" onclick="showSection('drivers', this)">
+        <span class="icon">🚗</span> נהגים <span class="count" id="nc-drivers">–</span>
+      </div>
+      <div class="nav-item" onclick="showSection('inquiries', this)">
+        <span class="icon">📩</span> פניות <span class="count" id="nc-inquiries">–</span>
+      </div>
+      <div class="nav-section" style="margin-top:8px;">כלים</div>
+      <div class="nav-item" onclick="showSection('conversations', this)">
+        <span class="icon">💬</span> שיחות <span class="count" id="nc-conversations">–</span>
+      </div>
+      <div class="nav-item" onclick="showSection('ai', this)">
+        <span class="icon">🤖</span> סוכן AI
+      </div>
+    </nav>
+    <div class="sidebar-footer">🟢 מחובר</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <h2 id="section-title">מלונות</h2>
+      <div class="search">
+        <span>🔍</span>
+        <input type="text" id="search-input" placeholder="חיפוש..." oninput="filterTable()">
+      </div>
+      <button class="btn-primary" id="btn-add-main" onclick="openAddModal()">➕ הוסף</button>
+    </div>
+
+    <div class="content">
+      <!-- Hotels -->
+      <div id="sec-hotels" class="section">
+        <div class="table-card">
+          <table id="tbl-hotels">
+            <thead>
+              <tr>
+                <th>שם המקום</th><th>סוג</th><th>מיקום</th>
+                <th>טלפון</th><th>מחיר</th><th>דירוג</th><th>WiFi</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody-hotels"><tr class="loading-row"><td colspan="8">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Attractions -->
+      <div id="sec-attractions" class="section" style="display:none;">
+        <div class="table-card">
+          <table>
+            <thead><tr><th>שם</th><th>תחום</th><th>מיקום</th><th>טלפון</th><th>מחיר כניסה</th><th>דירוג</th><th></th></tr></thead>
+            <tbody id="tbody-attractions"><tr class="loading-row"><td colspan="7">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- QnA -->
+      <div id="sec-qna" class="section" style="display:none;">
+        <div class="table-card">
+          <table>
+            <thead><tr><th>נושא</th><th>שאלה</th><th>תשובה</th><th></th></tr></thead>
+            <tbody id="tbody-qna"><tr class="loading-row"><td colspan="4">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Drivers -->
+      <div id="sec-drivers" class="section" style="display:none;">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+          <button class="btn-primary" id="btn-sync-drivers" onclick="syncDriversToNeon()" style="background:#2b6cb0;">
+            <span id="sync-label">🔄 סנכרן לNeon</span>
+            <span class="spinner-inline" id="sync-spinner" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+          </button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>שם נהג</th><th>חברה</th><th>טלפון</th><th>שפות</th><th>דירוג</th><th>הערות</th><th></th></tr></thead>
+            <tbody id="tbody-drivers"><tr class="loading-row"><td colspan="7">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Inquiries -->
+      <div id="sec-inquiries" class="section" style="display:none;">
+        <div class="table-card">
+          <table>
+            <thead><tr><th>שם</th><th>אימייל</th><th>נושא</th><th>סטטוס</th><th>תאריך</th><th></th></tr></thead>
+            <tbody id="tbody-inquiries"><tr class="loading-row"><td colspan="6">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Conversations -->
+      <div id="sec-conversations" class="section" style="display:none;">
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Session ID</th><th>הודעות</th><th>פתיחה</th></tr></thead>
+            <tbody id="tbody-conversations"><tr class="loading-row"><td colspan="3">לחץ על "שיחות" לטעינה</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AI Agent -->
+      <div id="sec-ai" class="section" style="display:none;">
+        <div class="chat-panel">
+          <div class="chat-messages" id="chat-msgs">
+            <div class="msg ai">שלום! אני יכול לעזור לך לחפש מידע בטבלאות. לדוגמה:<br>
+            • "מצא מלונות בארוגם ביי"<br>
+            • "הצג שאלות בנושא חיסונים"<br>
+            • "כמה אטרקציות יש?"
+            </div>
+          </div>
+          <div class="chat-input-row">
+            <input type="text" id="chat-in" placeholder="שאל שאלה..." onkeydown="if(event.key==='Enter') sendChat()">
+            <button class="btn-primary" onclick="sendChat()">שלח</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">הוסף רשומה</h3>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">ביטול</button>
+      <button class="btn-primary" id="btn-save-modal" onclick="saveModal()">
+        <span class="btn-label">שמור</span>
+        <span class="spinner-inline" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Config ───────────────────────────────────────────────
+const TABLES = {
+  hotels:      'tbl81JyV8LSgrcJtr',
+  drivers:     'tbluqVYPy7ng3qKJB',
+  attractions: 'tblwQrQEphUK8PphM',
+  qna:         'tblfKu8Xgja3ObS5F',   // גרסה 2 (עם תאריך)
+  inquiries:   'tblWaENqDC3hpkbZI'
+};
+
+const FIELDS = {
+  hotels: {
+    name: 'fldNSi5FmXtVjXMdC', type: 'fldBx8qZR7IwaXL5n', contact: 'flddt1mtCe8SyqLeT',
+    phone: 'fld2d8WgxmABllAm5', location: 'fldtjA9doG2MDQCEl', wifi: 'fldCkClyE9mKMmRcP',
+    desc: 'fldysYK1Zcx7TwyLO', price: 'fldS6keLJdoarzqSo', rating: 'fldoLnFs1AYm7mJpL',
+    email: 'fldJlKs9BzqhYNBOi'
+  },
+  attractions: {
+    name: 'fldWyHNf8irp0WHy6', domain: 'fld2lh3OcwXz6Xi4a', phone: 'fld0h3jhso29CraNB',
+    location: 'fldSZQv3JRHXo3Heu', notes: 'fldRE421H2Gpv06Tm', address: 'fldGjjzeMUKypCaYy',
+    desc: 'fldVcckPplmH1R2im', price: 'fld0yJdQ5cUn83L65', hours: 'fld6Kl7ClTiw5sswK',
+    rating: 'fldfqoj8xYBRje0bS'
+  },
+  qna: {
+    topic: 'fldOhEDpWC2jekXq3', question: 'fld4nFuEZPdTALZGG', answer: 'fldk6dZ8zSEvEcaZn'
+  },
+  drivers: {
+    company: 'fldaUyf4Mti0wqvD9', contact: 'fldUjQ2QBXoBXfStM', phone: 'fld51YqHfIl41rcB8',
+    notes: 'fldCEVqSt3gTwj4v3', sys: 'fldpMmLNcfkCGfX5O', driverName: 'fldsmpfSH4LlTJdcG',
+    driverPhone: 'fldYpQMEUcB45vgph', email: 'fldaxmnOr9toWUDNS', vehicle: 'fldtkOTkPbwSwP1W4',
+    languages: 'fldSOaHsCeqxq2BLX', rating: 'fldmYMg33kHsgTLoV'
+  },
+  inquiries: {
+    name: 'fld7nAdaHbJpGdfrx', email: 'fldB2o3aEifVVlTnJ', phone: 'fld913HTmungMHLuE',
+    subject: 'fldEkdYZhupmB2RlQ', content: 'fldh1JhuCNuVc7ZpG',
+    date: 'fldwgWiPCatusYkBH', status: 'flduBzSwjWUW1TPVj', notes: 'fldvK4lavvHGXJinO'
+  }
+};
+
+// ─── State ────────────────────────────────────────────────
+let currentSection = 'hotels';
+let allRecords = {};
+let editingId = null;
+
+// ─── Init ─────────────────────────────────────────────────
+function init() {
+  loadSection('hotels');
+}
+
+// ─── API ──────────────────────────────────────────────────
+async function atFetch(path, opts = {}) {
+  const res = await fetch(`/api/airtable/${path}`, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) }
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function fetchAll(tableId) {
+  let records = [], offset;
+  do {
+    const url = tableId + '?pageSize=100' + (offset ? `&offset=${offset}` : '');
+    const data = await atFetch(url);
+    records = records.concat(data.records || []);
+    offset = data.offset;
+  } while (offset);
+  return records;
+}
+
+// ─── Sections ─────────────────────────────────────────────
+function showSection(name, el) {
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + name).style.display = '';
+  el.classList.add('active');
+  currentSection = name;
+
+  const titles = { hotels:'מלונות', attractions:'אטרקציות', qna:'שאלות-תשובות', drivers:'נהגים', inquiries:'פניות', conversations:'שיחות', ai:'סוכן AI' };
+  document.getElementById('section-title').textContent = titles[name] || name;
+  const noBar = name === 'ai' || name === 'conversations';
+  document.getElementById('btn-add-main').style.display = noBar ? 'none' : '';
+  document.getElementById('search-input').parentElement.style.display = noBar ? 'none' : '';
+
+  if (name === 'conversations') { loadConversations(); return; }
+  if (name !== 'ai' && !allRecords[name]) loadSection(name);
+}
+
+async function loadSection(name) {
+  if (name === 'ai') return;
+  const tid = TABLES[name];
+  try {
+    const recs = await fetchAll(tid);
+    allRecords[name] = recs;
+    renderTable(name, recs);
+    document.getElementById('nc-' + name).textContent = recs.length;
+  } catch(e) {
+    showToast('שגיאה בטעינת ' + name + ': ' + e.message, 'err');
+  }
+}
+
+// ─── Render tables ────────────────────────────────────────
+function renderTable(name, recs) {
+  const tbody = document.getElementById('tbody-' + name);
+  if (!tbody) return;
+  if (!recs.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="9">אין רשומות</td></tr>'; return; }
+
+  const f = FIELDS[name];
+  const rows = recs.map(r => {
+    const d = r.fields;
+    const id = r.id;
+    let cells = '';
+
+    if (name === 'hotels') {
+      cells = `
+        <td><strong>${d[f.name]||'–'}</strong></td>
+        <td><span class="tag">${d[f.type]||'–'}</span></td>
+        <td>${d[f.location]||'–'}</td>
+        <td dir="ltr">${d[f.phone]||'–'}</td>
+        <td>${d[f.price] ? '$'+d[f.price] : '–'}</td>
+        <td>${d[f.rating]||'–'}</td>
+        <td><span class="tag ${d[f.wifi]==='כן'?'green':'red'}">${d[f.wifi]||'–'}</span></td>`;
+    } else if (name === 'attractions') {
+      cells = `
+        <td><strong>${d[f.name]||'–'}</strong></td>
+        <td><span class="tag blue">${d[f.domain]||'–'}</span></td>
+        <td>${d[f.location]||'–'}</td>
+        <td dir="ltr">${d[f.phone]||'–'}</td>
+        <td>${d[f.price] ? '$'+d[f.price] : '–'}</td>
+        <td>${d[f.rating]||'–'}</td>`;
+    } else if (name === 'qna') {
+      const q = d[f.question]||'';
+      const a = d[f.answer]||'';
+      cells = `
+        <td><span class="tag yellow">${d[f.topic]||'–'}</span></td>
+        <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${q}">${q}</td>
+        <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#718096;" title="${a}">${a}</td>`;
+    } else if (name === 'drivers') {
+      const langs = Array.isArray(d[f.languages]) ? d[f.languages].join(', ') : (d[f.languages]||'–');
+      cells = `
+        <td><strong>${d[f.driverName]||d[f.contact]||'–'}</strong></td>
+        <td>${d[f.company]||'–'}</td>
+        <td dir="ltr">${d[f.driverPhone]||d[f.phone]||'–'}</td>
+        <td>${langs}</td>
+        <td>${d[f.rating] ? '⭐'.repeat(d[f.rating]) : '–'}</td>
+        <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${d[f.notes]||''}">${d[f.notes]||'–'}</td>`;
+    } else if (name === 'inquiries') {
+      const status = d[f.status]||'חדש';
+      const cls = {חדש:'red', 'בטיפול':'yellow', 'טופל':'green'}[status]||'';
+      cells = `
+        <td><strong>${d[f.name]||'–'}</strong></td>
+        <td>${d[f.email]||'–'}</td>
+        <td>${d[f.subject]||'–'}</td>
+        <td><span class="tag ${cls}">${status}</span></td>
+        <td>${d[f.date]||'–'}</td>`;
+    }
+
+    return `<tr>
+      ${cells}
+      <td style="white-space:nowrap">
+        <button class="btn-icon" onclick="openEditModal('${name}','${id}')" title="עריכה">✏️</button>
+        <button class="btn-icon del" onclick="deleteRecord('${name}','${id}')" title="מחיקה">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+  tbody.innerHTML = rows;
+}
+
+// ─── Filter ───────────────────────────────────────────────
+function filterTable() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const recs = allRecords[currentSection] || [];
+  if (!q) { renderTable(currentSection, recs); return; }
+  const filtered = recs.filter(r => JSON.stringify(r.fields).toLowerCase().includes(q));
+  renderTable(currentSection, filtered);
+}
+
+// ─── Modal Forms ──────────────────────────────────────────
+const FORMS = {
+  hotels: (d={}) => `<div class="f-grid">
+    <div class="f-field"><label>שם המקום <span class="req">*</span></label>
+      <input id="mf-name" value="${esc(d.name)}" placeholder="שם המקום"></div>
+    <div class="f-field"><label>סוג מקום</label>
+      <select id="mf-type"><option>בחר...</option>
+        ${['הוסטל','ריזורט','מלון','גסט-האוס','ווילה','בית להשכרה'].map(o=>`<option ${d.type===o?'selected':''}>${o}</option>`).join('')}
+      </select></div>
+    <div class="f-field"><label>שם איש קשר</label><input id="mf-contact" value="${esc(d.contact)}"></div>
+    <div class="f-field"><label>מספר טלפון</label><input id="mf-phone" dir="ltr" value="${esc(d.phone)}"></div>
+    <div class="f-field"><label>מיקום <span class="req">*</span></label><input id="mf-location" value="${esc(d.location)}"></div>
+    <div class="f-field"><label>WiFi</label>
+      <select id="mf-wifi"><option value="כן" ${d.wifi==='כן'?'selected':''}>כן</option><option value="לא" ${d.wifi==='לא'?'selected':''}>לא</option></select></div>
+    <div class="f-field full"><label>תיאור</label><textarea id="mf-desc">${esc(d.desc)}</textarea></div>
+    <div class="f-field"><label>מחיר ממוצע ללילה ($)</label><input id="mf-price" type="number" value="${d.price||''}"></div>
+    <div class="f-field"><label>דירוג Booking</label><input id="mf-rating" type="number" step="0.1" value="${d.rating||''}"></div>
+    <div class="f-field full"><label>אימייל</label><input id="mf-email" dir="ltr" value="${esc(d.email)}"></div>
+  </div>`,
+
+  attractions: (d={}) => `<div class="f-grid">
+    <div class="f-field"><label>שם <span class="req">*</span></label><input id="mf-name" value="${esc(d.name)}"></div>
+    <div class="f-field"><label>תחום</label>
+      <select id="mf-domain">
+        ${['הדרכת גלישה','השכרת אופנועים','השכרת רכבים','אמבטיית קרח','ספא','חנות בגדים ומזכרות','תיקון גלשנים','יוגה','צלם גלישה','כביסה','חנות גלישה']
+          .map(o=>`<option ${d.domain===o?'selected':''}>${o}</option>`).join('')}
+      </select></div>
+    <div class="f-field"><label>טלפון</label><input id="mf-phone" dir="ltr" value="${esc(d.phone)}"></div>
+    <div class="f-field"><label>מיקום <span class="req">*</span></label><input id="mf-location" value="${esc(d.location)}"></div>
+    <div class="f-field"><label>מחיר כניסה ($)</label><input id="mf-price" type="number" value="${d.price||''}"></div>
+    <div class="f-field"><label>שעות פתיחה</label><input id="mf-hours" value="${esc(d.hours)}"></div>
+    <div class="f-field full"><label>כתובת מדויקת</label><input id="mf-address" value="${esc(d.address)}"></div>
+    <div class="f-field full"><label>תיאור</label><textarea id="mf-desc">${esc(d.desc)}</textarea></div>
+    <div class="f-field full"><label>הערות</label><textarea id="mf-notes">${esc(d.notes)}</textarea></div>
+  </div>`,
+
+  qna: (d={}) => `<div class="f-grid">
+    <div class="f-field full"><label>נושא <span class="req">*</span></label>
+      <select id="mf-topic">
+        ${['חיסונים','ויזה ואשרה','כסף ועלויות','תחבורה','אוכל','בטיחות','מזג אוויר','קניות','תרבות ומנהגים','תקשורת וסים','ביטוח','אחר']
+          .map(o=>`<option ${d.topic===o?'selected':''}>${o}</option>`).join('')}
+      </select></div>
+    <div class="f-field full"><label>שאלה <span class="req">*</span></label><textarea id="mf-question">${esc(d.question)}</textarea></div>
+    <div class="f-field full"><label>תשובה <span class="req">*</span></label><textarea id="mf-answer" style="min-height:100px">${esc(d.answer)}</textarea></div>
+  </div>`,
+
+  drivers: (d={}) => `<div class="f-grid">
+    <div class="f-field"><label>שם נהג</label><input id="mf-driverName" value="${esc(d.driverName)}"></div>
+    <div class="f-field"><label>שם חברה</label><input id="mf-company" value="${esc(d.company)}"></div>
+    <div class="f-field"><label>שם איש קשר</label><input id="mf-contact" value="${esc(d.contact)}"></div>
+    <div class="f-field"><label>טלפון (חברה)</label><input id="mf-phone" dir="ltr" value="${esc(d.phone)}"></div>
+    <div class="f-field"><label>טלפון (נהג)</label><input id="mf-driverPhone" dir="ltr" value="${esc(d.driverPhone)}"></div>
+    <div class="f-field"><label>אימייל</label><input id="mf-email" dir="ltr" value="${esc(d.email)}"></div>
+    <div class="f-field"><label>סוג רכב</label><input id="mf-vehicle" value="${esc(d.vehicle)}"></div>
+    <div class="f-field"><label>שפות</label>
+      <select id="mf-languages" multiple style="min-height:80px">
+        ${['עברית','אנגלית','סינהלית','טמילית','ערבית','שפה אחרת']
+          .map(o=>`<option value="${o}" ${(d.languages||[]).includes(o)?'selected':''}>${o}</option>`).join('')}
+      </select></div>
+    <div class="f-field full"><label>הערות</label><textarea id="mf-notes">${esc(d.notes)}</textarea></div>
+    <div class="f-field full"><label>הערות מערכת (פנימי)</label><textarea id="mf-sys">${esc(d.sys)}</textarea></div>
+  </div>`,
+
+  inquiries: (d={}) => `<div class="f-grid">
+    <div class="f-field"><label>שם מלא <span class="req">*</span></label><input id="mf-name" value="${esc(d.name)}"></div>
+    <div class="f-field"><label>אימייל</label><input id="mf-email" dir="ltr" value="${esc(d.email)}"></div>
+    <div class="f-field"><label>טלפון</label><input id="mf-phone" dir="ltr" value="${esc(d.phone)}"></div>
+    <div class="f-field"><label>סטטוס</label>
+      <select id="mf-status">
+        ${['חדש','בטיפול','טופל'].map(o=>`<option ${d.status===o?'selected':''}>${o}</option>`).join('')}
+      </select></div>
+    <div class="f-field full"><label>נושא הפנייה</label><input id="mf-subject" value="${esc(d.subject)}"></div>
+    <div class="f-field full"><label>תוכן הפנייה</label><textarea id="mf-content" style="min-height:100px">${esc(d.content)}</textarea></div>
+    <div class="f-field full"><label>הערות פנימיות</label><textarea id="mf-notes">${esc(d.notes)}</textarea></div>
+  </div>`
+};
+
+function esc(v) { return (v||'').toString().replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = '➕ הוסף ' + {hotels:'מלון',attractions:'אטרקציה',qna:'שאלה-תשובה',drivers:'נהג',inquiries:'פנייה'}[currentSection];
+  document.getElementById('modal-body').innerHTML = FORMS[currentSection]();
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function openEditModal(name, id) {
+  const rec = (allRecords[name]||[]).find(r => r.id === id);
+  if (!rec) return;
+  editingId = id;
+  const f = FIELDS[name];
+  const d = {};
+  for (const [key, fid] of Object.entries(f)) d[key] = rec.fields[fid];
+  document.getElementById('modal-title').textContent = '✏️ עריכה';
+  document.getElementById('modal-body').innerHTML = FORMS[name](d);
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  document.getElementById('btn-save-modal').style.display = '';
+  editingId = null;
+}
+
+function getModalFields() {
+  const name = currentSection;
+  const f = FIELDS[name];
+  const fields = {};
+  const v = id => document.getElementById(id)?.value?.trim();
+
+  if (name === 'hotels') {
+    if (!v('mf-name') || !v('mf-location')) throw new Error('שם מקום ומיקום הם שדות חובה');
+    fields[f.name] = v('mf-name'); fields[f.type] = v('mf-type');
+    fields[f.contact] = v('mf-contact'); fields[f.phone] = v('mf-phone');
+    fields[f.location] = v('mf-location'); fields[f.wifi] = v('mf-wifi');
+    fields[f.desc] = v('mf-desc'); fields[f.email] = v('mf-email');
+    if (v('mf-price')) fields[f.price] = parseFloat(v('mf-price'));
+    if (v('mf-rating')) fields[f.rating] = parseFloat(v('mf-rating'));
+  } else if (name === 'attractions') {
+    if (!v('mf-name') || !v('mf-location')) throw new Error('שם ומיקום הם שדות חובה');
+    fields[f.name] = v('mf-name'); fields[f.domain] = v('mf-domain');
+    fields[f.phone] = v('mf-phone'); fields[f.location] = v('mf-location');
+    fields[f.address] = v('mf-address'); fields[f.desc] = v('mf-desc');
+    fields[f.notes] = v('mf-notes'); fields[f.hours] = v('mf-hours');
+    if (v('mf-price')) fields[f.price] = parseFloat(v('mf-price'));
+  } else if (name === 'qna') {
+    if (!v('mf-topic') || !v('mf-question') || !v('mf-answer')) throw new Error('כל השדות חובה');
+    fields[f.topic] = v('mf-topic'); fields[f.question] = v('mf-question'); fields[f.answer] = v('mf-answer');
+  } else if (name === 'drivers') {
+    if (!v('mf-contact') && !v('mf-driverName')) throw new Error('יש למלא שם נהג או שם איש קשר');
+    fields[f.company] = v('mf-company'); fields[f.contact] = v('mf-contact');
+    fields[f.phone] = v('mf-phone'); fields[f.notes] = v('mf-notes');
+    fields[f.sys] = v('mf-sys'); fields[f.driverName] = v('mf-driverName');
+    fields[f.driverPhone] = v('mf-driverPhone'); fields[f.email] = v('mf-email');
+    fields[f.vehicle] = v('mf-vehicle');
+    const langs = [...document.getElementById('mf-languages').selectedOptions].map(o=>o.value);
+    if (langs.length) fields[f.languages] = langs;
+  } else if (name === 'inquiries') {
+    if (!v('mf-name')) throw new Error('שם מלא הוא שדה חובה');
+    fields[f.name] = v('mf-name'); fields[f.email] = v('mf-email');
+    fields[f.phone] = v('mf-phone'); fields[f.subject] = v('mf-subject');
+    fields[f.content] = v('mf-content'); fields[f.status] = v('mf-status');
+    fields[f.notes] = v('mf-notes');
+  }
+  // Remove empty strings
+  for (const k in fields) if (fields[k] === '') delete fields[k];
+  return fields;
+}
+
+async function saveModal() {
+  const btn = document.getElementById('btn-save-modal');
+  const label = btn.querySelector('.btn-label');
+  const spin = btn.querySelector('.spinner-inline');
+  btn.disabled = true; label.style.display = 'none'; spin.style.display = 'inline-block';
+
+  try {
+    const fields = getModalFields();
+    const tid = TABLES[currentSection];
+
+    if (editingId) {
+      await atFetch(tid + '/' + editingId, { method: 'PATCH', body: JSON.stringify({ fields }) });
+      showToast('עודכן בהצלחה ✓', 'ok');
+    } else {
+      await atFetch(tid, { method: 'POST', body: JSON.stringify({ fields }) });
+      showToast('נוסף בהצלחה ✓', 'ok');
+    }
+
+    closeModal();
+    allRecords[currentSection] = null;
+    loadSection(currentSection);
+  } catch(e) {
+    showToast('שגיאה: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false; label.style.display = ''; spin.style.display = 'none';
+  }
+}
+
+async function deleteRecord(name, id) {
+  if (!confirm('למחוק את הרשומה הזאת?')) return;
+  try {
+    await atFetch(TABLES[name] + '/' + id, { method: 'DELETE' });
+    showToast('נמחק', 'ok');
+    allRecords[name] = null;
+    loadSection(name);
+  } catch(e) {
+    showToast('שגיאת מחיקה: ' + e.message, 'err');
+  }
+}
+
+// ─── Toast ────────────────────────────────────────────────
+function showToast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ─── AI Chat ──────────────────────────────────────────────
+async function sendChat() {
+  const inp = document.getElementById('chat-in');
+  const q = inp.value.trim();
+  if (!q) return;
+  inp.value = '';
+
+  addMsg('user', q);
+  const thinking = addMsg('ai', '⏳ מחשב...');
+
+  try {
+    const answer = await aiAnswer(q);
+    thinking.textContent = answer;
+  } catch(e) {
+    thinking.textContent = '❌ שגיאה: ' + e.message;
+  }
+}
+
+function addMsg(role, text) {
+  const msgs = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+async function aiAnswer(q) {
+  const lower = q.toLowerCase();
+
+  // Load relevant data
+  let section = null;
+  if (/מלון|לינה|הוסטל|ריזורט/.test(lower)) section = 'hotels';
+  else if (/אטרקצי|גלישה|טיול|ספארי/.test(lower)) section = 'attractions';
+  else if (/שאלה|נושא|חיסון|ויזה|אוכל/.test(lower)) section = 'qna';
+  else if (/נהג|הסעה|רכב|טאקסי/.test(lower)) section = 'drivers';
+  else if (/פנייה|פנייות|סטטוס/.test(lower)) section = 'inquiries';
+
+  if (!section) {
+    // Show counts
+    let resp = '📊 סה"כ נתונים:\n';
+    for (const [name, tid] of Object.entries(TABLES)) {
+      const count = (allRecords[name]||[]).length;
+      resp += `• ${name}: ${count || '?'} רשומות\n`;
+    }
+    return resp;
+  }
+
+  if (!allRecords[section]) await loadSection(section);
+  const recs = allRecords[section] || [];
+  const f = FIELDS[section];
+
+  // Filter by location/topic if mentioned
+  const locationMatch = q.match(/ב([א-ת]+)/);
+  const topicMatch = q.match(/נושא\s+([א-ת]+)/);
+
+  let filtered = recs;
+  if (locationMatch) {
+    const loc = locationMatch[1];
+    filtered = recs.filter(r => JSON.stringify(r.fields).includes(loc));
+  }
+  if (topicMatch) {
+    const topic = topicMatch[1];
+    filtered = recs.filter(r => (r.fields[f.topic]||'').includes(topic));
+  }
+
+  if (!filtered.length) return 'לא נמצאו תוצאות לחיפוש שלך.';
+
+  const results = filtered.slice(0, 5).map(r => {
+    const d = r.fields;
+    if (section === 'hotels') return `🏨 ${d[f.name]||''} (${d[f.location]||''}) — ${d[f.type]||''}, ${d[f.price]?'$'+d[f.price]+'/לילה':''}`;
+    if (section === 'attractions') return `🏄 ${d[f.name]||''} (${d[f.location]||''}) — ${d[f.domain]||''}`;
+    if (section === 'qna') return `❓ ${d[f.question]||''}\n   ✅ ${(d[f.answer]||'').slice(0,100)}...`;
+    if (section === 'drivers') return `🚗 ${d[f.driverName]||d[f.contact]||''} — ${d[f.phone]||''}`;
+    if (section === 'inquiries') return `📩 ${d[f.name]||''} — ${d[f.status]||''}`;
+  }).join('\n\n');
+
+  return `נמצאו ${filtered.length} תוצאות:\n\n${results}${filtered.length > 5 ? `\n\n...ועוד ${filtered.length-5}` : ''}`;
+}
+
+// ─── Sync Drivers to Neon ─────────────────────────────────
+async function syncDriversToNeon() {
+  const btn = document.getElementById('btn-sync-drivers');
+  const label = document.getElementById('sync-label');
+  const spinner = document.getElementById('sync-spinner');
+  btn.disabled = true; label.style.display = 'none'; spinner.style.display = 'inline-block';
+
+  try {
+    const res = await fetch('/api/sync/tbluqVYPy7ng3qKJB', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'שגיאה');
+
+    const jobId = data.jobId;
+    showToast('סנכרון התחיל... ממתין לסיום', 'ok');
+
+    // Poll until done
+    for (let i = 0; i < 60; i++) {
+      await new Promise(r => setTimeout(r, 2000));
+      const s = await fetch('/api/sync-status/' + jobId).then(r => r.json());
+      if (s.done) {
+        if (s.error) throw new Error(s.error);
+        showToast(`✅ סנכרון הושלם — ${s.synced} נהגים עודכנו ב-Neon`, 'ok');
+        break;
+      }
+      label.style.display = 'inline'; spinner.style.display = 'none';
+      label.textContent = `⏳ ${s.synced}/${s.total}`;
+      label.style.display = 'inline'; spinner.style.display = 'none';
+    }
+  } catch(e) {
+    showToast('שגיאת סנכרון: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false; spinner.style.display = 'none';
+    label.textContent = '🔄 סנכרן לNeon'; label.style.display = 'inline';
+  }
+}
+
+// ─── Conversations ────────────────────────────────────────
+async function loadConversations() {
+  const tbody = document.getElementById('tbody-conversations');
+  tbody.innerHTML = '<tr class="loading-row"><td colspan="3">טוען... <span class="spinner-inline"></span></td></tr>';
+  try {
+    const rows = await fetch('/api/conversations').then(r => r.json());
+    document.getElementById('nc-conversations').textContent = rows.length;
+    if (!rows.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="3">אין שיחות עדיין</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => {
+      const preview = (r.first_human_msg || '').slice(0, 60) + (r.first_human_msg?.length > 60 ? '…' : '');
+      const shortId = r.session_id.length > 20 ? r.session_id.slice(0, 20) + '…' : r.session_id;
+      return `<tr style="cursor:pointer" onclick="openConversation('${esc(r.session_id)}')">
+        <td dir="ltr" title="${esc(r.session_id)}" style="font-size:0.8rem;color:var(--muted)">${shortId}</td>
+        <td style="text-align:center"><span class="tag">${r.msg_count}</span></td>
+        <td style="max-width:300px">${preview || '–'}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="3">שגיאה: ${e.message}</td></tr>`;
+  }
+}
+
+async function openConversation(sessionId) {
+  document.getElementById('modal-title').textContent = '💬 שיחה';
+  document.getElementById('modal-body').innerHTML = '<div style="text-align:center;padding:24px"><span class="spinner-inline"></span></div>';
+  document.getElementById('btn-save-modal').style.display = 'none';
+  document.getElementById('modal-bg').classList.add('open');
+
+  try {
+    const msgs = await fetch('/api/conversations/' + encodeURIComponent(sessionId)).then(r => r.json());
+    const html = '<div class="conv-thread">' + msgs.map(m => {
+      const role = m.message?.type === 'human' ? 'human' : 'ai';
+      const label = role === 'human' ? 'משתמש' : 'בוט';
+      const content = (m.message?.content || '').replace(/</g,'&lt;');
+      return `<div class="conv-msg ${role}">
+        <span class="role-label">${label}</span>
+        <div class="bubble">${content}</div>
+      </div>`;
+    }).join('') + '</div>';
+    document.getElementById('modal-body').innerHTML = html;
+  } catch(e) {
+    document.getElementById('modal-body').innerHTML = `<p style="color:red">שגיאה: ${e.message}</p>`;
+  }
+}
+
+// ─── Start ────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

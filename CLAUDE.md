@@ -46,8 +46,8 @@ Neon PostgreSQL (pgvector)
     drivers(3072)                                   ← Gemini gemini-embedding-001
     n8n_chat_histories
     ▼
-n8n Travel Assistant (fYiguXcH5HThI1m7)
-    AI Agent (GPT-4o) + 4× vectorStorePGVector tools + memoryPostgresChat
+n8n Travel Assistant (4veLlcqXhyjLgRWh)
+    AI Agent (DeepSeek) + 4× vectorStorePGVector tools + memoryPostgresChat(n8n_chat_histories)
 ```
 
 ### server.js — The Admin Panel Backend
@@ -57,7 +57,7 @@ Express app deployed on Railway at `admin-panel-production-106f.up.railway.app`.
 **Key constants:**
 - `BASE_ID = 'appRQcniFTsieCxkl'` — Airtable base
 - `N8N = 'https://all-in-n8n.up.railway.app/webhook'` — n8n webhooks
-- `N8N_BOT_WORKFLOW = '4veLlcqXhyjLgRWh'` — test workflow (also used for addToolNode)
+- `N8N_BOT_WORKFLOW = '4veLlcqXhyjLgRWh'` — production travel bot (DeepSeek + Postgres memory); also used by `addToolNodeToWorkflow()`
 - `BUILTIN_NEON` — maps Airtable table IDs → Neon table names
 - `BUILTIN_MAP` — maps Airtable table IDs → payload formatter functions
 - `GEMINI_EMBED_TABLES` — subset of `BUILTIN_NEON` that use Gemini embedding instead of n8n's ingest path
@@ -89,13 +89,13 @@ Express app deployed on Railway at `admin-panel-production-106f.up.railway.app`.
 
 | ID | Name | Purpose |
 |----|------|---------|
-| `fYiguXcH5HThI1m7` | All In Sri Lanka — Travel Assistant | Production bot (GPT-4o + 4 search tools) |
+| `4veLlcqXhyjLgRWh` | test | **Production travel bot** (DeepSeek + Postgres memory + 4 search tools); chatTrigger webhookId: `cd147b7a-d9e9-4ca2-850b-9c38cfa45aa2` |
+| `fYiguXcH5HThI1m7` | All In Sri Lanka — Travel Assistant | Legacy GPT-4o bot — not in use |
 | `u85IKWjfSam7fgAr` | All In Sri Lanka — Data Ingestion | `ingest-record` webhook handler |
 | `pgaZHQ2eyN0xEDXy` | All In Admin — Read Records | Admin panel read queries |
 | `ki0qogTXTIYd0JBy` | All In Admin — Delete Record | Delete by ID |
 | `OTvufAVSyx1HLUJg` | All In Admin — Clear Table | TRUNCATE a table |
 | `hq9jfJtkBk8k7jDZ` | All In Admin — Create Neon Table | CREATE TABLE with pgvector |
-| `4veLlcqXhyjLgRWh` | test | Used by `addToolNodeToWorkflow()` to inject tool nodes |
 
 **n8n API access:**
 - Internal REST (`/rest/`): requires `n8n-auth` cookie obtained via `POST /rest/login` with email/password. Session expires in 7 days.
@@ -104,7 +104,13 @@ Express app deployed on Railway at `admin-panel-production-106f.up.railway.app`.
 
 ### Admin Panel (admin.html)
 
-Single-page app served as a static file. Reads/writes Airtable **directly** from the browser using the API key stored in `localStorage('at_key')`. The `server.js` Airtable proxy (`/api/airtable/:table/:id?`) is for server-side use only.
+Single-page app served as a static file. All data access goes through server REST API — no credentials in the browser.
+
+**Server endpoints used by admin.html:**
+- `GET/POST/PATCH/DELETE /api/airtable/:table/:id?` — Airtable proxy (server holds the API key)
+- `GET /api/conversations` — list all bot chat sessions (from `n8n_chat_histories`)
+- `GET /api/conversations/:sessionId` — full message thread for a session
+- `POST /api/sync/:tableId` + `GET /api/sync-status/:jobId` — sync Airtable → Neon
 
 The "🔄 סנכרן לNeon" button in the Drivers section calls `/api/sync/tbluqVYPy7ng3qKJB` and polls `/api/sync-status/:jobId` every 2 seconds.
 
@@ -122,8 +128,9 @@ Both must stay in sync when Airtable schema changes.
 
 | Variable | Used by |
 |----------|---------|
-| `AIRTABLE_API_KEY` | server.js — all Airtable API calls |
+| `AIRTABLE_API_KEY` | server.js — all Airtable API calls (proxied to browser via `/api/airtable`) |
 | `GOOGLE_API_KEY` | server.js — `embedWithGemini()` |
+| `NEON_DATABASE_URL` | server.js — `neonPool` (pg client) for `/api/conversations` |
 
 `.env` (local, not committed) contains `N8N_API_KEY` and `N8N_API_URL` for programmatic workflow updates.
 
