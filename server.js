@@ -446,4 +446,9 @@ app.get('/bot', (req, res) => {
 </html>`);
 });
 
-app.listen(PORT, () => console.log(`Admin panel [AIRTABLE PROXY] on port ${PORT}`));
+function createApp() { return app; }
+module.exports.createApp = createApp;
+
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`Admin panel [AIRTABLE PROXY] on port ${PORT}`));
+}

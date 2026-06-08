@@ -567,7 +567,7 @@ async function atFetch(path, opts = {}) {
 async function fetchAll(tableId) {
   let records = [], offset;
   do {
-    const url = tableId + '?pageSize=100' + (offset ? `&offset=${offset}` : '');
+    const url = tableId + '?pageSize=100&returnFieldsByFieldId=true' + (offset ? `&offset=${offset}` : '');
     const data = await atFetch(url);
     records = records.concat(data.records || []);
     offset = data.offset;
