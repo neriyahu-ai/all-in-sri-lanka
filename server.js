@@ -354,4 +354,43 @@ app.get('/api/conversations/:sessionId', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// ── Bot chat page (new session on every load) ─────────────────────
+app.get('/bot', (req, res) => {
+  const sessionId = require('crypto').randomUUID();
+  res.send(`<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All In Sri Lanka — Travel Bot</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" />
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body { display: flex; flex-direction: column; height: 100vh; background: #f5f5f5; }
+  </style>
+</head>
+<body>
+<script type="module">
+  import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+  createChat({
+    webhookUrl: 'https://all-in-n8n.up.railway.app/webhook/cd147b7a-d9e9-4ca2-850b-9c38cfa45aa2',
+    mode: 'fullscreen',
+    sessionId: '${sessionId}',
+    initialMessages: ['שלום! אני הבוט של All In Sri Lanka 🌴', 'במה אוכל לעזור?'],
+    i18n: {
+      he: {
+        title: 'All In Sri Lanka',
+        subtitle: 'שאל אותי כל שאלה על סרי לנקה',
+        inputPlaceholder: 'כתוב הודעה...',
+        getStarted: 'התחל שיחה',
+        closeButtonTooltip: 'סגור',
+      },
+    },
+    defaultLanguage: 'he',
+  });
+</script>
+</body>
+</html>`);
+});
+
 app.listen(PORT, () => console.log(`Admin panel [AIRTABLE PROXY] on port ${PORT}`));
