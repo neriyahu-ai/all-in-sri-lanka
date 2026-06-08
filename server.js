@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const { createRequire } = require('module');
@@ -363,31 +364,83 @@ app.get('/bot', (req, res) => {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>All In Sri Lanka — Travel Bot</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" />
   <style>
-    html, body { margin: 0; padding: 0; height: 100%; }
-    body { display: flex; flex-direction: column; height: 100vh; background: #f5f5f5; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; }
+    body { display: flex; flex-direction: column; height: 100vh; }
+    #header { background: linear-gradient(135deg, #1a6b3a, #2d9e5f); color: #fff; padding: 14px 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+    #header h1 { font-size: 1.2rem; font-weight: 600; }
+    #header p  { font-size: .8rem; opacity: .85; margin-top: 2px; }
+    #messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .msg { display: flex; align-items: flex-end; gap: 8px; max-width: 80%; }
+    .msg.user { align-self: flex-start; flex-direction: row-reverse; }
+    .msg.bot  { align-self: flex-end; }
+    .bubble { padding: 10px 14px; border-radius: 18px; line-height: 1.5; font-size: .95rem; white-space: pre-wrap; word-break: break-word; }
+    .msg.user .bubble { background: #1a6b3a; color: #fff; border-bottom-right-radius: 4px; }
+    .msg.bot  .bubble { background: #fff; color: #222; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    #typing { display: none; align-self: flex-end; }
+    .dots span { display: inline-block; width: 7px; height: 7px; background: #aaa; border-radius: 50%; margin: 0 2px; animation: bounce .9s infinite; }
+    .dots span:nth-child(2) { animation-delay: .15s; }
+    .dots span:nth-child(3) { animation-delay: .3s; }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+    #input-bar { display: flex; gap: 10px; padding: 12px 16px; background: #fff; border-top: 1px solid #e0e0e0; }
+    #input-bar textarea { flex: 1; resize: none; border: 1px solid #ccc; border-radius: 22px; padding: 10px 16px; font-size: .95rem; font-family: inherit; outline: none; line-height: 1.4; max-height: 120px; overflow-y: auto; direction: rtl; }
+    #input-bar textarea:focus { border-color: #2d9e5f; }
+    #input-bar button { width: 44px; height: 44px; border-radius: 50%; border: none; background: #1a6b3a; color: #fff; font-size: 1.2rem; cursor: pointer; flex-shrink: 0; transition: background .2s; }
+    #input-bar button:hover { background: #2d9e5f; }
+    #input-bar button:disabled { background: #ccc; cursor: default; }
   </style>
 </head>
 <body>
-<script type="module">
-  import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
-  createChat({
-    webhookUrl: 'https://all-in-n8n.up.railway.app/webhook/cd147b7a-d9e9-4ca2-850b-9c38cfa45aa2',
-    mode: 'fullscreen',
-    sessionId: '${sessionId}',
-    initialMessages: ['שלום! אני הבוט של All In Sri Lanka 🌴', 'במה אוכל לעזור?'],
-    i18n: {
-      he: {
-        title: 'All In Sri Lanka',
-        subtitle: 'שאל אותי כל שאלה על סרי לנקה',
-        inputPlaceholder: 'כתוב הודעה...',
-        getStarted: 'התחל שיחה',
-        closeButtonTooltip: 'סגור',
-      },
-    },
-    defaultLanguage: 'he',
-  });
+<div id="header"><h1>🌴 All In Sri Lanka</h1><p>שאל אותי כל שאלה על טיול בסרי לנקה</p></div>
+<div id="messages">
+  <div class="msg bot"><div class="avatar">🌴</div><div class="bubble">שלום! אני הבוט של All In Sri Lanka 😊<br>אשמח לעזור לך בתכנון הטיול — שאל אותי על מלונות, אטרקציות, נהגים או כל שאלה אחרת!</div></div>
+</div>
+<div class="msg bot" id="typing"><div class="avatar">🌴</div><div class="bubble"><div class="dots"><span></span><span></span><span></span></div></div></div>
+<div id="input-bar">
+  <textarea id="msg-input" rows="1" placeholder="כתוב הודעה..." onkeydown="handleKey(event)"></textarea>
+  <button id="send-btn" onclick="send()">&#10148;</button>
+</div>
+<script>
+  const SESSION_ID = '${sessionId}';
+  const WEBHOOK = 'https://all-in-n8n.up.railway.app/webhook/cd147b7a-d9e9-4ca2-850b-9c38cfa45aa2/chat';
+  const messages = document.getElementById('messages');
+  const typing = document.getElementById('typing');
+  const input = document.getElementById('msg-input');
+  const sendBtn = document.getElementById('send-btn');
+
+  function addMsg(text, role) {
+    const d = document.createElement('div');
+    d.className = 'msg ' + role;
+    d.innerHTML = '<div class="avatar">' + (role==='bot'?'🌴':'👤') + '</div><div class="bubble">' + text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\\n/g,'<br>') + '</div>';
+    messages.appendChild(d);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function handleKey(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
+
+  async function send() {
+    const text = input.value.trim();
+    if (!text || sendBtn.disabled) return;
+    input.value = ''; input.style.height = '';
+    addMsg(text, 'user');
+    sendBtn.disabled = true;
+    messages.appendChild(typing); typing.style.display = 'flex';
+    messages.scrollTop = messages.scrollHeight;
+    try {
+      const r = await fetch(WEBHOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'sendMessage', sessionId:SESSION_ID, chatInput:text}) });
+      const d = await r.json();
+      typing.style.display = 'none';
+      addMsg(d.output || 'שגיאה בתשובה', 'bot');
+    } catch(e) {
+      typing.style.display = 'none';
+      addMsg('שגיאה בחיבור לבוט. נסה שוב.', 'bot');
+    }
+    sendBtn.disabled = false; input.focus();
+  }
+
+  input.addEventListener('input', () => { input.style.height = ''; input.style.height = Math.min(input.scrollHeight,120)+'px'; });
 </script>
 </body>
 </html>`);
