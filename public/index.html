@@ -287,6 +287,23 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
 }
 .f-field textarea { resize: vertical; min-height: 70px; }
 
+/* New table modal */
+.info-box {
+  background: #fffbeb; border: 1px solid #f6e05e; border-radius: 10px;
+  padding: 12px 14px; font-size: 0.82rem; line-height: 1.5; color: #744210;
+}
+.field-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.field-row { display: flex; gap: 8px; align-items: center; }
+.field-row input { flex: 2; padding: 8px 11px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.85rem; }
+.field-row select { flex: 1.2; padding: 8px 11px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.85rem; background: var(--bg); }
+.btn-add-field {
+  background: none; border: 1.5px dashed var(--border); border-radius: 8px;
+  padding: 8px 14px; font-size: 0.82rem; cursor: pointer; color: var(--muted); width: 100%;
+}
+.btn-add-field:hover { border-color: var(--green); color: var(--green); }
+.btn-del-field { background: none; border: none; cursor: pointer; font-size: 1rem; color: #cbd5e0; padding: 4px; }
+.btn-del-field:hover { color: #e53e3e; }
+
 /* Toast */
 .toast {
   position: fixed; bottom: 24px; left: 24px;
@@ -354,6 +371,9 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
     </div>
     <nav>
       <div class="nav-section">תוכן</div>
+      <div class="nav-item" onclick="openNewTable()" style="border-bottom:1px solid rgba(255,255,255,0.06); margin-bottom:4px;">
+        <span class="icon">➕</span> הוסף טבלה
+      </div>
       <div class="nav-item active" onclick="showSection('hotels', this)">
         <span class="icon">🏨</span> מלונות <span class="count" id="nc-hotels">–</span>
       </div>
@@ -393,6 +413,12 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
     <div class="content">
       <!-- Hotels -->
       <div id="sec-hotels" class="section">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+          <button class="btn-primary" id="btn-sync-hotels" onclick="syncTableToNeon('hotels')" style="background:#2b6cb0;">
+            <span id="sync-label-hotels">🔄 סנכרן לNeon</span>
+            <span class="spinner-inline" id="sync-spinner-hotels" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+          </button>
+        </div>
         <div class="table-card">
           <table id="tbl-hotels">
             <thead>
@@ -408,6 +434,12 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
 
       <!-- Attractions -->
       <div id="sec-attractions" class="section" style="display:none;">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+          <button class="btn-primary" id="btn-sync-attractions" onclick="syncTableToNeon('attractions')" style="background:#2b6cb0;">
+            <span id="sync-label-attractions">🔄 סנכרן לNeon</span>
+            <span class="spinner-inline" id="sync-spinner-attractions" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+          </button>
+        </div>
         <div class="table-card">
           <table>
             <thead><tr><th>שם</th><th>תחום</th><th>מיקום</th><th>טלפון</th><th>מחיר כניסה</th><th>דירוג</th><th></th></tr></thead>
@@ -418,6 +450,12 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
 
       <!-- QnA -->
       <div id="sec-qna" class="section" style="display:none;">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+          <button class="btn-primary" id="btn-sync-qna" onclick="syncTableToNeon('qna')" style="background:#2b6cb0;">
+            <span id="sync-label-qna">🔄 סנכרן לNeon</span>
+            <span class="spinner-inline" id="sync-spinner-qna" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+          </button>
+        </div>
         <div class="table-card">
           <table>
             <thead><tr><th>נושא</th><th>שאלה</th><th>תשובה</th><th></th></tr></thead>
@@ -429,9 +467,9 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
       <!-- Drivers -->
       <div id="sec-drivers" class="section" style="display:none;">
         <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
-          <button class="btn-primary" id="btn-sync-drivers" onclick="syncDriversToNeon()" style="background:#2b6cb0;">
-            <span id="sync-label">🔄 סנכרן לNeon</span>
-            <span class="spinner-inline" id="sync-spinner" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+          <button class="btn-primary" id="btn-sync-drivers" onclick="syncTableToNeon('drivers')" style="background:#2b6cb0;">
+            <span id="sync-label-drivers">🔄 סנכרן לNeon</span>
+            <span class="spinner-inline" id="sync-spinner-drivers" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
         <div class="table-card">
@@ -501,6 +539,49 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- New Table Modal -->
+<div class="modal-bg" id="modal-tbl" onclick="if(event.target===this)closeTblModal()">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <h3>➕ טבלה חדשה</h3>
+      <button class="btn-close" onclick="closeTblModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
+        <div class="f-field" style="grid-column:1/-1;">
+          <label>שם הטבלה (לתצוגה) <span class="req">*</span></label>
+          <input id="nt-name" placeholder="למשל: חדרי צ&#39;ופר, מסעדות...">
+        </div>
+        <div class="f-field">
+          <label>שם ב-Neon (אנגלית, לבוט) <span class="req">*</span></label>
+          <input id="nt-neon" dir="ltr" placeholder="chalets" oninput="sanitizeNeon()">
+        </div>
+        <div class="f-field">
+          <label>אייקון</label>
+          <input id="nt-icon" placeholder="🏕️" style="font-size:1.3rem;text-align:center">
+        </div>
+      </div>
+
+      <div class="f-field" style="margin-bottom:8px;">
+        <label>שדות הטבלה <span class="req">*</span></label>
+      </div>
+      <div id="nt-field-list" class="field-list"></div>
+      <button class="btn-add-field" onclick="addFieldRow()">+ הוסף שדה</button>
+
+      <div class="info-box" style="margin-top:16px;">
+        💡 הטבלה תיווצר ב-Airtable ובמסד Neon. לאחר מכן תוכל להוסיף רשומות ולסנכרן לבוט.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeTblModal()">ביטול</button>
+      <button class="btn-primary" id="btn-create-tbl" onclick="createTable()">
+        <span id="create-lbl">צור טבלה</span>
+        <span class="spinner-inline" id="create-spin" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+      </button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ─── Config ───────────────────────────────────────────────
@@ -961,20 +1042,27 @@ async function aiAnswer(q) {
   return `נמצאו ${filtered.length} תוצאות:\n\n${results}${filtered.length > 5 ? `\n\n...ועוד ${filtered.length-5}` : ''}`;
 }
 
-// ─── Sync Drivers to Neon ─────────────────────────────────
-async function syncDriversToNeon() {
-  const btn = document.getElementById('btn-sync-drivers');
-  const label = document.getElementById('sync-label');
-  const spinner = document.getElementById('sync-spinner');
+// ─── Sync Table to Neon ───────────────────────────────────
+const SYNC_LABELS = { hotels:'מלונות', attractions:'אטרקציות', qna:'שאלות ותשובות', drivers:'נהגים' };
+
+async function syncTableToNeon(name) {
+  const btn = document.getElementById('btn-sync-' + name);
+  const label = document.getElementById('sync-label-' + name);
+  const spinner = document.getElementById('sync-spinner-' + name);
   btn.disabled = true; label.style.display = 'none'; spinner.style.display = 'inline-block';
 
   try {
-    const res = await fetch('/api/sync/tbluqVYPy7ng3qKJB', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+    const tableId = TABLES[name];
+    if (!tableId) throw new Error('מזהה טבלה לא ידוע');
+
+    const res = await fetch('/api/sync/' + tableId, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'שגיאה');
 
     const jobId = data.jobId;
     showToast('סנכרון התחיל... ממתין לסיום', 'ok');
+
+    const heName = SYNC_LABELS[name] || name;
 
     // Poll until done
     for (let i = 0; i < 60; i++) {
@@ -982,7 +1070,7 @@ async function syncDriversToNeon() {
       const s = await fetch('/api/sync-status/' + jobId).then(r => r.json());
       if (s.done) {
         if (s.error) throw new Error(s.error);
-        showToast(`✅ סנכרון הושלם — ${s.synced} נהגים עודכנו ב-Neon`, 'ok');
+        showToast(`✅ סנכרון הושלם — ${s.synced} ${heName} עודכנו ב-Neon`, 'ok');
         break;
       }
       label.style.display = 'inline'; spinner.style.display = 'none';
@@ -994,6 +1082,81 @@ async function syncDriversToNeon() {
   } finally {
     btn.disabled = false; spinner.style.display = 'none';
     label.textContent = '🔄 סנכרן לNeon'; label.style.display = 'inline';
+  }
+}
+
+// ─── New Table Modal ──────────────────────────────────────
+let fieldRowId = 0;
+
+function openNewTable() {
+  document.getElementById('nt-name').value = '';
+  document.getElementById('nt-neon').value = '';
+  document.getElementById('nt-icon').value = '';
+  document.getElementById('nt-field-list').innerHTML = '';
+  fieldRowId = 0;
+  addFieldRow('שם', 'singleLineText');
+  addFieldRow('תיאור', 'multilineText');
+  document.getElementById('modal-tbl').classList.add('open');
+}
+
+function closeTblModal() { document.getElementById('modal-tbl').classList.remove('open'); }
+
+function addFieldRow(name='', type='singleLineText') {
+  const id = ++fieldRowId;
+  const types = [
+    ['singleLineText','טקסט קצר'],['multilineText','טקסט ארוך'],
+    ['number','מספר'],['singleSelect','בחירה יחידה'],['date','תאריך'],
+  ];
+  const opts = types.map(([v,l]) => `<option value="${v}" ${v===type?'selected':''}>${l}</option>`).join('');
+  const row = document.createElement('div');
+  row.className = 'field-row';
+  row.id = 'fr-' + id;
+  row.innerHTML = `<input placeholder="שם השדה" value="${esc(name)}"><select>${opts}</select>
+    <button class="btn-del-field" onclick="document.getElementById('fr-${id}').remove()">✕</button>`;
+  document.getElementById('nt-field-list').appendChild(row);
+}
+
+function sanitizeNeon() {
+  const el = document.getElementById('nt-neon');
+  el.value = el.value.toLowerCase().replace(/[^a-z0-9_]/g,'_').replace(/^[0-9]/,'t$&');
+}
+
+async function createTable() {
+  const name = document.getElementById('nt-name').value.trim();
+  const neonName = document.getElementById('nt-neon').value.trim();
+  const icon = document.getElementById('nt-icon').value.trim() || '📋';
+
+  if (!name || !neonName) return showToast('יש למלא שם ושם Neon', 'err');
+
+  const rows = document.querySelectorAll('#nt-field-list .field-row');
+  const fields = [];
+  for (const row of rows) {
+    const n = row.querySelector('input').value.trim();
+    const t = row.querySelector('select').value;
+    if (n) fields.push({ name: n, type: t });
+  }
+  if (!fields.length) return showToast('יש להוסיף לפחות שדה אחד', 'err');
+
+  const btn = document.getElementById('btn-create-tbl');
+  const lbl = document.getElementById('create-lbl');
+  const spin = document.getElementById('create-spin');
+  btn.disabled = true; lbl.style.display = 'none'; spin.style.display = 'inline-block';
+
+  try {
+    const res = await fetch('/api/tables', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, neonName, fields }),
+    });
+    const d = await res.json();
+    if (!d.success) throw new Error(d.error || 'נכשל');
+
+    showToast(`✅ טבלה "${name}" נוצרה!`, 'ok');
+    closeTblModal();
+  } catch(e) {
+    showToast('שגיאה: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false; lbl.style.display = ''; spin.style.display = 'none';
   }
 }
 
