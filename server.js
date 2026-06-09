@@ -214,14 +214,14 @@ app.post('/api/sync/:tableId', async (req, res) => {
         syncStatus[jobId].synced += Math.min(BATCH, payloads.length - i);
       }
 
-      syncStatus[jobId].done = true;
-
       // 5. Add search tool node to n8n workflow (custom tables + Gemini-embedded builtins)
       if (!BUILTIN_NEON[tableId] || GEMINI_EMBED_TABLES.has(tableId)) {
         await addToolNodeToWorkflow(neonTable).catch(e =>
           console.error('addToolNode failed:', e.message)
         );
       }
+
+      syncStatus[jobId].done = true;
     } catch (e) {
       syncStatus[jobId].done = true;
       syncStatus[jobId].error = e.message;
@@ -355,6 +355,44 @@ app.get('/api/conversations/:sessionId', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// ── Bot chat API — server owns Neon persistence ──────────────────
+const N8N_CHAT = 'https://all-in-n8n.up.railway.app/webhook/cd147b7a-d9e9-4ca2-850b-9c38cfa45aa2/chat';
+
+app.post('/api/bot/chat', async (req, res) => {
+  const { sessionId, message } = req.body || {};
+  if (!sessionId || typeof sessionId !== 'string') return res.status(400).json({ error: 'sessionId required' });
+  if (!message   || typeof message   !== 'string') return res.status(400).json({ error: 'message required' });
+
+  try {
+    // 1. Save human message to Neon immediately
+    await neonPool.query(
+      'INSERT INTO n8n_chat_histories (session_id, message) VALUES ($1, $2)',
+      [sessionId, JSON.stringify({ type: 'human', content: message })]
+    );
+
+    // 2. Call n8n — it reads context from Neon via Postgres memory node
+    const n8nRes = await fetch(N8N_CHAT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'sendMessage', sessionId, chatInput: message }),
+    });
+    const n8nData = await n8nRes.json();
+    const output = n8nData.output || '';
+
+    // 3. Save AI response to Neon (server guarantees persistence regardless of n8n memory)
+    if (output) {
+      await neonPool.query(
+        'INSERT INTO n8n_chat_histories (session_id, message) VALUES ($1, $2)',
+        [sessionId, JSON.stringify({ type: 'ai', content: output })]
+      );
+    }
+
+    res.json({ output });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ── Bot chat page (new session on every load) ─────────────────────
 app.get('/bot', (req, res) => {
   const sessionId = require('crypto').randomUUID();
@@ -404,7 +442,7 @@ app.get('/bot', (req, res) => {
 </div>
 <script>
   const SESSION_ID = '${sessionId}';
-  const WEBHOOK = 'https://all-in-n8n.up.railway.app/webhook/cd147b7a-d9e9-4ca2-850b-9c38cfa45aa2/chat';
+  const WEBHOOK = '/api/bot/chat';
   const messages = document.getElementById('messages');
   const typing = document.getElementById('typing');
   const input = document.getElementById('msg-input');
@@ -429,7 +467,7 @@ app.get('/bot', (req, res) => {
     messages.appendChild(typing); typing.style.display = 'flex';
     messages.scrollTop = messages.scrollHeight;
     try {
-      const r = await fetch(WEBHOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'sendMessage', sessionId:SESSION_ID, chatInput:text}) });
+      const r = await fetch(WEBHOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({sessionId:SESSION_ID, message:text}) });
       const d = await r.json();
       typing.style.display = 'none';
       addMsg(d.output || 'שגיאה בתשובה', 'bot');
