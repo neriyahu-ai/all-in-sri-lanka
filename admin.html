@@ -1045,6 +1045,13 @@ async function aiAnswer(q) {
 // ─── Sync Table to Neon ───────────────────────────────────
 const SYNC_LABELS = { hotels:'מלונות', attractions:'אטרקציות', qna:'שאלות ותשובות', drivers:'נהגים' };
 
+function neonNameFor(name) {
+  const tableId = TABLES[name];
+  if (!tableId) return null;
+  const custom = JSON.parse(localStorage.getItem('custom_tables') || '{}');
+  return custom[tableId]?.neon || null;
+}
+
 async function syncTableToNeon(name) {
   const btn = document.getElementById('btn-sync-' + name);
   const label = document.getElementById('sync-label-' + name);
@@ -1055,7 +1062,15 @@ async function syncTableToNeon(name) {
     const tableId = TABLES[name];
     if (!tableId) throw new Error('מזהה טבלה לא ידוע');
 
-    const res = await fetch('/api/sync/' + tableId, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+    const body = {};
+    const customNeon = neonNameFor(name);
+    if (customNeon) body.neonTable = customNeon;
+
+    const res = await fetch('/api/sync/' + tableId, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: Object.keys(body).length ? JSON.stringify(body) : undefined,
+    });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'שגיאה');
 
@@ -1150,6 +1165,11 @@ async function createTable() {
     });
     const d = await res.json();
     if (!d.success) throw new Error(d.error || 'נכשל');
+
+    // Save icon + neon mapping for sync
+    const custom = JSON.parse(localStorage.getItem('custom_tables') || '{}');
+    custom[d.airtableId] = { icon, neon: neonName };
+    localStorage.setItem('custom_tables', JSON.stringify(custom));
 
     showToast(`✅ טבלה "${name}" נוצרה!`, 'ok');
     closeTblModal();

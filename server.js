@@ -38,6 +38,10 @@ const BUILTIN_NEON = {
 // Tables that use Gemini embedding (vector 3072) instead of n8n ingest-record
 const GEMINI_EMBED_TABLES = new Set(['tbluqVYPy7ng3qKJB']);
 
+// Custom table registry: airtableId → neonTable name (in-memory, resets on restart)
+// Persisted when POST /api/tables creates a new table
+const customTableRegistry = {};
+
 // Field ID → ingest payload key for built-in tables
 const BUILTIN_MAP = {
   tbl81JyV8LSgrcJtr: f => ({ type:'hotels', name:f['fldBx8qZR7IwaXL5n']||'', place_name:f['fldNSi5FmXtVjXMdC']||'', contact_name:f['flddt1mtCe8SyqLeT']||'', phone:f['fld2d8WgxmABllAm5']||'', location:f['fldtjA9doG2MDQCEl']||'', wifi:f['fldCkClyE9mKMmRcP']||'', description:f['fldysYK1Zcx7TwyLO']||'', price:f['fldS6keLJdoarzqSo']||'', rating:f['fldoLnFs1AYm7mJpL']||'' }),
@@ -80,6 +84,15 @@ app.get('/api/tables', async (req, res) => {
       neonTable: BUILTIN_NEON[t.id] || null,
       fields: (t.fields || []).map(f => ({ id: f.id, name: f.name, type: f.type, options: f.options })),
     }));
+
+    // Merge custom table mappings persisted by the create-table endpoint
+    if (typeof customTableRegistry === 'object') {
+      for (const t of tables) {
+        if (!t.neonTable && customTableRegistry[t.id]) {
+          t.neonTable = customTableRegistry[t.id];
+        }
+      }
+    }
     res.json(tables);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -116,6 +129,7 @@ app.post('/api/tables', async (req, res) => {
     });
     const neonData = await neonRes.json();
 
+    customTableRegistry[atData.id] = neonName;
     res.json({ success: true, airtableId: atData.id, neonTable: neonName, created: neonData.created });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
