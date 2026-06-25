@@ -405,6 +405,17 @@ const STAGING_FIELD_LABELS = {
   ],
 };
 
+function safeTruncate(v, maxLen) {
+  let s = String(v).slice(0, maxLen || 200);
+  // Remove incomplete surrogate pair at the boundary
+  const last = s.length - 1;
+  if (last >= 0) {
+    const code = s.charCodeAt(last);
+    if (code >= 0xD800 && code <= 0xDBFF) s = s.slice(0, -1);
+  }
+  return s;
+}
+
 // ── Sync staging Airtable → staging Neon ─────────────────────────
 app.post('/api/sync-staging/:type', async (req, res) => {
   const { type } = req.params;
@@ -443,14 +454,14 @@ app.post('/api/sync-staging/:type', async (req, res) => {
           const val = f[fid];
           if (val == null || val === '') continue;
           if (label === 'source') {
-            parts.push(`source: ${String(val).slice(0, 200)}`);
+            parts.push(`source: ${safeTruncate(val)}`);
             continue;
           }
           parts.push(`${label}: ${val}`);
           meta[label] = val;
         }
         const src = sourceFid ? f[sourceFid] : '';
-        if (src) meta.source_chat = String(src).slice(0, 200);
+        if (src) meta.source_chat = safeTruncate(src);
         meta.source = neonTable;
         return { text: parts.join(' | '), metadata: meta };
       });
