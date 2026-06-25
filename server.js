@@ -497,6 +497,134 @@ app.post('/api/sync-staging/:type', async (req, res) => {
   })();
 });
 
+// ── Production table mappings for approve flow ────────────────────
+const PROD_TABLES = {
+  hotels: 'tbl81JyV8LSgrcJtr',
+  attractions: 'tblwQrQEphUK8PphM',
+  drivers: 'tbluqVYPy7ng3qKJB',
+  qa: 'tblfKu8Xgja3ObS5F',
+};
+
+const PROD_NEON = {
+  hotels: 'hotels',
+  attractions: 'attractions',
+  drivers: 'drivers',
+  qa: 'qna',
+};
+
+const STAGING_TO_PROD_FIELD = {
+  hotels: {
+    'fldFVVJ258ujY4zgZ': 'fldNSi5FmXtVjXMdC',
+    'fld0iwt6sFarAP9m7': 'fldtjA9doG2MDQCEl',
+    'fldNZLObOvG7SlX2y': 'fldS6keLJdoarzqSo',
+    'fldt6onSC78ypVVcd': 'fld2d8WgxmABllAm5',
+    'fldLYWCfNBziV7NBd': 'fldysYK1Zcx7TwyLO',
+  },
+  attractions: {
+    'fldzXo1rodgcqqIum': 'fldWyHNf8irp0WHy6',
+    'fldOTPCq0BYMJCWc6': 'fldSZQv3JRHXo3Heu',
+    'flddHNOhT0g0eHMF0': 'fld2lh3OcwXz6Xi4a',
+    'fldqSZAzoTO492qOF': 'fld0yJdQ5cUn83L65',
+    'fldE2jojQUzu4bpaQ': 'fldRE421H2Gpv06Tm',
+  },
+  drivers: {
+    'fldJrKXIq4dQoyzGp': 'fldsmpfSH4LlTJdcG',
+    'fldrxC249eaOBeMug': 'fld51YqHfIl41rcB8',
+    'fldoJF99Kd39xcUwe': 'fldCEVqSt3gTwj4v3',
+  },
+  qa: {
+    'fldwexDGfxkuuNiL7': 'fldOhEDpWC2jekXq3',
+    'flduKSkhJ2FtXwasr': 'fld4nFuEZPdTALZGG',
+    'fldywtYrmPGXP3vD2': 'fldk6dZ8zSEvEcaZn',
+  },
+};
+
+// ── Approve selected staging records → production ─────────────────
+app.post('/api/approve/:type', async (req, res) => {
+  const { type } = req.params;
+  const { recordIds } = req.body || {};
+  if (!Array.isArray(recordIds) || !recordIds.length)
+    return res.status(400).json({ error: 'recordIds array required' });
+
+  const prodTable = PROD_TABLES[type];
+  const neonTable = PROD_NEON[type];
+  const fieldMap = STAGING_TO_PROD_FIELD[type];
+  const stagingTableId = STAGING_TABLES[type];
+  const labels = STAGING_FIELD_LABELS[type];
+  if (!prodTable || !neonTable || !fieldMap || !stagingTableId || !labels)
+    return res.status(400).json({ error: 'Unknown type: ' + type });
+
+  const results = { approved: 0, errors: [] };
+
+  for (const recordId of recordIds) {
+    try {
+      // 1. Fetch from staging Airtable
+      const r = await fetch(`https://api.airtable.com/v0/${STAGING_BASE}/${stagingTableId}/${recordId}?returnFieldsByFieldId=true`,
+        { headers: { 'Authorization': `Bearer ${AT_KEY}` } });
+      if (!r.ok) { results.errors.push({ recordId, error: `Staging fetch failed: ${r.status}` }); continue; }
+      const rec = (await r.json());
+      const f = rec.fields || {};
+
+      // 2. Map fields to production field IDs
+      const prodFields = {};
+      for (const [stagFid, prodFid] of Object.entries(fieldMap)) {
+        const val = f[stagFid];
+        if (val != null && val !== '') prodFields[prodFid] = val;
+      }
+
+      // 3. Create in production Airtable
+      const p = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${prodTable}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${AT_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: prodFields }),
+      });
+      if (!p.ok) {
+        const errBody = await p.json().catch(() => ({}));
+        results.errors.push({ recordId, error: `Prod Airtable create failed: ${JSON.stringify(errBody)}` });
+        continue;
+      }
+
+      // 4. Build text + metadata for production Neon
+      const sourceFid = labels.find(([_, l]) => l === 'source')?.[0];
+      const parts = [];
+      const meta = {};
+      for (const [fid, label] of labels) {
+        const val = f[fid];
+        if (val == null || val === '') continue;
+        if (label === 'source') { parts.push(`source: ${safeTruncate(val, 300)}`); continue; }
+        parts.push(`${label}: ${val}`);
+        meta[label] = val;
+      }
+      const src = sourceFid ? f[sourceFid] : '';
+      if (src) meta.source_chat = safeTruncate(src, 300);
+      meta.source = neonTable;
+
+      // 5. Insert into production Neon (no embedding — bot will embed at query time)
+      const client = await neonPool.connect();
+      try {
+        await client.query(
+          `INSERT INTO ${neonTable} (text, metadata) VALUES ($1, $2)`,
+          [parts.join(' | '), JSON.stringify(meta)]
+        );
+      } finally {
+        client.release();
+      }
+
+      // 6. Delete from staging Airtable
+      await fetch(`https://api.airtable.com/v0/${STAGING_BASE}/${stagingTableId}/${recordId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${AT_KEY}` },
+      });
+
+      results.approved++;
+    } catch (e) {
+      results.errors.push({ recordId, error: e.message });
+    }
+  }
+
+  res.json(results);
+});
+
 // ── Conversations: list sessions ──────────────────────────────────
 app.get('/api/conversations', async (req, res) => {
   try {

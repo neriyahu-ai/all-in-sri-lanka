@@ -73,6 +73,15 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
   color: rgba(255,255,255,0.35);
 }
 .nav-subitem { padding-right: 24px !important; font-size: 0.85rem; }
+.approve-bar {
+  position: sticky; top: 0; z-index: 10;
+  background: #2b6cb0; color: #fff; padding: 10px 16px; border-radius: 8px;
+  display: none; align-items: center; justify-content: space-between;
+  margin-bottom: 12px; font-weight: 600;
+}
+.approve-bar .count { font-size: 1.1rem; }
+.approve-bar button { background: #fff; color: #2b6cb0; border: none; padding: 6px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.approve-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Main */
 .main { margin-right: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
@@ -522,10 +531,14 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
             <span class="spinner-inline" id="sync-staging-spinner-hotels" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
+        <div class="approve-bar" id="ab-staging-hotels">
+          <span class="count" id="abc-staging-hotels">0 נבחרו</span>
+          <button onclick="approveSelected('hotels')" id="abtn-staging-hotels">✅ אשר מסומנות</button>
+        </div>
         <div class="table-card">
           <table>
-            <thead><tr><th>שם</th><th>מיקום</th><th>טווח מחירים</th><th>טלפון</th><th>הערות</th><th></th></tr></thead>
-            <tbody id="tbody-staging-hotels"><tr class="loading-row"><td colspan="6">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+            <thead><tr><th style="width:32px"><input type="checkbox" onchange="toggleAll(this,'staging-hotels')"></th><th>שם</th><th>מיקום</th><th>טווח מחירים</th><th>טלפון</th><th>הערות</th><th></th></tr></thead>
+            <tbody id="tbody-staging-hotels"><tr class="loading-row"><td colspan="7">טוען... <span class="spinner-inline"></span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -538,10 +551,14 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
             <span class="spinner-inline" id="sync-staging-spinner-attractions" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
+        <div class="approve-bar" id="ab-staging-attractions">
+          <span class="count" id="abc-staging-attractions">0 נבחרו</span>
+          <button onclick="approveSelected('attractions')" id="abtn-staging-attractions">✅ אשר מסומנות</button>
+        </div>
         <div class="table-card">
           <table>
-            <thead><tr><th>שם</th><th>מיקום</th><th>סוג</th><th>מחיר</th><th>הערות</th><th></th></tr></thead>
-            <tbody id="tbody-staging-attractions"><tr class="loading-row"><td colspan="6">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+            <thead><tr><th style="width:32px"><input type="checkbox" onchange="toggleAll(this,'staging-attractions')"></th><th>שם</th><th>מיקום</th><th>סוג</th><th>מחיר</th><th>הערות</th><th></th></tr></thead>
+            <tbody id="tbody-staging-attractions"><tr class="loading-row"><td colspan="7">טוען... <span class="spinner-inline"></span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -554,10 +571,14 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
             <span class="spinner-inline" id="sync-staging-spinner-qa" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
+        <div class="approve-bar" id="ab-staging-qa">
+          <span class="count" id="abc-staging-qa">0 נבחרו</span>
+          <button onclick="approveSelected('qa')" id="abtn-staging-qa">✅ אשר מסומנות</button>
+        </div>
         <div class="table-card">
           <table>
-            <thead><tr><th>נושא</th><th>שאלה</th><th>תשובה</th><th></th></tr></thead>
-            <tbody id="tbody-staging-qa"><tr class="loading-row"><td colspan="4">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+            <thead><tr><th style="width:32px"><input type="checkbox" onchange="toggleAll(this,'staging-qa')"></th><th>נושא</th><th>שאלה</th><th>תשובה</th><th></th></tr></thead>
+            <tbody id="tbody-staging-qa"><tr class="loading-row"><td colspan="5">טוען... <span class="spinner-inline"></span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -570,10 +591,14 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
             <span class="spinner-inline" id="sync-staging-spinner-drivers" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
+        <div class="approve-bar" id="ab-staging-drivers">
+          <span class="count" id="abc-staging-drivers">0 נבחרו</span>
+          <button onclick="approveSelected('drivers')" id="abtn-staging-drivers">✅ אשר מסומנות</button>
+        </div>
         <div class="table-card">
           <table>
-            <thead><tr><th>שם</th><th>טלפון</th><th>מיקום</th><th>הערות</th><th></th></tr></thead>
-            <tbody id="tbody-staging-drivers"><tr class="loading-row"><td colspan="5">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+            <thead><tr><th style="width:32px"><input type="checkbox" onchange="toggleAll(this,'staging-drivers')"></th><th>שם</th><th>טלפון</th><th>מיקום</th><th>הערות</th><th></th></tr></thead>
+            <tbody id="tbody-staging-drivers"><tr class="loading-row"><td colspan="6">טוען... <span class="spinner-inline"></span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -864,6 +889,7 @@ function renderTable(name, recs) {
         <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${d[f.notes]||''}">${d[f.notes]||'–'}</td>`;
     } else if (name === 'staging-hotels') {
       cells = `
+        <td><input type="checkbox" class="staging-cb" value="${id}" onchange="updateApproveBar('${name}')"></td>
         <td><strong>${d[f.name]||'–'}</strong></td>
         <td>${d[f.location]||'–'}</td>
         <td>${d[f.price]||'–'}</td>
@@ -871,6 +897,7 @@ function renderTable(name, recs) {
         <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${d[f.notes]||'–'}</td>`;
     } else if (name === 'staging-attractions') {
       cells = `
+        <td><input type="checkbox" class="staging-cb" value="${id}" onchange="updateApproveBar('${name}')"></td>
         <td><strong>${d[f.name]||'–'}</strong></td>
         <td>${d[f.location]||'–'}</td>
         <td>${d[f.subtype]||'–'}</td>
@@ -880,11 +907,13 @@ function renderTable(name, recs) {
       const q = d[f.question]||'';
       const a = d[f.answer]||'';
       cells = `
+        <td><input type="checkbox" class="staging-cb" value="${id}" onchange="updateApproveBar('${name}')"></td>
         <td><span class="tag yellow">${d[f.topic]||'–'}</span></td>
         <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${q}">${q}</td>
         <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#718096;" title="${a}">${a}</td>`;
     } else if (name === 'staging-drivers') {
       cells = `
+        <td><input type="checkbox" class="staging-cb" value="${id}" onchange="updateApproveBar('${name}')"></td>
         <td><strong>${d[f.name]||'–'}</strong></td>
         <td dir="ltr">${d[f.phone]||'–'}</td>
         <td>${d[f.location]||'–'}</td>
@@ -1468,6 +1497,58 @@ async function syncStagingToProduction(type) {
   } finally {
     btn.disabled = false; spinner.style.display = 'none';
     label.textContent = '🔄 סנכרן לNeon'; label.style.display = 'inline';
+  }
+}
+
+// ─── Approve Selected ────────────────────────────────────
+function updateApproveBar(name) {
+  const cbs = document.querySelectorAll('#tbody-' + name + ' .staging-cb:checked');
+  const bar = document.getElementById('ab-' + name);
+  const count = document.getElementById('abc-' + name);
+  if (cbs.length) {
+    bar.style.display = 'flex';
+    count.textContent = cbs.length + ' נבחרו';
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function toggleAll(master, name) {
+  document.querySelectorAll('#tbody-' + name + ' .staging-cb').forEach(cb => cb.checked = master.checked);
+  updateApproveBar(name);
+}
+
+async function approveSelected(type) {
+  const name = 'staging-' + type;
+  const cbs = document.querySelectorAll('#tbody-' + name + ' .staging-cb:checked');
+  const ids = [...cbs].map(cb => cb.value);
+  if (!ids.length) return;
+
+  const btn = document.getElementById('abtn-' + name);
+  btn.disabled = true; btn.textContent = '⏳ מאשר...';
+
+  try {
+    const res = await fetch('/api/approve/' + type, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recordIds: ids }),
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error || 'שגיאה');
+    if (d.errors?.length) {
+      showToast('✅ ' + d.approved + ' אושרו, ❌ ' + d.errors.length + ' נכשלו', d.errors.length ? 'err' : 'ok');
+      console.error('Approve errors:', d.errors);
+    } else {
+      showToast('✅ ' + d.approved + ' רשומות אושרו והועברו להפקה', 'ok');
+    }
+    // Reload the section
+    allRecords[name] = null;
+    loadSection(name);
+    document.getElementById('ab-' + name).style.display = 'none';
+  } catch(e) {
+    showToast('שגיאה: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '✅ אשר מסומנות';
   }
 }
 
