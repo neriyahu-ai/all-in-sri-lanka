@@ -584,33 +584,40 @@ app.post('/api/approve/:type', async (req, res) => {
         continue;
       }
 
-      // 4. Build text + metadata for production Neon
-      const sourceFid = labels.find(([_, l]) => l === 'source')?.[0];
-      const parts = [];
-      const meta = {};
-      for (const [fid, label] of labels) {
-        const val = f[fid];
-        if (val == null || val === '') continue;
-        if (label === 'source') { parts.push(`source: ${safeTruncate(val, 300)}`); continue; }
-        parts.push(`${label}: ${val}`);
-        meta[label] = val;
-      }
-      const src = sourceFid ? f[sourceFid] : '';
-      if (src) meta.source_chat = safeTruncate(src, 300);
-      meta.source = neonTable;
+      // 4. Send to n8n ingest-record for embedding
+      const prodCreated = await p.json();
+      const prodRecordId = prodCreated.id;
+      const formatter = BUILTIN_MAP[prodTable];
+      const useGemini = GEMINI_EMBED_TABLES.has(prodTable);
 
-      // 5. Insert into production Neon (no embedding — bot will embed at query time)
-      const client = await neonPool.connect();
-      try {
-        await client.query(
-          `INSERT INTO ${neonTable} (text, metadata) VALUES ($1, $2)`,
-          [parts.join(' | '), JSON.stringify(meta)]
-        );
-      } finally {
-        client.release();
+      if (formatter) {
+        const prodFetch = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${prodTable}/${prodRecordId}?returnFieldsByFieldId=true`,
+          { headers: { 'Authorization': `Bearer ${AT_KEY}` } });
+        if (prodFetch.ok) {
+          const prodData = await prodFetch.json();
+          const prodFields = prodData.fields || {};
+          const ingestPayload = formatter(prodFields);
+
+          if (useGemini) {
+            const rawText = buildGeminiText(ingestPayload, neonTable);
+            const meta = { source: neonTable };
+            const vec = await embedWithGemini(rawText);
+            await fetch(`${N8N}/ingest-record`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: neonTable, _embedding: vec, _rawText: rawText, _metadata: meta }),
+            });
+          } else {
+            await fetch(`${N8N}/ingest-record`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(ingestPayload),
+            });
+          }
+        }
       }
 
-      // 6. Delete from staging Airtable
+      // 5. Delete from staging Airtable
       await fetch(`https://api.airtable.com/v0/${STAGING_BASE}/${stagingTableId}/${recordId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${AT_KEY}` },
