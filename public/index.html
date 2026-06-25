@@ -518,7 +518,7 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
       <div id="sec-staging-hotels" class="section" style="display:none;">
         <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
           <button class="btn-primary" onclick="syncStagingToProduction('hotels')" style="background:#c05621;">
-            <span id="sync-staging-label-hotels">⬆️ אשר והעבר להפקה</span>
+            <span id="sync-staging-label-hotels">🔄 סנכרן לNeon</span>
             <span class="spinner-inline" id="sync-staging-spinner-hotels" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
@@ -534,7 +534,7 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
       <div id="sec-staging-attractions" class="section" style="display:none;">
         <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
           <button class="btn-primary" onclick="syncStagingToProduction('attractions')" style="background:#c05621;">
-            <span id="sync-staging-label-attractions">⬆️ אשר והעבר להפקה</span>
+            <span id="sync-staging-label-attractions">🔄 סנכרן לNeon</span>
             <span class="spinner-inline" id="sync-staging-spinner-attractions" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
@@ -550,7 +550,7 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
       <div id="sec-staging-qa" class="section" style="display:none;">
         <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
           <button class="btn-primary" onclick="syncStagingToProduction('qa')" style="background:#c05621;">
-            <span id="sync-staging-label-qa">⬆️ אשר והעבר להפקה</span>
+            <span id="sync-staging-label-qa">🔄 סנכרן לNeon</span>
             <span class="spinner-inline" id="sync-staging-spinner-qa" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
@@ -566,7 +566,7 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
       <div id="sec-staging-drivers" class="section" style="display:none;">
         <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
           <button class="btn-primary" onclick="syncStagingToProduction('drivers')" style="background:#c05621;">
-            <span id="sync-staging-label-drivers">⬆️ אשר והעבר להפקה</span>
+            <span id="sync-staging-label-drivers">🔄 סנכרן לNeon</span>
             <span class="spinner-inline" id="sync-staging-spinner-drivers" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
@@ -1467,7 +1467,7 @@ async function syncStagingToProduction(type) {
     showToast('שגיאה: ' + e.message, 'err');
   } finally {
     btn.disabled = false; spinner.style.display = 'none';
-    label.textContent = '⬆️ אשר והעבר להפקה'; label.style.display = 'inline';
+    label.textContent = '🔄 סנכרן לNeon'; label.style.display = 'inline';
   }
 }
 
