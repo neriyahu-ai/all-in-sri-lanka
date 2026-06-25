@@ -363,49 +363,56 @@ const STAGING_TABLES = {
   qa: 'tblzN9BOc4ifOJSa2',
 };
 
-const STAGING_PROD_TABLE = {
-  hotels: 'tbl81JyV8LSgrcJtr',
-  attractions: 'tblwQrQEphUK8PphM',
-  drivers: 'tbluqVYPy7ng3qKJB',
-  qa: 'tblfKu8Xgja3ObS5F',
+// ── Staging Neon table names ──────────────────────────────────────
+const STAGING_NEON = {
+  hotels: 'hotels_v3',
+  attractions: 'attractions_v3',
+  drivers: 'drivers_v3',
+  qa: 'qa_v3',
 };
 
-const STAGING_FIELD_MAP = {
-  hotels: {
-    'fldFVVJ258ujY4zgZ': 'fldNSi5FmXtVjXMdC',  // name
-    'fld0iwt6sFarAP9m7': 'fldtjA9doG2MDQCEl',  // location
-    'fldNZLObOvG7SlX2y': 'fldS6keLJdoarzqSo',  // price_range
-    'fldt6onSC78ypVVcd': 'fld2d8WgxmABllAm5',  // phone
-    'fldLYWCfNBziV7NBd': 'fldysYK1Zcx7TwyLO',  // notes
-  },
-  attractions: {
-    'fldzXo1rodgcqqIum': 'fldWyHNf8irp0WHy6',  // name
-    'fldOTPCq0BYMJCWc6': 'fldSZQv3JRHXo3Heu',  // location
-    'flddHNOhT0g0eHMF0': 'fld2lh3OcwXz6Xi4a',   // subtype
-    'fldqSZAzoTO492qOF': 'fld0yJdQ5cUn83L65',  // price
-    'fldE2jojQUzu4bpaQ': 'fldRE421H2Gpv06Tm',  // notes
-  },
-  drivers: {
-    'fldJrKXIq4dQoyzGp': 'fldsmpfSH4LlTJdcG',  // name
-    'fldrxC249eaOBeMug': 'fld51YqHfIl41rcB8',  // phone
-    'fldoJF99Kd39xcUwe': 'fldCEVqSt3gTwj4v3',  // notes
-  },
-  qa: {
-    'fldwexDGfxkuuNiL7': 'fldOhEDpWC2jekXq3',  // topic
-    'flduKSkhJ2FtXwasr': 'fld4nFuEZPdTALZGG',  // question
-    'fldywtYrmPGXP3vD2': 'fldk6dZ8zSEvEcaZn',  // answer
-  },
+// Staging field IDs → human-readable labels for building text
+const STAGING_FIELD_LABELS = {
+  hotels: [
+    ['fldFVVJ258ujY4zgZ', 'name'],
+    ['fld0iwt6sFarAP9m7', 'location'],
+    ['fldNZLObOvG7SlX2y', 'price_range'],
+    ['fldt6onSC78ypVVcd', 'phone'],
+    ['fldLYWCfNBziV7NBd', 'notes'],
+    ['fldHkrl6kpEGJjylU', 'source'],
+  ],
+  attractions: [
+    ['fldzXo1rodgcqqIum', 'name'],
+    ['fldOTPCq0BYMJCWc6', 'location'],
+    ['flddHNOhT0g0eHMF0', 'subtype'],
+    ['fldqSZAzoTO492qOF', 'price'],
+    ['fldE2jojQUzu4bpaQ', 'notes'],
+    ['fldLKZ6DmWYAWIuXU', 'source'],
+  ],
+  drivers: [
+    ['fldJrKXIq4dQoyzGp', 'name'],
+    ['fldrxC249eaOBeMug', 'phone'],
+    ['fldJ0reuUJWiEumfC', 'location'],
+    ['fldew7aJfMLvPBj9m', 'price_notes'],
+    ['fldoJF99Kd39xcUwe', 'notes'],
+    ['fldlaQgGrWSOLU1dk', 'source'],
+  ],
+  qa: [
+    ['flduKSkhJ2FtXwasr', 'question'],
+    ['fldywtYrmPGXP3vD2', 'answer'],
+    ['fldwexDGfxkuuNiL7', 'topic'],
+    ['fldvDEeCRateACCYB', 'source'],
+  ],
 };
 
-// ── Sync staging → Production ────────────────────────────────────
+// ── Sync staging Airtable → staging Neon ─────────────────────────
 app.post('/api/sync-staging/:type', async (req, res) => {
   const { type } = req.params;
-  const prodTableId = STAGING_PROD_TABLE[type];
   const stagingTableId = STAGING_TABLES[type];
-  const fieldMap = STAGING_FIELD_MAP[type];
-  if (!prodTableId || !stagingTableId || !fieldMap) return res.status(400).json({ error: 'Unknown type: ' + type });
+  const neonTable = STAGING_NEON[type];
+  const labels = STAGING_FIELD_LABELS[type];
+  if (!stagingTableId || !neonTable || !labels) return res.status(400).json({ error: 'Unknown type: ' + type });
 
-  const limit = req.body?.limit || 0;
   const jobId = Date.now().toString();
   syncStatus[jobId] = { done: false, synced: 0, total: 0, error: null };
   res.json({ started: true, jobId });
@@ -425,33 +432,47 @@ app.post('/api/sync-staging/:type', async (req, res) => {
       } while (offset);
 
       syncStatus[jobId].total = records.length;
-      const toSync = limit > 0 ? records.slice(0, limit) : records;
 
-      for (const rec of toSync) {
-        const stagingF = rec.fields || {};
-        const prodFields = {};
-        for (const [stagingKey, prodFieldId] of Object.entries(fieldMap)) {
-          const val = stagingF[stagingKey];
-          if (val != null && val !== '') prodFields[prodFieldId] = val;
-        }
-        try {
-          const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${prodTableId}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${AT_KEY}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fields: prodFields }),
-          });
-          if (!r.ok) {
-            const errBody = await r.json().catch(() => ({}));
-            console.error('Sync staging→prod failed:', type, errBody);
+      // Build text + metadata for each record
+      const sourceFid = labels.find(([_, l]) => l === 'source')?.[0];
+      const rows = records.map(rec => {
+        const f = rec.fields || {};
+        const parts = [];
+        const meta = {};
+        for (const [fid, label] of labels) {
+          const val = f[fid];
+          if (val == null || val === '') continue;
+          if (label === 'source') {
+            parts.push(`source: ${String(val).slice(0, 200)}`);
+            continue;
           }
-        } catch (e) {
-          console.error('Sync staging→prod error:', type, e.message);
+          parts.push(`${label}: ${val}`);
+          meta[label] = val;
         }
-        syncStatus[jobId].synced++;
+        const src = sourceFid ? f[sourceFid] : '';
+        if (src) meta.source_chat = String(src).slice(0, 200);
+        meta.source = neonTable;
+        return { text: parts.join(' | '), metadata: meta };
+      });
+
+      // Truncate + bulk insert
+      const client = await neonPool.connect();
+      try {
+        await client.query(`TRUNCATE TABLE ${neonTable}`);
+        for (const row of rows) {
+          await client.query(
+            `INSERT INTO ${neonTable} (text, metadata) VALUES ($1, $2)`,
+            [row.text, JSON.stringify(row.metadata)]
+          );
+        }
+      } finally {
+        client.release();
       }
 
+      syncStatus[jobId].synced = rows.length;
       syncStatus[jobId].done = true;
     } catch (e) {
+      console.error('Staging sync error:', e);
       syncStatus[jobId].done = true;
       syncStatus[jobId].error = e.message;
     }
