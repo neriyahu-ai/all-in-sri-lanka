@@ -455,15 +455,20 @@ app.post('/api/sync-staging/:type', async (req, res) => {
         return { text: parts.join(' | '), metadata: meta };
       });
 
-      // Truncate + bulk insert
+      // Truncate + bulk insert (batched)
       const client = await neonPool.connect();
       try {
         await client.query(`TRUNCATE TABLE ${neonTable}`);
-        for (const row of rows) {
+        const BATCH = 500;
+        for (let i = 0; i < rows.length; i += BATCH) {
+          const batch = rows.slice(i, i + BATCH);
+          const vals = batch.flatMap(r => [r.text, JSON.stringify(r.metadata)]);
+          const placeholders = batch.map((_, j) => `($${j * 2 + 1}, $${j * 2 + 2})`).join(',');
           await client.query(
-            `INSERT INTO ${neonTable} (text, metadata) VALUES ($1, $2)`,
-            [row.text, JSON.stringify(row.metadata)]
+            `INSERT INTO ${neonTable} (text, metadata) VALUES ${placeholders}`,
+            vals
           );
+          syncStatus[jobId].synced = Math.min(i + BATCH, rows.length);
         }
       } finally {
         client.release();
@@ -476,6 +481,8 @@ app.post('/api/sync-staging/:type', async (req, res) => {
       syncStatus[jobId].done = true;
       syncStatus[jobId].error = e.message;
     }
+    // Clean up old status entries after 5 min
+    setTimeout(() => delete syncStatus[jobId], 300000);
   })();
 });
 
