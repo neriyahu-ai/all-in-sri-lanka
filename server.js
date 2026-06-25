@@ -37,7 +37,7 @@ const BUILTIN_NEON = {
 };
 
 // Tables that use Gemini embedding (vector 3072) instead of n8n ingest-record
-const GEMINI_EMBED_TABLES = new Set(['tbluqVYPy7ng3qKJB']);
+const GEMINI_EMBED_TABLES = new Set([]);
 
 // Custom table registry: airtableId → neonTable name (in-memory, resets on restart)
 // Persisted when POST /api/tables creates a new table
