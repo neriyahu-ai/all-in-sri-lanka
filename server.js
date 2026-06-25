@@ -371,10 +371,30 @@ const STAGING_PROD_TABLE = {
 };
 
 const STAGING_FIELD_MAP = {
-  hotels: { name: 'fldNSi5FmXtVjXMdC', location: 'fldtjA9doG2MDQCEl', price_range: 'fldS6keLJdoarzqSo', phone: 'fld2d8WgxmABllAm5', notes: 'fldysYK1Zcx7TwyLO' },
-  attractions: { name: 'fldWyHNf8irp0WHy6', location: 'fldSZQv3JRHXo3Heu', subtype: 'fld2lh3OcwXz6Xi4a', price: 'fld0yJdQ5cUn83L65', notes: 'fldRE421H2Gpv06Tm' },
-  drivers: { name: 'fldsmpfSH4LlTJdcG', phone: 'fld51YqHfIl41rcB8', notes: 'fldCEVqSt3gTwj4v3' },
-  qa: { question: 'fld4nFuEZPdTALZGG', answer: 'fldk6dZ8zSEvEcaZn', topic: 'fldOhEDpWC2jekXq3' },
+  hotels: {
+    'fldFVVJ258ujY4zgZ': 'fldNSi5FmXtVjXMdC',  // name
+    'fld0iwt6sFarAP9m7': 'fldtjA9doG2MDQCEl',  // location
+    'fldNZLObOvG7SlX2y': 'fldS6keLJdoarzqSo',  // price_range
+    'fldt6onSC78ypVVcd': 'fld2d8WgxmABllAm5',  // phone
+    'fldLYWCfNBziV7NBd': 'fldysYK1Zcx7TwyLO',  // notes
+  },
+  attractions: {
+    'fldzXo1rodgcqqIum': 'fldWyHNf8irp0WHy6',  // name
+    'fldOTPCq0BYMJCWc6': 'fldSZQv3JRHXo3Heu',  // location
+    'flddHNOhT0g0eHMF0': 'fld2lh3OcwXz6Xi4a',   // subtype
+    'fldqSZAzoTO492qOF': 'fld0yJdQ5cUn83L65',  // price
+    'fldE2jojQUzu4bpaQ': 'fldRE421H2Gpv06Tm',  // notes
+  },
+  drivers: {
+    'fldJrKXIq4dQoyzGp': 'fldsmpfSH4LlTJdcG',  // name
+    'fldrxC249eaOBeMug': 'fld51YqHfIl41rcB8',  // phone
+    'fldoJF99Kd39xcUwe': 'fldCEVqSt3gTwj4v3',  // notes
+  },
+  qa: {
+    'fldwexDGfxkuuNiL7': 'fldOhEDpWC2jekXq3',  // topic
+    'flduKSkhJ2FtXwasr': 'fld4nFuEZPdTALZGG',  // question
+    'fldywtYrmPGXP3vD2': 'fldk6dZ8zSEvEcaZn',  // answer
+  },
 };
 
 // ── Sync staging → Production ────────────────────────────────────
@@ -395,7 +415,7 @@ app.post('/api/sync-staging/:type', async (req, res) => {
       // Read from staging Airtable
       let records = [], offset;
       do {
-        const qs = 'pageSize=100' + (offset ? '&offset=' + offset : '');
+        const qs = 'pageSize=100&returnFieldsByFieldId=true' + (offset ? '&offset=' + offset : '');
         const r = await fetch(`https://api.airtable.com/v0/${STAGING_BASE}/${stagingTableId}?${qs}`,
           { headers: { 'Authorization': `Bearer ${AT_KEY}` } });
         if (!r.ok) throw new Error('Staging fetch failed: ' + r.status);

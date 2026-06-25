@@ -572,8 +572,8 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
         </div>
         <div class="table-card">
           <table>
-            <thead><tr><th>שם</th><th>טלפון</th><th>הערות</th><th></th></tr></thead>
-            <tbody id="tbody-staging-drivers"><tr class="loading-row"><td colspan="4">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+            <thead><tr><th>שם</th><th>טלפון</th><th>מיקום</th><th>הערות</th><th></th></tr></thead>
+            <tbody id="tbody-staging-drivers"><tr class="loading-row"><td colspan="5">טוען... <span class="spinner-inline"></span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -719,22 +719,22 @@ const STAGING_TABLES = {
 
 const STAGING_FIELDS = {
   'staging-hotels': {
-    name: 'fldNSi5FmXtVjXMdC', location: 'fldtjA9doG2MDQCEl',
-    price: 'fldS6keLJdoarzqSo', phone: 'fld2d8WgxmABllAm5',
-    notes: 'fldysYK1Zcx7TwyLO'
+    name: 'fldFVVJ258ujY4zgZ', location: 'fld0iwt6sFarAP9m7',
+    price: 'fldNZLObOvG7SlX2y', phone: 'fldt6onSC78ypVVcd',
+    notes: 'fldLYWCfNBziV7NBd'
   },
   'staging-attractions': {
-    name: 'fldWyHNf8irp0WHy6', location: 'fldSZQv3JRHXo3Heu',
-    subtype: 'fld2lh3OcwXz6Xi4a', price: 'fld0yJdQ5cUn83L65',
-    notes: 'fldRE421H2Gpv06Tm'
+    name: 'fldzXo1rodgcqqIum', location: 'fldOTPCq0BYMJCWc6',
+    subtype: 'flddHNOhT0g0eHMF0', price: 'fldqSZAzoTO492qOF',
+    notes: 'fldE2jojQUzu4bpaQ'
   },
   'staging-qa': {
-    topic: 'fldOhEDpWC2jekXq3', question: 'fld4nFuEZPdTALZGG',
-    answer: 'fldk6dZ8zSEvEcaZn'
+    topic: 'fldwexDGfxkuuNiL7', question: 'flduKSkhJ2FtXwasr',
+    answer: 'fldywtYrmPGXP3vD2'
   },
   'staging-drivers': {
-    name: 'fldsmpfSH4LlTJdcG', phone: 'fld51YqHfIl41rcB8',
-    notes: 'fldCEVqSt3gTwj4v3'
+    name: 'fldJrKXIq4dQoyzGp', phone: 'fldrxC249eaOBeMug',
+    location: 'fldJ0reuUJWiEumfC', notes: 'fldoJF99Kd39xcUwe'
   },
 };
 
@@ -887,6 +887,7 @@ function renderTable(name, recs) {
       cells = `
         <td><strong>${d[f.name]||'–'}</strong></td>
         <td dir="ltr">${d[f.phone]||'–'}</td>
+        <td>${d[f.location]||'–'}</td>
         <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${d[f.notes]||'–'}</td>`;
     } else if (name === 'inquiries') {
       const status = d[f.status]||'חדש';
