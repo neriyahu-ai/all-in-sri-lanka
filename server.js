@@ -139,11 +139,11 @@ app.post('/api/tables', async (req, res) => {
     const atData = await atRes.json();
     if (!atRes.ok) return res.status(atRes.status).json({ error: atData.error?.message || 'Airtable error' });
 
-    // Create in Neon — custom tables use gemini-embedding-001 (3072-dim)
+    // Create in Neon — custom tables use OpenAI ada-002 (1536-dim)
     const neonRes = await fetch(`${N8N}/admin-create-table`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tableName: neonName, dimensions: 3072 }),
+      body: JSON.stringify({ tableName: neonName, dimensions: 1536 }),
     });
     const neonData = await neonRes.json();
 
@@ -214,8 +214,7 @@ app.post('/api/sync/:tableId', async (req, res) => {
       }
 
       // 4. Re-ingest in batches of 5
-      const isCustom = !BUILTIN_NEON[tableId];
-      const useGemini = isCustom || GEMINI_EMBED_TABLES.has(tableId);
+      const useGemini = GEMINI_EMBED_TABLES.has(tableId);
       const payloads = records.map(r => resolvedMapper(r.fields));
       const BATCH = 5;
       for (let i = 0; i < payloads.length; i += BATCH) {
@@ -246,8 +245,8 @@ app.post('/api/sync/:tableId', async (req, res) => {
         syncStatus[jobId].synced += Math.min(BATCH, payloads.length - i);
       }
 
-      // 5. Add search tool node to n8n workflow (custom tables + Gemini-embedded builtins)
-      if (!BUILTIN_NEON[tableId] || GEMINI_EMBED_TABLES.has(tableId)) {
+      // 5. Add search tool node to n8n workflow (custom tables only — builtins already have tools)
+      if (!BUILTIN_NEON[tableId]) {
         await addToolNodeToWorkflow(neonTable).catch(e =>
           console.error('addToolNode failed:', e.message)
         );
@@ -294,7 +293,7 @@ async function embedWithGemini(text) {
   return d.embedding.values; // float[]
 }
 
-// ── Add vectorStorePGVector + Gemini embeddings node to n8n workflow ─
+// ── Add vectorStorePGVector + OpenAI embeddings node to n8n workflow ─
 const N8N_BOT_WORKFLOW = '4veLlcqXhyjLgRWh';
 const N8N_INTERNAL = 'https://all-in-n8n.up.railway.app/rest';
 
@@ -322,7 +321,7 @@ async function addToolNodeToWorkflow(neonTable) {
 
   // Build new nodes
   const vectorNode = utils.buildVectorToolNode(toolName, neonTable);
-  const embedNode  = utils.buildGeminiEmbeddingsNode(toolName);
+  const embedNode  = utils.buildOpenAiEmbeddingsNode(toolName);
 
   const agentName = wf.nodes.find(n => n.type.includes('agent'))?.name || 'AI Agent';
 
