@@ -72,6 +72,7 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
   font-size: 0.75rem;
   color: rgba(255,255,255,0.35);
 }
+.nav-subitem { padding-right: 24px !important; font-size: 0.85rem; }
 
 /* Main */
 .main { margin-right: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
@@ -389,6 +390,19 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
       <div class="nav-item" onclick="showSection('inquiries', this)">
         <span class="icon">📩</span> פניות <span class="count" id="nc-inquiries">–</span>
       </div>
+      <div class="nav-section" style="margin-top:8px;">טבלאות לאישור</div>
+      <div class="nav-item nav-subitem" onclick="showSection('staging-hotels', this)">
+        <span class="icon">🏨</span> מלונות <span class="count" id="nc-staging-hotels">–</span>
+      </div>
+      <div class="nav-item nav-subitem" onclick="showSection('staging-attractions', this)">
+        <span class="icon">🏄</span> אטרקציות <span class="count" id="nc-staging-attractions">–</span>
+      </div>
+      <div class="nav-item nav-subitem" onclick="showSection('staging-qa', this)">
+        <span class="icon">💬</span> שאלות-תשובות <span class="count" id="nc-staging-qa">–</span>
+      </div>
+      <div class="nav-item nav-subitem" onclick="showSection('staging-drivers', this)">
+        <span class="icon">🚗</span> נהגים <span class="count" id="nc-staging-drivers">–</span>
+      </div>
       <div class="nav-section" style="margin-top:8px;">כלים</div>
       <div class="nav-item" onclick="showSection('conversations', this)">
         <span class="icon">💬</span> שיחות <span class="count" id="nc-conversations">–</span>
@@ -496,6 +510,70 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
           <table>
             <thead><tr><th>Session ID</th><th>הודעות</th><th>פתיחה</th></tr></thead>
             <tbody id="tbody-conversations"><tr class="loading-row"><td colspan="3">לחץ על "שיחות" לטעינה</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Staging Hotels -->
+      <div id="sec-staging-hotels" class="section" style="display:none;">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
+          <button class="btn-primary" onclick="syncStagingToProduction('hotels')" style="background:#c05621;">
+            <span id="sync-staging-label-hotels">⬆️ אשר והעבר להפקה</span>
+            <span class="spinner-inline" id="sync-staging-spinner-hotels" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+          </button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>שם</th><th>מיקום</th><th>טווח מחירים</th><th>טלפון</th><th>הערות</th><th></th></tr></thead>
+            <tbody id="tbody-staging-hotels"><tr class="loading-row"><td colspan="6">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Staging Attractions -->
+      <div id="sec-staging-attractions" class="section" style="display:none;">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
+          <button class="btn-primary" onclick="syncStagingToProduction('attractions')" style="background:#c05621;">
+            <span id="sync-staging-label-attractions">⬆️ אשר והעבר להפקה</span>
+            <span class="spinner-inline" id="sync-staging-spinner-attractions" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+          </button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>שם</th><th>מיקום</th><th>סוג</th><th>מחיר</th><th>הערות</th><th></th></tr></thead>
+            <tbody id="tbody-staging-attractions"><tr class="loading-row"><td colspan="6">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Staging QA -->
+      <div id="sec-staging-qa" class="section" style="display:none;">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
+          <button class="btn-primary" onclick="syncStagingToProduction('qa')" style="background:#c05621;">
+            <span id="sync-staging-label-qa">⬆️ אשר והעבר להפקה</span>
+            <span class="spinner-inline" id="sync-staging-spinner-qa" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+          </button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>נושא</th><th>שאלה</th><th>תשובה</th><th></th></tr></thead>
+            <tbody id="tbody-staging-qa"><tr class="loading-row"><td colspan="4">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Staging Drivers -->
+      <div id="sec-staging-drivers" class="section" style="display:none;">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
+          <button class="btn-primary" onclick="syncStagingToProduction('drivers')" style="background:#c05621;">
+            <span id="sync-staging-label-drivers">⬆️ אשר והעבר להפקה</span>
+            <span class="spinner-inline" id="sync-staging-spinner-drivers" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+          </button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>שם</th><th>טלפון</th><th>הערות</th><th></th></tr></thead>
+            <tbody id="tbody-staging-drivers"><tr class="loading-row"><td colspan="4">טוען... <span class="spinner-inline"></span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -632,6 +710,36 @@ function init() {
   loadSection('hotels');
 }
 
+const STAGING_TABLES = {
+  'staging-hotels':      'tbley8ucQErKnVC2d',
+  'staging-attractions': 'tblyvTjMtywW6RQuM',
+  'staging-qa':          'tblzN9BOc4ifOJSa2',
+  'staging-drivers':     'tbl54Wol8O0DDg3f7',
+};
+
+const STAGING_FIELDS = {
+  'staging-hotels': {
+    name: 'fldNSi5FmXtVjXMdC', location: 'fldtjA9doG2MDQCEl',
+    price: 'fldS6keLJdoarzqSo', phone: 'fld2d8WgxmABllAm5',
+    notes: 'fldysYK1Zcx7TwyLO'
+  },
+  'staging-attractions': {
+    name: 'fldWyHNf8irp0WHy6', location: 'fldSZQv3JRHXo3Heu',
+    subtype: 'fld2lh3OcwXz6Xi4a', price: 'fld0yJdQ5cUn83L65',
+    notes: 'fldRE421H2Gpv06Tm'
+  },
+  'staging-qa': {
+    topic: 'fldOhEDpWC2jekXq3', question: 'fld4nFuEZPdTALZGG',
+    answer: 'fldk6dZ8zSEvEcaZn'
+  },
+  'staging-drivers': {
+    name: 'fldsmpfSH4LlTJdcG', phone: 'fld51YqHfIl41rcB8',
+    notes: 'fldCEVqSt3gTwj4v3'
+  },
+};
+
+const SECTION_TYPE = name => name.startsWith('staging-') ? 'staging' : 'prod';
+
 // ─── API ──────────────────────────────────────────────────
 async function atFetch(path, opts = {}) {
   const res = await fetch(`/api/airtable/${path}`, {
@@ -645,11 +753,24 @@ async function atFetch(path, opts = {}) {
   return res.json();
 }
 
-async function fetchAll(tableId) {
+async function stagingFetch(path, opts = {}) {
+  const res = await fetch(`/api/staging/${path}`, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) }
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function fetchAll(tableId, type = 'prod') {
   let records = [], offset;
+  const fetcher = type === 'staging' ? stagingFetch : atFetch;
   do {
     const url = tableId + '?pageSize=100&returnFieldsByFieldId=true' + (offset ? `&offset=${offset}` : '');
-    const data = await atFetch(url);
+    const data = await fetcher(url);
     records = records.concat(data.records || []);
     offset = data.offset;
   } while (offset);
@@ -664,9 +785,10 @@ function showSection(name, el) {
   el.classList.add('active');
   currentSection = name;
 
-  const titles = { hotels:'מלונות', attractions:'אטרקציות', qna:'שאלות-תשובות', drivers:'נהגים', inquiries:'פניות', conversations:'שיחות', ai:'סוכן AI' };
+  const titles = { hotels:'מלונות', attractions:'אטרקציות', qna:'שאלות-תשובות', drivers:'נהגים', inquiries:'פניות', conversations:'שיחות', ai:'סוכן AI',
+    'staging-hotels':'מלונות (לאישור)', 'staging-attractions':'אטרקציות (לאישור)', 'staging-qa':'שאלות-תשובות (לאישור)', 'staging-drivers':'נהגים (לאישור)' };
   document.getElementById('section-title').textContent = titles[name] || name;
-  const noBar = name === 'ai' || name === 'conversations';
+  const noBar = name === 'ai' || name === 'conversations' || SECTION_TYPE(name) === 'staging';
   document.getElementById('btn-add-main').style.display = noBar ? 'none' : '';
   document.getElementById('search-input').parentElement.style.display = noBar ? 'none' : '';
 
@@ -676,9 +798,16 @@ function showSection(name, el) {
 
 async function loadSection(name) {
   if (name === 'ai') return;
-  const tid = TABLES[name];
+  const type = SECTION_TYPE(name);
+  const tables = type === 'staging' ? STAGING_TABLES : TABLES;
+  const tid = tables[name];
+  if (!tid) {
+    document.getElementById('nc-' + name).textContent = '0';
+    document.getElementById('tbody-' + name).innerHTML = '<tr class="empty-row"><td colspan="9">אין רשומות</td></tr>';
+    return;
+  }
   try {
-    const recs = await fetchAll(tid);
+    const recs = await fetchAll(tid, type);
     allRecords[name] = recs;
     renderTable(name, recs);
     document.getElementById('nc-' + name).textContent = recs.length;
@@ -693,7 +822,8 @@ function renderTable(name, recs) {
   if (!tbody) return;
   if (!recs.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="9">אין רשומות</td></tr>'; return; }
 
-  const f = FIELDS[name];
+  const isStaging = SECTION_TYPE(name) === 'staging';
+  const f = isStaging ? STAGING_FIELDS[name] : FIELDS[name];
   const rows = recs.map(r => {
     const d = r.fields;
     const id = r.id;
@@ -732,6 +862,32 @@ function renderTable(name, recs) {
         <td>${langs}</td>
         <td>${d[f.rating] ? '⭐'.repeat(d[f.rating]) : '–'}</td>
         <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${d[f.notes]||''}">${d[f.notes]||'–'}</td>`;
+    } else if (name === 'staging-hotels') {
+      cells = `
+        <td><strong>${d[f.name]||'–'}</strong></td>
+        <td>${d[f.location]||'–'}</td>
+        <td>${d[f.price]||'–'}</td>
+        <td dir="ltr">${d[f.phone]||'–'}</td>
+        <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${d[f.notes]||'–'}</td>`;
+    } else if (name === 'staging-attractions') {
+      cells = `
+        <td><strong>${d[f.name]||'–'}</strong></td>
+        <td>${d[f.location]||'–'}</td>
+        <td>${d[f.subtype]||'–'}</td>
+        <td>${d[f.price]||'–'}</td>
+        <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${d[f.notes]||'–'}</td>`;
+    } else if (name === 'staging-qa') {
+      const q = d[f.question]||'';
+      const a = d[f.answer]||'';
+      cells = `
+        <td><span class="tag yellow">${d[f.topic]||'–'}</span></td>
+        <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${q}">${q}</td>
+        <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#718096;" title="${a}">${a}</td>`;
+    } else if (name === 'staging-drivers') {
+      cells = `
+        <td><strong>${d[f.name]||'–'}</strong></td>
+        <td dir="ltr">${d[f.phone]||'–'}</td>
+        <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${d[f.notes]||'–'}</td>`;
     } else if (name === 'inquiries') {
       const status = d[f.status]||'חדש';
       const cls = {חדש:'red', 'בטיפול':'yellow', 'טופל':'green'}[status]||'';
@@ -853,11 +1009,35 @@ function openEditModal(name, id) {
   const rec = (allRecords[name]||[]).find(r => r.id === id);
   if (!rec) return;
   editingId = id;
-  const f = FIELDS[name];
+  const isStaging = SECTION_TYPE(name) === 'staging';
+  const f = isStaging ? STAGING_FIELDS[name] : FIELDS[name];
   const d = {};
   for (const [key, fid] of Object.entries(f)) d[key] = rec.fields[fid];
+
+  if (isStaging) {
+    const baseName = name.replace('staging-', '');
+    const labels = { hotels: { name:'שם', location:'מיקום', price:'טווח מחירים', phone:'טלפון', notes:'הערות' },
+      attractions: { name:'שם', location:'מיקום', subtype:'סוג', price:'מחיר', notes:'הערות' },
+      drivers: { name:'שם', phone:'טלפון', notes:'הערות' },
+      qa: { topic:'נושא', question:'שאלה', answer:'תשובה' } };
+    const lbl = labels[baseName] || {};
+    const formFields = Object.entries(f).map(([key, fid]) => {
+      const val = esc(d[key]);
+      const isTextarea = key === 'notes' || key === 'answer' || key === 'question';
+      return `<div class="f-field full"><label>${lbl[key]||key}</label>
+        ${isTextarea ? `<textarea id="mf-${key}" style="min-height:60px">${val}</textarea>` : `<input id="mf-${key}" value="${val}">`}</div>`;
+    }).join('');
+    document.getElementById('modal-title').textContent = '✏️ עריכה (' + (lbl.name || baseName) + ')';
+    document.getElementById('modal-body').innerHTML = `<div class="f-grid">${formFields}</div>`;
+    document.getElementById('modal-bg').classList.add('open');
+    return;
+  }
+
+  const f2 = FIELDS[name];
+  const d2 = {};
+  for (const [key, fid2] of Object.entries(f2)) d2[key] = rec.fields[fid2];
   document.getElementById('modal-title').textContent = '✏️ עריכה';
-  document.getElementById('modal-body').innerHTML = FORMS[name](d);
+  document.getElementById('modal-body').innerHTML = FORMS[name](d2);
   document.getElementById('modal-bg').classList.add('open');
 }
 
@@ -919,6 +1099,27 @@ async function saveModal() {
   btn.disabled = true; label.style.display = 'none'; spin.style.display = 'inline-block';
 
   try {
+    const isStaging = SECTION_TYPE(currentSection) === 'staging';
+    if (isStaging) {
+      const tables = STAGING_TABLES;
+      const f = STAGING_FIELDS[currentSection];
+      const tid = tables[currentSection];
+      const fields = {};
+      for (const key of Object.keys(f)) {
+        const el = document.getElementById('mf-' + key);
+        if (el && el.value.trim()) fields[key] = el.value.trim();
+      }
+      const fetcher = stagingFetch;
+      if (editingId) {
+        await fetcher(tid + '/' + editingId, { method: 'PATCH', body: JSON.stringify({ fields }) });
+        showToast('עודכן בהצלחה ✓', 'ok');
+      }
+      closeModal();
+      allRecords[currentSection] = null;
+      loadSection(currentSection);
+      return;
+    }
+
     const fields = getModalFields();
     const tid = TABLES[currentSection];
 
@@ -943,7 +1144,10 @@ async function saveModal() {
 async function deleteRecord(name, id) {
   if (!confirm('למחוק את הרשומה הזאת?')) return;
   try {
-    await atFetch(TABLES[name] + '/' + id, { method: 'DELETE' });
+    const isStaging = SECTION_TYPE(name) === 'staging';
+    const tables = isStaging ? STAGING_TABLES : TABLES;
+    const fetcher = isStaging ? stagingFetch : atFetch;
+    await fetcher(tables[name] + '/' + id, { method: 'DELETE' });
     showToast('נמחק', 'ok');
     allRecords[name] = null;
     loadSection(name);
@@ -1225,6 +1429,44 @@ async function openConversation(sessionId) {
     document.getElementById('modal-body').innerHTML = html;
   } catch(e) {
     document.getElementById('modal-body').innerHTML = `<p style="color:red">שגיאה: ${e.message}</p>`;
+  }
+}
+
+// ─── Sync Staging → Production ────────────────────────────
+async function syncStagingToProduction(type) {
+  const label = document.getElementById('sync-staging-label-' + type);
+  const spinner = document.getElementById('sync-staging-spinner-' + type);
+  const btn = label.closest('button');
+  btn.disabled = true; label.style.display = 'none'; spinner.style.display = 'inline-block';
+
+  try {
+    const res = await fetch('/api/sync-staging/' + type, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'שגיאה');
+
+    if (!data.jobId) { showToast('✅ סנכרון הושלם', 'ok'); return; }
+    showToast('סנכרון התחיל...', 'ok');
+
+    for (let i = 0; i < 60; i++) {
+      await new Promise(r => setTimeout(r, 2000));
+      const s = await fetch('/api/sync-status/' + data.jobId).then(r => r.json());
+      if (s.done) {
+        if (s.error) throw new Error(s.error);
+        showToast(`✅ ${s.synced} רשומות הועברו להפקה`, 'ok');
+        break;
+      }
+      label.style.display = 'inline';
+      label.textContent = `⏳ ${s.synced}/${s.total}`;
+      label.style.display = 'inline'; spinner.style.display = 'none';
+    }
+  } catch(e) {
+    showToast('שגיאה: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false; spinner.style.display = 'none';
+    label.textContent = '⬆️ אשר והעבר להפקה'; label.style.display = 'inline';
   }
 }
 

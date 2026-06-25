@@ -25,6 +25,7 @@ const neonPool = new Pool({
 });
 const AT_KEY = process.env.AIRTABLE_API_KEY;
 const BASE_ID = 'appRQcniFTsieCxkl';
+const STAGING_BASE = 'appJUuX2pvERkZD7W';
 const N8N = 'https://all-in-n8n.up.railway.app/webhook';
 
 // Built-in tables: Airtable ID → Neon table name (for sync)
@@ -58,6 +59,23 @@ app.all('/api/airtable/:table/:id?', async (req, res) => {
   if (!AT_KEY) return res.status(500).json({ error: 'AIRTABLE_API_KEY not set' });
   const { table, id } = req.params;
   let url = `https://api.airtable.com/v0/${BASE_ID}/${table}`;
+  if (id) url += '/' + id;
+  const qs = new URLSearchParams(req.query).toString();
+  if (qs) url += '?' + qs;
+  const opts = { method: req.method, headers: { 'Authorization': `Bearer ${AT_KEY}`, 'Content-Type': 'application/json' } };
+  if (['POST','PATCH','PUT'].includes(req.method) && Object.keys(req.body).length)
+    opts.body = JSON.stringify(req.body);
+  try {
+    const r = await fetch(url, opts);
+    res.status(r.status).json(await r.json());
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Staging Airtable proxy ──────────────────────────────────────────
+app.all('/api/staging/:table/:id?', async (req, res) => {
+  if (!AT_KEY) return res.status(500).json({ error: 'AIRTABLE_API_KEY not set' });
+  const { table, id } = req.params;
+  let url = `https://api.airtable.com/v0/${STAGING_BASE}/${table}`;
   if (id) url += '/' + id;
   const qs = new URLSearchParams(req.query).toString();
   if (qs) url += '?' + qs;
@@ -335,6 +353,89 @@ app.get('/api/sync-status/:jobId', (req, res) => {
   const s = syncStatus[req.params.jobId];
   if (!s) return res.status(404).json({ error: 'job not found' });
   res.json(s);
+});
+
+// ── Staging table IDs ──────────────────────────────────────────────
+const STAGING_TABLES = {
+  hotels: 'tbley8ucQErKnVC2d',
+  attractions: 'tblyvTjMtywW6RQuM',
+  drivers: 'tbl54Wol8O0DDg3f7',
+  qa: 'tblzN9BOc4ifOJSa2',
+};
+
+const STAGING_PROD_TABLE = {
+  hotels: 'tbl81JyV8LSgrcJtr',
+  attractions: 'tblwQrQEphUK8PphM',
+  drivers: 'tbluqVYPy7ng3qKJB',
+  qa: 'tblfKu8Xgja3ObS5F',
+};
+
+const STAGING_FIELD_MAP = {
+  hotels: { name: 'fldNSi5FmXtVjXMdC', location: 'fldtjA9doG2MDQCEl', price_range: 'fldS6keLJdoarzqSo', phone: 'fld2d8WgxmABllAm5', notes: 'fldysYK1Zcx7TwyLO' },
+  attractions: { name: 'fldWyHNf8irp0WHy6', location: 'fldSZQv3JRHXo3Heu', subtype: 'fld2lh3OcwXz6Xi4a', price: 'fld0yJdQ5cUn83L65', notes: 'fldRE421H2Gpv06Tm' },
+  drivers: { name: 'fldsmpfSH4LlTJdcG', phone: 'fld51YqHfIl41rcB8', notes: 'fldCEVqSt3gTwj4v3' },
+  qa: { question: 'fld4nFuEZPdTALZGG', answer: 'fldk6dZ8zSEvEcaZn', topic: 'fldOhEDpWC2jekXq3' },
+};
+
+// ── Sync staging → Production ────────────────────────────────────
+app.post('/api/sync-staging/:type', async (req, res) => {
+  const { type } = req.params;
+  const prodTableId = STAGING_PROD_TABLE[type];
+  const stagingTableId = STAGING_TABLES[type];
+  const fieldMap = STAGING_FIELD_MAP[type];
+  if (!prodTableId || !stagingTableId || !fieldMap) return res.status(400).json({ error: 'Unknown type: ' + type });
+
+  const limit = req.body?.limit || 0;
+  const jobId = Date.now().toString();
+  syncStatus[jobId] = { done: false, synced: 0, total: 0, error: null };
+  res.json({ started: true, jobId });
+
+  (async () => {
+    try {
+      // Read from staging Airtable
+      let records = [], offset;
+      do {
+        const qs = 'pageSize=100' + (offset ? '&offset=' + offset : '');
+        const r = await fetch(`https://api.airtable.com/v0/${STAGING_BASE}/${stagingTableId}?${qs}`,
+          { headers: { 'Authorization': `Bearer ${AT_KEY}` } });
+        if (!r.ok) throw new Error('Staging fetch failed: ' + r.status);
+        const d = await r.json();
+        records = records.concat(d.records || []);
+        offset = d.offset;
+      } while (offset);
+
+      syncStatus[jobId].total = records.length;
+      const toSync = limit > 0 ? records.slice(0, limit) : records;
+
+      for (const rec of toSync) {
+        const stagingF = rec.fields || {};
+        const prodFields = {};
+        for (const [stagingKey, prodFieldId] of Object.entries(fieldMap)) {
+          const val = stagingF[stagingKey];
+          if (val != null && val !== '') prodFields[prodFieldId] = val;
+        }
+        try {
+          const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${prodTableId}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${AT_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fields: prodFields }),
+          });
+          if (!r.ok) {
+            const errBody = await r.json().catch(() => ({}));
+            console.error('Sync staging→prod failed:', type, errBody);
+          }
+        } catch (e) {
+          console.error('Sync staging→prod error:', type, e.message);
+        }
+        syncStatus[jobId].synced++;
+      }
+
+      syncStatus[jobId].done = true;
+    } catch (e) {
+      syncStatus[jobId].done = true;
+      syncStatus[jobId].error = e.message;
+    }
+  })();
 });
 
 // ── Conversations: list sessions ──────────────────────────────────
