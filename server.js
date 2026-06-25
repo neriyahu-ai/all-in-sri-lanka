@@ -528,7 +528,7 @@ const STAGING_TO_PROD_FIELD = {
     'fldE2jojQUzu4bpaQ': 'fldRE421H2Gpv06Tm',
   },
   drivers: {
-    'fldJrKXIq4dQoyzGp': 'fldsmpfSH4LlTJdcG',
+    'fldJrKXIq4dQoyzGp': 'fldUjQ2QBXoBXfStM',
     'fldrxC249eaOBeMug': 'fld51YqHfIl41rcB8',
     'fldoJF99Kd39xcUwe': 'fldCEVqSt3gTwj4v3',
   },
@@ -584,37 +584,41 @@ app.post('/api/approve/:type', async (req, res) => {
         continue;
       }
 
-      // 4. Send to n8n ingest-record for embedding
-      const prodCreated = await p.json();
-      const prodRecordId = prodCreated.id;
-      const formatter = BUILTIN_MAP[prodTable];
-      const useGemini = GEMINI_EMBED_TABLES.has(prodTable);
+      // 4. Send to n8n ingest-record for embedding (non-fatal)
+      try {
+        const prodCreated = await p.json();
+        const prodRecordId = prodCreated.id;
+        const formatter = BUILTIN_MAP[prodTable];
+        const useGemini = GEMINI_EMBED_TABLES.has(prodTable);
 
-      if (formatter) {
-        const prodFetch = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${prodTable}/${prodRecordId}?returnFieldsByFieldId=true`,
-          { headers: { 'Authorization': `Bearer ${AT_KEY}` } });
-        if (prodFetch.ok) {
-          const prodData = await prodFetch.json();
-          const prodFields = prodData.fields || {};
-          const ingestPayload = formatter(prodFields);
+        if (formatter) {
+          const prodFetch = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${prodTable}/${prodRecordId}?returnFieldsByFieldId=true`,
+            { headers: { 'Authorization': `Bearer ${AT_KEY}` } });
+          if (prodFetch.ok) {
+            const prodData = await prodFetch.json();
+            const prodFields = prodData.fields || {};
+            const ingestPayload = formatter(prodFields);
 
-          if (useGemini) {
-            const rawText = buildGeminiText(ingestPayload, neonTable);
-            const meta = { source: neonTable };
-            const vec = await embedWithGemini(rawText);
-            await fetch(`${N8N}/ingest-record`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ type: neonTable, _embedding: vec, _rawText: rawText, _metadata: meta }),
-            });
-          } else {
-            await fetch(`${N8N}/ingest-record`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(ingestPayload),
-            });
+            if (useGemini) {
+              const rawText = buildGeminiText(ingestPayload, neonTable);
+              const meta = { source: neonTable };
+              const vec = await embedWithGemini(rawText);
+              await fetch(`${N8N}/ingest-record`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: neonTable, _embedding: vec, _rawText: rawText, _metadata: meta }),
+              });
+            } else {
+              await fetch(`${N8N}/ingest-record`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(ingestPayload),
+              });
+            }
           }
         }
+      } catch (_e) {
+        console.warn(`Approve: Neon ingest skipped for ${type}/${recordId}: ${_e.message}`);
       }
 
       // 5. Delete from staging Airtable
