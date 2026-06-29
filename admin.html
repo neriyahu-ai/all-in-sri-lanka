@@ -82,6 +82,15 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
 .approve-bar .count { font-size: 1.1rem; }
 .approve-bar button { background: #fff; color: #2b6cb0; border: none; padding: 6px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; }
 .approve-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
+.delete-bar {
+  position: sticky; top: 0; z-index: 10;
+  background: #c53030; color: #fff; padding: 10px 16px; border-radius: 8px;
+  display: none; align-items: center; justify-content: space-between;
+  margin-bottom: 12px; font-weight: 600;
+}
+.delete-bar .count { font-size: 1.1rem; }
+.delete-bar button { background: #fff; color: #c53030; border: none; padding: 6px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.delete-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Main */
 .main { margin-right: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
@@ -442,15 +451,20 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
             <span class="spinner-inline" id="sync-spinner-hotels" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
+        <div class="delete-bar" id="delb-hotels">
+          <span class="count" id="delc-hotels">0 נבחרו</span>
+          <button onclick="deleteSelected('hotels')" id="deln-hotels">🗑️ מחק מסומנות</button>
+        </div>
         <div class="table-card">
           <table id="tbl-hotels">
             <thead>
               <tr>
+                <th style="width:32px"><input type="checkbox" onchange="toggleAll(this,'hotels')"></th>
                 <th>שם המקום</th><th>סוג</th><th>מיקום</th>
                 <th>טלפון</th><th>מחיר</th><th>דירוג</th><th>WiFi</th><th></th>
               </tr>
             </thead>
-            <tbody id="tbody-hotels"><tr class="loading-row"><td colspan="8">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+            <tbody id="tbody-hotels"><tr class="loading-row"><td colspan="9">טוען... <span class="spinner-inline"></span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -463,10 +477,14 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
             <span class="spinner-inline" id="sync-spinner-attractions" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
+        <div class="delete-bar" id="delb-attractions">
+          <span class="count" id="delc-attractions">0 נבחרו</span>
+          <button onclick="deleteSelected('attractions')" id="deln-attractions">🗑️ מחק מסומנות</button>
+        </div>
         <div class="table-card">
           <table>
-            <thead><tr><th>שם</th><th>תחום</th><th>מיקום</th><th>טלפון</th><th>מחיר כניסה</th><th>דירוג</th><th></th></tr></thead>
-            <tbody id="tbody-attractions"><tr class="loading-row"><td colspan="7">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+            <thead><tr><th style="width:32px"><input type="checkbox" onchange="toggleAll(this,'attractions')"></th><th>שם</th><th>תחום</th><th>מיקום</th><th>טלפון</th><th>מחיר כניסה</th><th>דירוג</th><th></th></tr></thead>
+            <tbody id="tbody-attractions"><tr class="loading-row"><td colspan="8">טוען... <span class="spinner-inline"></span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -479,10 +497,14 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
             <span class="spinner-inline" id="sync-spinner-qna" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
+        <div class="delete-bar" id="delb-qna">
+          <span class="count" id="delc-qna">0 נבחרו</span>
+          <button onclick="deleteSelected('qna')" id="deln-qna">🗑️ מחק מסומנות</button>
+        </div>
         <div class="table-card">
           <table>
-            <thead><tr><th>נושא</th><th>שאלה</th><th>תשובה</th><th></th></tr></thead>
-            <tbody id="tbody-qna"><tr class="loading-row"><td colspan="4">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+            <thead><tr><th style="width:32px"><input type="checkbox" onchange="toggleAll(this,'qna')"></th><th>נושא</th><th>שאלה</th><th>תשובה</th><th></th></tr></thead>
+            <tbody id="tbody-qna"><tr class="loading-row"><td colspan="5">טוען... <span class="spinner-inline"></span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -495,10 +517,14 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
             <span class="spinner-inline" id="sync-spinner-drivers" style="display:none; width:14px; height:14px; border-width:2px;"></span>
           </button>
         </div>
+        <div class="delete-bar" id="delb-drivers">
+          <span class="count" id="delc-drivers">0 נבחרו</span>
+          <button onclick="deleteSelected('drivers')" id="deln-drivers">🗑️ מחק מסומנות</button>
+        </div>
         <div class="table-card">
           <table>
-            <thead><tr><th>שם נהג</th><th>חברה</th><th>טלפון</th><th>שפות</th><th>דירוג</th><th>הערות</th><th></th></tr></thead>
-            <tbody id="tbody-drivers"><tr class="loading-row"><td colspan="7">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+            <thead><tr><th style="width:32px"><input type="checkbox" onchange="toggleAll(this,'drivers')"></th><th>שם נהג</th><th>חברה</th><th>טלפון</th><th>שפות</th><th>דירוג</th><th>הערות</th><th></th></tr></thead>
+            <tbody id="tbody-drivers"><tr class="loading-row"><td colspan="8">טוען... <span class="spinner-inline"></span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -856,6 +882,7 @@ function renderTable(name, recs) {
 
     if (name === 'hotels') {
       cells = `
+        <td><input type="checkbox" class="del-cb" value="${id}" onchange="updateDeleteBar('${name}')"></td>
         <td><strong>${d[f.name]||'–'}</strong></td>
         <td><span class="tag">${d[f.type]||'–'}</span></td>
         <td>${d[f.location]||'–'}</td>
@@ -865,6 +892,7 @@ function renderTable(name, recs) {
         <td><span class="tag ${d[f.wifi]==='כן'?'green':'red'}">${d[f.wifi]||'–'}</span></td>`;
     } else if (name === 'attractions') {
       cells = `
+        <td><input type="checkbox" class="del-cb" value="${id}" onchange="updateDeleteBar('${name}')"></td>
         <td><strong>${d[f.name]||'–'}</strong></td>
         <td><span class="tag blue">${d[f.domain]||'–'}</span></td>
         <td>${d[f.location]||'–'}</td>
@@ -875,12 +903,14 @@ function renderTable(name, recs) {
       const q = d[f.question]||'';
       const a = d[f.answer]||'';
       cells = `
+        <td><input type="checkbox" class="del-cb" value="${id}" onchange="updateDeleteBar('${name}')"></td>
         <td><span class="tag yellow">${d[f.topic]||'–'}</span></td>
         <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${q}">${q}</td>
         <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#718096;" title="${a}">${a}</td>`;
     } else if (name === 'drivers') {
       const langs = Array.isArray(d[f.languages]) ? d[f.languages].join(', ') : (d[f.languages]||'–');
       cells = `
+        <td><input type="checkbox" class="del-cb" value="${id}" onchange="updateDeleteBar('${name}')"></td>
         <td><strong>${d[f.driverName]||d[f.contact]||'–'}</strong></td>
         <td>${d[f.company]||'–'}</td>
         <td dir="ltr">${d[f.driverPhone]||d[f.phone]||'–'}</td>
@@ -933,7 +963,6 @@ function renderTable(name, recs) {
       ${cells}
       <td style="white-space:nowrap">
         <button class="btn-icon" onclick="openEditModal('${name}','${id}')" title="עריכה">✏️</button>
-        <button class="btn-icon del" onclick="deleteRecord('${name}','${id}')" title="מחיקה">🗑️</button>
       </td>
     </tr>`;
   }).join('');
@@ -1514,8 +1543,48 @@ function updateApproveBar(name) {
 }
 
 function toggleAll(master, name) {
-  document.querySelectorAll('#tbody-' + name + ' .staging-cb').forEach(cb => cb.checked = master.checked);
-  updateApproveBar(name);
+  const isStaging = SECTION_TYPE(name) === 'staging';
+  const cls = isStaging ? '.staging-cb' : '.del-cb';
+  document.querySelectorAll('#tbody-' + name + ' ' + cls).forEach(cb => cb.checked = master.checked);
+  if (isStaging) updateApproveBar(name);
+  else updateDeleteBar(name);
+}
+
+function updateDeleteBar(name) {
+  const cbs = document.querySelectorAll('#tbody-' + name + ' .del-cb:checked');
+  const bar = document.getElementById('delb-' + name);
+  const count = document.getElementById('delc-' + name);
+  if (cbs.length) {
+    bar.style.display = 'flex';
+    count.textContent = cbs.length + ' נבחרו';
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+async function deleteSelected(name) {
+  const cbs = document.querySelectorAll('#tbody-' + name + ' .del-cb:checked');
+  const ids = [...cbs].map(cb => cb.value);
+  if (!ids.length) return;
+  if (!confirm('למחוק ' + ids.length + ' רשומות?')) return;
+
+  const btn = document.getElementById('deln-' + name);
+  btn.disabled = true; btn.textContent = '⏳ מוחק...';
+
+  const tableId = TABLES[name];
+  let ok = 0, fail = 0;
+  for (const id of ids) {
+    try {
+      await atFetch(tableId + '/' + id, { method: 'DELETE' });
+      ok++;
+    } catch(e) {
+      fail++;
+    }
+  }
+  showToast(ok + ' נמחקו' + (fail ? ', ' + fail + ' נכשלו' : ''), fail ? 'err' : 'ok');
+  btn.disabled = false; btn.textContent = '🗑️ מחק מסומנות';
+  allRecords[name] = null;
+  loadSection(name);
 }
 
 async function approveSelected(type) {
