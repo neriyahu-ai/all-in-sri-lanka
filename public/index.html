@@ -627,6 +627,7 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
       <!-- Staging QA (curated, Neon-only) -->
       <div id="sec-staging-qa-curated" class="section" style="display:none;">
         <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
+          <button class="btn-primary" onclick="openAddNeonStagingModal('qa-curated')">➕ הוסף שורה</button>
           <button class="btn-primary" onclick="syncNeonStagingText('qa-curated')" style="background:#c05621;">
             <span id="sync-staging-label-qa-curated">🔄 סנכרן</span>
             <span class="spinner-inline" id="sync-staging-spinner-qa-curated" style="display:none; width:14px; height:14px; border-width:2px;"></span>
@@ -1129,6 +1130,23 @@ function openAddModal() {
   document.getElementById('modal-bg').classList.add('open');
 }
 
+function openAddNeonStagingModal(type) {
+  const name = 'staging-' + type;
+  editingId = null;
+  currentSection = name;
+  const f = STAGING_FIELDS[name];
+  const labels = { 'qa-curated': { topic:'נושא', question:'שאלה', answer:'תשובה' } };
+  const lbl = labels[type] || {};
+  const formFields = Object.entries(f).map(([key]) => {
+    const isTextarea = key === 'answer' || key === 'question';
+    return `<div class="f-field full"><label>${lbl[key]||key}</label>
+      ${isTextarea ? `<textarea id="mf-${key}" style="min-height:60px"></textarea>` : `<input id="mf-${key}" value="">`}</div>`;
+  }).join('');
+  document.getElementById('modal-title').textContent = '➕ הוספת שורה';
+  document.getElementById('modal-body').innerHTML = `<div class="f-grid">${formFields}</div>`;
+  document.getElementById('modal-bg').classList.add('open');
+}
+
 function openEditModal(name, id) {
   const rec = (allRecords[name]||[]).find(r => r.id === id);
   if (!rec) return;
@@ -1237,6 +1255,9 @@ async function saveModal() {
       if (editingId) {
         await fetcher(tid + '/' + editingId, { method: 'PATCH', body: JSON.stringify({ fields }) });
         showToast('עודכן בהצלחה ✓', 'ok');
+      } else if (sectionType === 'neon-staging') {
+        await fetcher(tid, { method: 'POST', body: JSON.stringify({ fields }) });
+        showToast('נוסף בהצלחה ✓', 'ok');
       }
       closeModal();
       allRecords[currentSection] = null;

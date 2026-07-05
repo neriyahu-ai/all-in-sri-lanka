@@ -384,6 +384,19 @@ app.get('/api/neon-staging/:type', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+app.post('/api/neon-staging/:type', async (req, res) => {
+  const table = NEON_STAGING_TABLES[req.params.type];
+  if (!table) return res.status(400).json({ error: 'Unknown type: ' + req.params.type });
+  try {
+    const meta = { ...(req.body.fields || {}), source: table };
+    const { rows } = await neonPool.query(
+      `INSERT INTO ${table} (text, metadata) VALUES ($1, $2) RETURNING id`,
+      ['', JSON.stringify(meta)]
+    );
+    res.json({ created: true, id: rows[0].id, fields: meta });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 app.patch('/api/neon-staging/:type/:id', async (req, res) => {
   const table = NEON_STAGING_TABLES[req.params.type];
   if (!table) return res.status(400).json({ error: 'Unknown type: ' + req.params.type });
