@@ -419,7 +419,7 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
         <span class="icon">💬</span> שאלות-תשובות <span class="count" id="nc-staging-qa">–</span>
       </div>
       <div class="nav-item nav-subitem" onclick="showSection('staging-qa-curated', this)">
-        <span class="icon">📗</span> שו"ת קיוריטד <span class="count" id="nc-staging-qa-curated">–</span>
+        <span class="icon">📗</span> שאלות-תשובות <span class="count" id="nc-staging-qa-curated">–</span>
       </div>
       <div class="nav-item nav-subitem" onclick="showSection('staging-drivers', this)">
         <span class="icon">🚗</span> נהגים <span class="count" id="nc-staging-drivers">–</span>
@@ -796,7 +796,6 @@ function init() {
 
 const STAGING_TABLES = {
   'staging-hotels':      'tbley8ucQErKnVC2d',
-  'staging-attractions': 'tblyvTjMtywW6RQuM',
   'staging-qa':          'tblzN9BOc4ifOJSa2',
   'staging-drivers':     'tbl54Wol8O0DDg3f7',
   'staging-qa-curated':  'qa-curated',
@@ -889,7 +888,7 @@ function showSection(name, el) {
 
   const titles = { hotels:'מלונות', attractions:'אטרקציות', qna:'שאלות-תשובות', drivers:'נהגים', inquiries:'פניות', conversations:'שיחות', ai:'סוכן AI',
     'staging-hotels':'מלונות (לאישור)', 'staging-attractions':'אטרקציות (לאישור)', 'staging-qa':'שאלות-תשובות (לאישור)', 'staging-drivers':'נהגים (לאישור)',
-    'staging-qa-curated':'שו"ת קיוריטד (לאישור)' };
+    'staging-qa-curated':'שאלות-תשובות (לאישור)' };
   document.getElementById('section-title').textContent = titles[name] || name;
   const noBar = name === 'ai' || name === 'conversations' || SECTION_TYPE(name) !== 'prod';
   document.getElementById('btn-add-main').style.display = noBar ? 'none' : '';
