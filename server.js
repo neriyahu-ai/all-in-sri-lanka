@@ -384,6 +384,37 @@ app.get('/api/neon-staging/:type', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+app.patch('/api/neon-staging/:type/:id', async (req, res) => {
+  const table = NEON_STAGING_TABLES[req.params.type];
+  if (!table) return res.status(400).json({ error: 'Unknown type: ' + req.params.type });
+  try {
+    const { rows } = await neonPool.query(`SELECT metadata FROM ${table} WHERE id = $1`, [req.params.id]);
+    if (!rows.length) return res.status(404).json({ error: 'not found' });
+    const merged = { ...rows[0].metadata, ...(req.body.fields || {}) };
+    await neonPool.query(`UPDATE ${table} SET metadata = $1 WHERE id = $2`, [JSON.stringify(merged), req.params.id]);
+    res.json({ updated: true, id: req.params.id, fields: merged });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// Rebuild the searchable `text` blob from `metadata` for every row (applies edits/deletes)
+app.post('/api/neon-staging-sync/:type', async (req, res) => {
+  const table = NEON_STAGING_TABLES[req.params.type];
+  if (!table) return res.status(400).json({ error: 'Unknown type: ' + req.params.type });
+  try {
+    const { rows } = await neonPool.query(`SELECT id, metadata FROM ${table}`);
+    for (const r of rows) {
+      const m = r.metadata || {};
+      const parts = [];
+      if (m.question) parts.push(`question: ${m.question}`);
+      if (m.answer) parts.push(`answer: ${m.answer}`);
+      if (m.topic) parts.push(`topic: ${m.topic}`);
+      parts.push(`source: ${m.source || table}`);
+      await neonPool.query(`UPDATE ${table} SET text = $1 WHERE id = $2`, [parts.join(' | '), r.id]);
+    }
+    res.json({ synced: rows.length });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 app.delete('/api/neon-staging/:type/:id', async (req, res) => {
   const table = NEON_STAGING_TABLES[req.params.type];
   if (!table) return res.status(400).json({ error: 'Unknown type: ' + req.params.type });

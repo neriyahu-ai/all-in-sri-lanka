@@ -626,6 +626,12 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
 
       <!-- Staging QA (curated, Neon-only) -->
       <div id="sec-staging-qa-curated" class="section" style="display:none;">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
+          <button class="btn-primary" onclick="syncNeonStagingText('qa-curated')" style="background:#c05621;">
+            <span id="sync-staging-label-qa-curated">🔄 סנכרן</span>
+            <span class="spinner-inline" id="sync-staging-spinner-qa-curated" style="display:none; width:14px; height:14px; border-width:2px;"></span>
+          </button>
+        </div>
         <div class="delete-bar" id="delb-staging-qa-curated">
           <span class="count" id="delc-staging-qa-curated">0 נבחרו</span>
           <button onclick="deleteSelectedNeonStaging('qa-curated')" id="deln-staging-qa-curated">🗑️ מחק מסומנות</button>
@@ -1021,7 +1027,7 @@ function renderTable(name, recs) {
     return `<tr>
       ${cells}
       <td style="white-space:nowrap">
-        ${name === 'staging-qa-curated' ? '' : `<button class="btn-icon" onclick="openEditModal('${name}','${id}')" title="עריכה">✏️</button>`}
+        <button class="btn-icon" onclick="openEditModal('${name}','${id}')" title="עריכה">✏️</button>
       </td>
     </tr>`;
   }).join('');
@@ -1137,7 +1143,8 @@ function openEditModal(name, id) {
     const labels = { hotels: { name:'שם', location:'מיקום', price:'טווח מחירים', phone:'טלפון', notes:'הערות' },
       attractions: { name:'שם', location:'מיקום', subtype:'סוג', price:'מחיר', notes:'הערות' },
       drivers: { name:'שם', phone:'טלפון', notes:'הערות' },
-      qa: { topic:'נושא', question:'שאלה', answer:'תשובה' } };
+      qa: { topic:'נושא', question:'שאלה', answer:'תשובה' },
+      'qa-curated': { topic:'נושא', question:'שאלה', answer:'תשובה' } };
     const lbl = labels[baseName] || {};
     const formFields = Object.entries(f).map(([key, fid]) => {
       const val = esc(d[key]);
@@ -1217,17 +1224,16 @@ async function saveModal() {
   btn.disabled = true; label.style.display = 'none'; spin.style.display = 'inline-block';
 
   try {
-    const isStaging = SECTION_TYPE(currentSection) === 'staging';
-    if (isStaging) {
-      const tables = STAGING_TABLES;
+    const sectionType = SECTION_TYPE(currentSection);
+    if (sectionType !== 'prod') {
       const f = STAGING_FIELDS[currentSection];
-      const tid = tables[currentSection];
+      const tid = STAGING_TABLES[currentSection];
       const fields = {};
       for (const key of Object.keys(f)) {
         const el = document.getElementById('mf-' + key);
         if (el && el.value.trim()) fields[key] = el.value.trim();
       }
-      const fetcher = stagingFetch;
+      const fetcher = sectionType === 'neon-staging' ? neonStagingFetch : stagingFetch;
       if (editingId) {
         await fetcher(tid + '/' + editingId, { method: 'PATCH', body: JSON.stringify({ fields }) });
         showToast('עודכן בהצלחה ✓', 'ok');
@@ -1585,6 +1591,24 @@ async function syncStagingToProduction(type) {
   } finally {
     btn.disabled = false; spinner.style.display = 'none';
     label.textContent = '🔄 סנכרן לNeon'; label.style.display = 'inline';
+  }
+}
+
+async function syncNeonStagingText(type) {
+  const label = document.getElementById('sync-staging-label-' + type);
+  const spinner = document.getElementById('sync-staging-spinner-' + type);
+  const btn = label.closest('button');
+  btn.disabled = true; label.style.display = 'none'; spinner.style.display = 'inline-block';
+  try {
+    const res = await fetch('/api/neon-staging-sync/' + type, { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'שגיאה');
+    showToast(`✅ ${data.synced} רשומות סונכרנו`, 'ok');
+  } catch(e) {
+    showToast('שגיאה: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false; spinner.style.display = 'none';
+    label.textContent = '🔄 סנכרן'; label.style.display = 'inline';
   }
 }
 
