@@ -370,6 +370,29 @@ const STAGING_NEON = {
   qa: 'qa_v3',
 };
 
+// ── Neon-only staging tables (no Airtable backing) ─────────────────
+const NEON_STAGING_TABLES = {
+  'qa-curated': 'qa_staging_curated',
+};
+
+app.get('/api/neon-staging/:type', async (req, res) => {
+  const table = NEON_STAGING_TABLES[req.params.type];
+  if (!table) return res.status(400).json({ error: 'Unknown type: ' + req.params.type });
+  try {
+    const { rows } = await neonPool.query(`SELECT id, metadata FROM ${table} ORDER BY id`);
+    res.json({ records: rows.map(r => ({ id: r.id, fields: r.metadata })) });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete('/api/neon-staging/:type/:id', async (req, res) => {
+  const table = NEON_STAGING_TABLES[req.params.type];
+  if (!table) return res.status(400).json({ error: 'Unknown type: ' + req.params.type });
+  try {
+    await neonPool.query(`DELETE FROM ${table} WHERE id = $1`, [req.params.id]);
+    res.json({ deleted: true, id: req.params.id });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // Staging field IDs → human-readable labels for building text
 const STAGING_FIELD_LABELS = {
   hotels: [

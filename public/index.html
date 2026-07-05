@@ -418,6 +418,9 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
       <div class="nav-item nav-subitem" onclick="showSection('staging-qa', this)">
         <span class="icon">💬</span> שאלות-תשובות <span class="count" id="nc-staging-qa">–</span>
       </div>
+      <div class="nav-item nav-subitem" onclick="showSection('staging-qa-curated', this)">
+        <span class="icon">📗</span> שו"ת קיוריטד <span class="count" id="nc-staging-qa-curated">–</span>
+      </div>
       <div class="nav-item nav-subitem" onclick="showSection('staging-drivers', this)">
         <span class="icon">🚗</span> נהגים <span class="count" id="nc-staging-drivers">–</span>
       </div>
@@ -621,6 +624,20 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
         </div>
       </div>
 
+      <!-- Staging QA (curated, Neon-only) -->
+      <div id="sec-staging-qa-curated" class="section" style="display:none;">
+        <div class="delete-bar" id="delb-staging-qa-curated">
+          <span class="count" id="delc-staging-qa-curated">0 נבחרו</span>
+          <button onclick="deleteSelectedNeonStaging('qa-curated')" id="deln-staging-qa-curated">🗑️ מחק מסומנות</button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th style="width:32px"><input type="checkbox" onchange="toggleAll(this,'staging-qa-curated')"></th><th>נושא</th><th>שאלה</th><th>תשובה</th><th></th></tr></thead>
+            <tbody id="tbody-staging-qa-curated"><tr class="loading-row"><td colspan="5">טוען... <span class="spinner-inline"></span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- Staging Drivers -->
       <div id="sec-staging-drivers" class="section" style="display:none;">
         <div style="display:flex; justify-content:flex-end; margin-bottom:10px; gap:8px;">
@@ -782,6 +799,7 @@ const STAGING_TABLES = {
   'staging-attractions': 'tblyvTjMtywW6RQuM',
   'staging-qa':          'tblzN9BOc4ifOJSa2',
   'staging-drivers':     'tbl54Wol8O0DDg3f7',
+  'staging-qa-curated':  'qa-curated',
 };
 
 const STAGING_FIELDS = {
@@ -803,9 +821,10 @@ const STAGING_FIELDS = {
     name: 'fldJrKXIq4dQoyzGp', phone: 'fldrxC249eaOBeMug',
     location: 'fldJ0reuUJWiEumfC', notes: 'fldoJF99Kd39xcUwe'
   },
+  'staging-qa-curated': { topic: 'topic', question: 'question', answer: 'answer' },
 };
 
-const SECTION_TYPE = name => name.startsWith('staging-') ? 'staging' : 'prod';
+const SECTION_TYPE = name => name === 'staging-qa-curated' ? 'neon-staging' : name.startsWith('staging-') ? 'staging' : 'prod';
 
 // ─── API ──────────────────────────────────────────────────
 async function atFetch(path, opts = {}) {
@@ -832,7 +851,23 @@ async function stagingFetch(path, opts = {}) {
   return res.json();
 }
 
+async function neonStagingFetch(path, opts = {}) {
+  const res = await fetch(`/api/neon-staging/${path}`, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) }
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 async function fetchAll(tableId, type = 'prod') {
+  if (type === 'neon-staging') {
+    const data = await neonStagingFetch(tableId);
+    return data.records || [];
+  }
   let records = [], offset;
   const fetcher = type === 'staging' ? stagingFetch : atFetch;
   do {
@@ -853,9 +888,10 @@ function showSection(name, el) {
   currentSection = name;
 
   const titles = { hotels:'מלונות', attractions:'אטרקציות', qna:'שאלות-תשובות', drivers:'נהגים', inquiries:'פניות', conversations:'שיחות', ai:'סוכן AI',
-    'staging-hotels':'מלונות (לאישור)', 'staging-attractions':'אטרקציות (לאישור)', 'staging-qa':'שאלות-תשובות (לאישור)', 'staging-drivers':'נהגים (לאישור)' };
+    'staging-hotels':'מלונות (לאישור)', 'staging-attractions':'אטרקציות (לאישור)', 'staging-qa':'שאלות-תשובות (לאישור)', 'staging-drivers':'נהגים (לאישור)',
+    'staging-qa-curated':'שו"ת קיוריטד (לאישור)' };
   document.getElementById('section-title').textContent = titles[name] || name;
-  const noBar = name === 'ai' || name === 'conversations' || SECTION_TYPE(name) === 'staging';
+  const noBar = name === 'ai' || name === 'conversations' || SECTION_TYPE(name) !== 'prod';
   document.getElementById('btn-add-main').style.display = noBar ? 'none' : '';
   document.getElementById('search-input').parentElement.style.display = noBar ? 'none' : '';
 
@@ -866,7 +902,7 @@ function showSection(name, el) {
 async function loadSection(name) {
   if (name === 'ai') return;
   const type = SECTION_TYPE(name);
-  const tables = type === 'staging' ? STAGING_TABLES : TABLES;
+  const tables = type !== 'prod' ? STAGING_TABLES : TABLES;
   const tid = tables[name];
   if (!tid) {
     document.getElementById('nc-' + name).textContent = '0';
@@ -889,7 +925,7 @@ function renderTable(name, recs) {
   if (!tbody) return;
   if (!recs.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="9">אין רשומות</td></tr>'; return; }
 
-  const isStaging = SECTION_TYPE(name) === 'staging';
+  const isStaging = SECTION_TYPE(name) !== 'prod';
   const f = isStaging ? STAGING_FIELDS[name] : FIELDS[name];
   const rows = recs.map(r => {
     const d = r.fields;
@@ -957,6 +993,14 @@ function renderTable(name, recs) {
         <td><span class="tag yellow">${d[f.topic]||'–'}</span></td>
         <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${q}">${q}</td>
         <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#718096;" title="${a}">${a}</td>`;
+    } else if (name === 'staging-qa-curated') {
+      const q = d[f.question]||'';
+      const a = d[f.answer]||'';
+      cells = `
+        <td><input type="checkbox" class="staging-cb" value="${id}" onchange="updateDeleteBar('${name}')"></td>
+        <td><span class="tag yellow">${d[f.topic]||'–'}</span></td>
+        <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${q}">${q}</td>
+        <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#718096;" title="${a}">${a}</td>`;
     } else if (name === 'staging-drivers') {
       cells = `
         <td><input type="checkbox" class="staging-cb" value="${id}" onchange="updateApproveBar('${name}')"></td>
@@ -978,7 +1022,7 @@ function renderTable(name, recs) {
     return `<tr>
       ${cells}
       <td style="white-space:nowrap">
-        <button class="btn-icon" onclick="openEditModal('${name}','${id}')" title="עריכה">✏️</button>
+        ${name === 'staging-qa-curated' ? '' : `<button class="btn-icon" onclick="openEditModal('${name}','${id}')" title="עריכה">✏️</button>`}
       </td>
     </tr>`;
   }).join('');
@@ -1084,7 +1128,7 @@ function openEditModal(name, id) {
   const rec = (allRecords[name]||[]).find(r => r.id === id);
   if (!rec) return;
   editingId = id;
-  const isStaging = SECTION_TYPE(name) === 'staging';
+  const isStaging = SECTION_TYPE(name) !== 'prod';
   const f = isStaging ? STAGING_FIELDS[name] : FIELDS[name];
   const d = {};
   for (const [key, fid] of Object.entries(f)) d[key] = rec.fields[fid];
@@ -1219,7 +1263,7 @@ async function saveModal() {
 async function deleteRecord(name, id) {
   if (!confirm('למחוק את הרשומה הזאת?')) return;
   try {
-    const isStaging = SECTION_TYPE(name) === 'staging';
+    const isStaging = SECTION_TYPE(name) !== 'prod';
     const tables = isStaging ? STAGING_TABLES : TABLES;
     const fetcher = isStaging ? stagingFetch : atFetch;
     await fetcher(tables[name] + '/' + id, { method: 'DELETE' });
@@ -1559,15 +1603,16 @@ function updateApproveBar(name) {
 }
 
 function toggleAll(master, name) {
-  const isStaging = SECTION_TYPE(name) === 'staging';
+  const type = SECTION_TYPE(name);
+  const isStaging = type !== 'prod';
   const cls = isStaging ? '.staging-cb' : '.del-cb';
   document.querySelectorAll('#tbody-' + name + ' ' + cls).forEach(cb => cb.checked = master.checked);
-  if (isStaging) updateApproveBar(name);
+  if (type === 'staging') updateApproveBar(name);
   else updateDeleteBar(name);
 }
 
 function updateDeleteBar(name) {
-  const isStaging = SECTION_TYPE(name) === 'staging';
+  const isStaging = SECTION_TYPE(name) !== 'prod';
   const cls = isStaging ? '.staging-cb' : '.del-cb';
   const cbs = document.querySelectorAll('#tbody-' + name + ' ' + cls + ':checked');
   const bar = document.getElementById('delb-' + name);
@@ -1622,6 +1667,31 @@ async function deleteSelectedStaging(type) {
   for (const id of ids) {
     try {
       await stagingFetch(tableId + '/' + id, { method: 'DELETE' });
+      ok++;
+    } catch(e) {
+      fail++;
+    }
+  }
+  showToast(ok + ' נמחקו' + (fail ? ', ' + fail + ' נכשלו' : ''), fail ? 'err' : 'ok');
+  btn.disabled = false; btn.textContent = '🗑️ מחק מסומנות';
+  allRecords[name] = null;
+  loadSection(name);
+}
+
+async function deleteSelectedNeonStaging(type) {
+  const name = 'staging-' + type;
+  const cbs = document.querySelectorAll('#tbody-' + name + ' .staging-cb:checked');
+  const ids = [...cbs].map(cb => cb.value);
+  if (!ids.length) return;
+  if (!confirm('למחוק ' + ids.length + ' רשומות מסטאג\'ינג?')) return;
+
+  const btn = document.getElementById('deln-' + name);
+  btn.disabled = true; btn.textContent = '⏳ מוחק...';
+
+  let ok = 0, fail = 0;
+  for (const id of ids) {
+    try {
+      await neonStagingFetch(type + '/' + id, { method: 'DELETE' });
       ok++;
     } catch(e) {
       fail++;
