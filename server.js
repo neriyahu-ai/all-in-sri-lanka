@@ -755,11 +755,9 @@ app.post('/api/bot/chat', async (req, res) => {
       headers: { 'Content-Type': 'application/json' },
       // The GHL workflow expects the inbound message envelope used by its webhook.
       body: JSON.stringify({
-        body: {
-          message: { body: message },
-          phone: sessionId,
-          contact_id: process.env.N8N_ADMIN_CONTACT_ID || sessionId,
-        },
+        message: { body: message },
+        phone: sessionId,
+        contact_id: process.env.N8N_ADMIN_CONTACT_ID || sessionId,
       }),
     });
     const n8nData = await n8nRes.json();
