@@ -801,6 +801,11 @@ app.get('/bot', (req, res) => {
     #header { background: linear-gradient(135deg, #1a6b3a, #2d9e5f); color: #fff; padding: 14px 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
     #header h1 { font-size: 1.2rem; font-weight: 600; }
     #header p  { font-size: .8rem; opacity: .85; margin-top: 2px; }
+    #prompt-panel { background: #fff; padding: 12px 16px; border-bottom: 1px solid #e0e0e0; }
+    #prompt-panel label { display: block; font-size: .82rem; font-weight: 600; margin-bottom: 6px; }
+    #system-prompt { width: 100%; min-height: 74px; resize: vertical; border: 1px solid #ccc; border-radius: 10px; padding: 8px 11px; font: .85rem/1.45 'Segoe UI', Arial, sans-serif; direction: rtl; }
+    #system-prompt:focus { outline: none; border-color: #2d9e5f; }
+    #prompt-panel small { display: block; color: #777; margin-top: 5px; font-size: .72rem; }
     #messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
     .msg { display: flex; align-items: flex-end; gap: 8px; max-width: 80%; }
     .msg.user { align-self: flex-start; flex-direction: row-reverse; }
@@ -824,6 +829,11 @@ app.get('/bot', (req, res) => {
 </head>
 <body>
 <div id="header"><h1>🌴 All In Sri Lanka</h1><p>שאל אותי כל שאלה על טיול בסרי לנקה</p></div>
+<div id="prompt-panel">
+  <label for="system-prompt">System Prompt לסוכן (אופציונלי)</label>
+  <textarea id="system-prompt" placeholder="השאר ריק כדי שהסוכן יפעל ללא System Prompt מותאם..."></textarea>
+  <small>נשמר בדפדפן ונשלח בכל הודעה; אינו נשמר בזיכרון השיחה.</small>
+</div>
 <div id="messages">
   <div class="msg bot"><div class="avatar">🌴</div><div class="bubble">שלום! אני הבוט של All In Sri Lanka 😊<br>אשמח לעזור לך בתכנון הטיול — שאל אותי על מלונות, אטרקציות, נהגים או כל שאלה אחרת!</div></div>
 </div>
@@ -839,6 +849,9 @@ app.get('/bot', (req, res) => {
   const typing = document.getElementById('typing');
   const input = document.getElementById('msg-input');
   const sendBtn = document.getElementById('send-btn');
+  const systemPrompt = document.getElementById('system-prompt');
+  systemPrompt.value = localStorage.getItem('admin_ai_system_prompt') || '';
+  systemPrompt.addEventListener('input', () => localStorage.setItem('admin_ai_system_prompt', systemPrompt.value));
 
   function addMsg(text, role) {
     const d = document.createElement('div');
@@ -859,7 +872,7 @@ app.get('/bot', (req, res) => {
     messages.appendChild(typing); typing.style.display = 'flex';
     messages.scrollTop = messages.scrollHeight;
     try {
-      const r = await fetch(WEBHOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({sessionId:SESSION_ID, message:text}) });
+      const r = await fetch(WEBHOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({sessionId:SESSION_ID, message:text, source:'admin', system_prompt:systemPrompt.value}) });
       const d = await r.json();
       typing.style.display = 'none';
       addMsg(d.output || 'שגיאה בתשובה', 'bot');
