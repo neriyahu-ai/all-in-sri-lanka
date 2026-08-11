@@ -735,7 +735,7 @@ app.get('/api/conversations/:sessionId', async (req, res) => {
 });
 
 // ── Bot chat API — server owns Neon persistence ──────────────────
-const N8N_CHAT = 'https://all-in-n8n.up.railway.app/webhook/cd147b7a-d9e9-4ca2-850b-9c38cfa45aa2/chat';
+const N8N_CHAT = 'https://all-in-n8n.up.railway.app/webhook/7cb5cf63-c6eb-4837-86ad-e266d2d50a5b';
 
 app.post('/api/bot/chat', async (req, res) => {
   const { sessionId, message } = req.body || {};
@@ -753,7 +753,14 @@ app.post('/api/bot/chat', async (req, res) => {
     const n8nRes = await fetch(N8N_CHAT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'sendMessage', sessionId, chatInput: message }),
+      // The GHL workflow expects the inbound message envelope used by its webhook.
+      body: JSON.stringify({
+        body: {
+          message: { body: message },
+          phone: sessionId,
+          contact_id: process.env.N8N_ADMIN_CONTACT_ID || sessionId,
+        },
+      }),
     });
     const n8nData = await n8nRes.json();
     const output = n8nData.output || '';
