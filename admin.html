@@ -374,6 +374,11 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
   padding: 10px 14px; font-size: 0.9rem; direction: rtl;
 }
 .chat-input-row input:focus { outline: none; border-color: var(--green); }
+.ai-prompt-panel { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.ai-prompt-panel label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 7px; }
+.ai-prompt-panel textarea { width: 100%; min-height: 120px; resize: vertical; border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px; font: inherit; font-size: .85rem; line-height: 1.5; direction: rtl; }
+.ai-prompt-panel textarea:focus { outline: none; border-color: var(--green); }
+.ai-prompt-help { color: var(--muted); font-size: .75rem; margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -671,6 +676,11 @@ nav { flex: 1; padding: 12px 0; overflow-y: auto; }
 
       <!-- AI Agent -->
       <div id="sec-ai" class="section" style="display:none;">
+        <div class="ai-prompt-panel">
+          <label for="ai-system-prompt">System Prompt לסוכן</label>
+          <textarea id="ai-system-prompt" placeholder="השאר ריק כדי שהסוכן יפעל ללא System Prompt מותאם..."></textarea>
+          <div class="ai-prompt-help">ההגדרה נשמרת בדפדפן ונשלחת לסוכן בכל הודעה. היא אינה נשמרת בזיכרון השיחה.</div>
+        </div>
         <div class="chat-panel">
           <div class="chat-messages" id="chat-msgs">
             <div class="msg ai">שלום! אני יכול לעזור לך לחפש מידע בטבלאות. לדוגמה:<br>
@@ -798,6 +808,11 @@ let editingId = null;
 
 // ─── Init ─────────────────────────────────────────────────
 function init() {
+  const promptField = document.getElementById('ai-system-prompt');
+  if (promptField) {
+    promptField.value = localStorage.getItem('admin_ai_system_prompt') || '';
+    promptField.addEventListener('input', () => localStorage.setItem('admin_ai_system_prompt', promptField.value));
+  }
   loadSection('hotels');
 }
 
@@ -1339,6 +1354,25 @@ function addMsg(role, text) {
 }
 
 async function aiAnswer(q) {
+  const systemPrompt = document.getElementById('ai-system-prompt')?.value || '';
+  const sessionKey = 'admin_ai_session_id';
+  let sessionId = localStorage.getItem(sessionKey);
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    localStorage.setItem(sessionKey, sessionId);
+  }
+
+  const response = await fetch('/api/bot/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessionId, message: q, source: 'admin', system_prompt: systemPrompt })
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+  return data.output || 'לא התקבלה תשובה.';
+
+  /* Legacy local lookup retained below for reference; the live AI uses n8n. */
+  /*
   const lower = q.toLowerCase();
 
   // Load relevant data
@@ -1389,6 +1423,7 @@ async function aiAnswer(q) {
   }).join('\n\n');
 
   return `נמצאו ${filtered.length} תוצאות:\n\n${results}${filtered.length > 5 ? `\n\n...ועוד ${filtered.length-5}` : ''}`;
+  */
 }
 
 // ─── Sync Table to Neon ───────────────────────────────────

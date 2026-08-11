@@ -738,9 +738,15 @@ app.get('/api/conversations/:sessionId', async (req, res) => {
 const N8N_CHAT = 'https://all-in-n8n.up.railway.app/webhook/7cb5cf63-c6eb-4837-86ad-e266d2d50a5b';
 
 app.post('/api/bot/chat', async (req, res) => {
-  const { sessionId, message } = req.body || {};
+  const { sessionId, message, system_prompt, source } = req.body || {};
   if (!sessionId || typeof sessionId !== 'string') return res.status(400).json({ error: 'sessionId required' });
   if (!message   || typeof message   !== 'string') return res.status(400).json({ error: 'message required' });
+  if (system_prompt !== undefined && typeof system_prompt !== 'string') {
+    return res.status(400).json({ error: 'system_prompt must be a string' });
+  }
+  if (typeof system_prompt === 'string' && system_prompt.length > 20000) {
+    return res.status(400).json({ error: 'system_prompt is too long' });
+  }
 
   try {
     // 1. Save human message to Neon immediately
@@ -758,6 +764,8 @@ app.post('/api/bot/chat', async (req, res) => {
         message: { body: message },
         phone: sessionId,
         contact_id: process.env.N8N_ADMIN_CONTACT_ID || sessionId,
+        source: source || 'admin',
+        system_prompt: system_prompt || '',
       }),
     });
     const n8nData = await n8nRes.json();
